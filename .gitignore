@@ -1,0 +1,72 @@
+# Project-specific (large trees / vendored copies)
+drawio-master_10_6_0_main/
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build outputs
+build/
+dist/
+bundle/
+out/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+
+# Minified JS under site/js (applies only to untracked files; use
+# `git rm --cached <path>` once if a file was committed before this rule.)
+yii2a/advanced/frontend/web/site/js/*.min.js
+yii2a/advanced/frontend/web/site/js/**/*.min.js
+
+# Upload and temporary directories
+uploads/
+converted/
+tmp/
+temp/
+
+# 3D / CAD binaries (often large)
+*.gltf
+*.glb
+*.obj
+*.mtl
+
+# Environment and secrets (keep *.example committed)
+.env
+cad-convert-app/server.key
+cad-convert-app/server.cert
+.env.local
+.env.*.local
+*.pem
+
+# Logs and debug
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Test / coverage
+coverage/
+.nyc_output/
+*.lcov
+
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editors / IDEs
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*~
+
+# Optional local tooling (uncomment if you do not commit these)
+# .vscode/

@@ -1,0 +1,7 @@
+# Keep text files as LF in the repo and working tree (avoids CRLF warnings
+# and mixed endings on Windows with editors that use LF).
+* text=auto eol=lf
+
+# Native Windows launchers often expect CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf

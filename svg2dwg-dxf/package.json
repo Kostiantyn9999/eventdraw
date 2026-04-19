@@ -1,0 +1,17 @@
+{
+  "name": "file-upload",
+  "author": "Petr Vecera - pagep.net",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node ./main.js"
+  },
+  "dependencies": {
+    "busboy": "^1.6.0",
+    "connect-busboy": "^1.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "fs-extra": "^11.2.0"
+  }
+}

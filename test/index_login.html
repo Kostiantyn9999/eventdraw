@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>3D EventDraw</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Ruthie&display=swap" rel="stylesheet"/>
+    <link rel="icon" href="./eventdraw.ico" type="image/x-icon"/>
+    <link rel="stylesheet" type="text/css" media="screen" href="./assets/css/stylesheet.css"/>
+</head>
+
+<body>
+<div class="loading-page">
+    <div class="counter">
+        <p>Loading</p>
+        <h1>O%</h1>
+        <hr/>
+    </div>
+</div>
+<div class="building-loading-page">
+    <div class="ring">Loading
+        <span></span>
+    </div>
+</div>
+<div class="header">
+    <div class="logo flex">
+        <a>
+            <img src="assets/images/logo.png" alt="Eventdraw 3D Logo"/>
+        </a>
+    </div>
+</div>
+<div id="mySidebar" class="sidebar">
+    <div class="slide-content">
+        <h4>Background</h4>
+        <a href="javascript:void(0)" class="closebtn" id="btn-close-sliderbar">&times;</a>
+        <div class="setting-container">
+            <div id="color-setting" class="setting-body"></div>
+        </div>
+        <div class="setting-container">
+            <div id="background-picker" class="property-title">
+                <span>Fill</span>
+                <button class="geColorBtn" style="
+                position: absolute;
+                margin-top: -4px;
+                right: 20px;
+                height: 22px;
+              ">
+                    <div style="
+                      width: 36px;
+                      height: 12px;
+                      margin: 3px;
+                      border: 1px solid black;
+                      background-color: #ffffff;
+                    "></div>
+                </button>
+            </div>
+            <div class="property-title">
+                <span>Gradient</span>
+                <button class="geColorBtn" id="background-gradient-picker" style="
+                position: absolute;
+                margin-top: -4px;
+                right: 20px;
+                height: 22px;
+              ">
+                    <div style="
+                        width: 36px;
+                        height: 12px;
+                        margin: 3px;
+                        border: 1px solid black;
+                        background-color: #ffffff;
+                    "></div>
+                </button>
+            </div>
+        </div>
+        <div class="setting-container reset-container">
+            <input type="button" id="btn-reset-background" value="Reset Background"/>
+        </div>
+        <div class="setting-container">
+            <div class="check-setting-ground">
+                <input type="checkbox" id="text-show" checked name="chb-ground"/>
+                <label for="text-show" data-content="Disable">Text Disable</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="setting-floor" class="sidebar">
+    <div class="slide-content">
+        <h4>Floor Setting</h4>
+        <a href="javascript:void(0)" class="closebtn" id="btn-close-setting-floor">&times;</a>
+        <div class="setting-container">
+            <div class="property-title">
+                <span>Opacity</span>
+            </div>
+            <div class="setting-body" id="slider-floor-opacity"></div>
+            <div class="setting-body reset-container">
+                <input type="button" id="btn-reset-floor-opacity" value="Reset Opacity"/>
+            </div>
+        </div>
+        <div class="setting-container">
+            <div class="setting-body flex" id="floor-setting"></div>
+        </div>
+        <div class="setting-container">
+            <div id="floor-picker" class="property-title">
+                <span>Fill</span>
+                <button class="geColorBtn" style="
+                position: absolute;
+                margin-top: -4px;
+                right: 20px;
+                height: 22px;
+              ">
+                    <div style="
+                  width: 36px;
+                  height: 12px;
+                  margin: 3px;
+                  border: 1px solid black;
+                  background-color: #ffffff;
+                "></div>
+                </button>
+            </div>
+        </div>
+        <div class="setting-container reset-container">
+            <input type="button" id="btn-reset-floor" value="Reset Floor Color"/>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar for Adding spot -->
+<div id="add-points" class="sidebar">
+    <p>Wall Setting</p>
+    <a href="javascript:void(0)" class="closebtn" id="btn-close-add-points">&times;</a>
+    <div>
+        <ul class="form-style">
+            <li>
+                <label>Add Spot Point<span class="required">*</span></label>
+                <input type="number" name="add-x-point" id="add-x-point" class="field-divided" placeholder="X point"/>
+                <input type="number" name="add-y-point" id="add-y-point" class="field-divided" placeholder="Y point"/>
+                <input type="number" name="add-z-point" id="add-z-point" class="field-divided" placeholder="Z point"/>
+            </li>
+            <li>
+                <input type="button" value="Submit" id="btn-add-points-apply"/>
+            </li>
+        </ul>
+    </div>
+    <h1>Point lists</h1>
+    <ul class="list-group" id="spot-point-lists">
+        <li>
+            <span>X</span><span>100</span> <span>Y</span><span>100</span>
+            <span>Z</span><span>100</span>
+            <span class="badge">10</span>
+        </li>
+    </ul>
+</div>
+
+<!-- Sidebar for Wall -->
+<div id="setting-wall" class="sidebar">
+    <div class="slide-content">
+        <h4>Wall Setting</h4>
+        <a href="javascript:void(0)" class="closebtn" id="btn-close-wall">&times;</a>
+        <div class="setting-container">
+            <div class="property-title">
+                <span>Height</span>
+                <input type="number" value="300" id="ipt-set-height" style="
+                position: absolute;
+                width: 100px;
+                margin-top: -4px;
+                right: 20px;
+                height: 22px;
+                text-align: right;
+              "/>
+            </div>
+        </div>
+        <div class="setting-container">
+            <div class="property-title">
+                <span>Opacity</span>
+            </div>
+            <div class="setting-body" id="slider-wall-opacity"></div>
+            <div class="setting-body reset-container">
+                <input type="button" id="btn-reset-wall-opacity" value="Reset Opacity"/>
+            </div>
+        </div>
+        <div class="setting-container">
+            <div class="setting-body" id="wall-color-setting"></div>
+        </div>
+        <div class="setting-container">
+            <div id="wall-picker" class="property-title">
+                <span>Fill</span>
+                <button class="geColorBtn" style="position: absolute; margin-top: -4px; right: 20px">
+                    <div style="
+                  width: 36px;
+                  height: 12px;
+                  margin: 3px;
+                  border: 1px solid black;
+                  background-color: #ffffff;
+                "></div>
+                </button>
+            </div>
+        </div>
+        <div class="setting-container">
+            <div class="setting-body flex" id="wall-texture-setting"></div>
+        </div>
+        <div class="setting-container reset-container">
+            <input type="button" id="btn-reset-Wall" value="Reset Wall Color"/>
+        </div>
+        <div class="setting-container">
+            <div class="fileUpload blue-btn btn width100">
+                <span>Upload your Art Image</span>
+                <input type="file" class="uploadlogo" id="upload-art"/>
+            </div>
+            <div class="setting-body flex" id="wall-art-texture-setting"></div>
+        </div>
+        <div class="setting-container">
+            <div class="setting-body flex" id="wall-video-texture-setting"></div>
+        </div>
+    </div>
+</div>
+
+<div id="setting-pos-size" class="sidebar">
+    <div class="slide-content">
+        <h4>Property</h4>
+        <a href="javascript:void(0)" class="closebtn" id="btn-close-pos-size">&times;</a>
+        <div class="setting-container">
+            <div class="check-setting-ground">
+                <input type="checkbox" id="model-selection-mode" name="chb-selection-mode"/>
+                <label for="model-selection-mode" data-content="Disable">Change settings for all same models?</label>
+            </div>
+        </div>
+        <div class="setting-container">
+            <div class="property-title">
+                <span>Base Elevation</span>
+                <input type="number" value="0" id="base-elevation" style="
+                position: absolute;
+                width: 100px;
+                margin-top: -4px;
+                right: 20px;
+                text-align: right;
+              "/>
+            </div>
+            <div class="setting-body" id="slider-handles"></div>
+        </div>
+        <div class="setting-container">
+            <div class="property-title">
+                <span>3D Height</span>
+                <input type="number" value="0" id="3d-height" style="
+                position: absolute;
+                width: 100px;
+                margin-top: -4px;
+                right: 20px;
+                text-align: right;
+              "/>
+            </div>
+            <div class="setting-body" id="slider-height-handles"></div>
+        </div>
+        <div class="setting-container reset-container">
+            <input type="button" id="btn-reset-size" value="Reset"/>
+        </div>
+        <div id="table-control">
+            <div class="setting-container">
+                <div class="property-title">
+            <span>
+              Table Color
+            </span>
+                </div>
+                <div id="table-color-setting" class="setting-body flex"></div>
+                <div id="table-color-picker" class="property-title">
+                    <span>Fill</span>
+                    <button class="geColorBtn" style="position: absolute; margin-top: -4px; right: 20px">
+                        <div style="
+                    width: 36px;
+                    height: 12px;
+                    margin: 3px;
+                    border: 1px solid black;
+                    background-color: #ffffff;
+                  "></div>
+                    </button>
+                </div>
+                <div class="reset-container" style="padding-top: 1rem">
+                    <input type="button" id="btn-reset-table-color" value="Reset"/>
+                </div>
+            </div>
+            <div class="setting-container ">
+                <div class="property-title">
+            <span>
+              Chair Color
+            </span>
+                </div>
+                <div id="chair-color-setting" class="setting-body flex"></div>
+                <div id="chair-color-picker" class="property-title">
+                    <span>Fill</span>
+                    <button class="geColorBtn" style="position: absolute; margin-top: -4px; right: 20px">
+                        <div style="
+                    width: 36px;
+                    height: 12px;
+                    margin: 3px;
+                    border: 1px solid black;
+                    background-color: #ffffff;
+                  "></div>
+                    </button>
+                </div>
+                <div class="reset-container" style="padding-top: 1rem">
+                    <input type="button" id="btn-reset-chair-color" value="Reset"/>
+                </div>
+            </div>
+            <div class="setting-container">
+                <div class="check-setting-ground">
+                    <input type="checkbox" id="chb-selection-table-numbers" name="chb-selection-table-numbers"/>
+                    <label for="chb-selection-table-numbers" data-content="Disable">Hide Table Numbers</label>
+                </div>
+            </div>
+        </div>
+        <div id="group-selection-control">
+            <div class="group-list" id="group-shape-lists"></div>
+        </div>
+    </div>
+</div>
+
+<div id="setting-environment" class="sidebar">
+    <div class="slide-content">
+        <h4>Views</h4>
+        <a href="javascript:void(0)" class="closebtn" id="btn-close-environment">&times;</a>
+        </span>
+        <div class="flex" id="choose-theme-selection"></div>
+        <div class="setting-container reset-container">
+            <input type="button" id="btn-reset-theme" value="Reset Theme"/>
+        </div>
+        <div id="accordion">
+            <h3>Light Rotaion</h3>
+            <div>
+                <div id="rotationSliderContainer">
+                    <div id="rotationSlider"></div>
+                    <div id="rotationSliderDegrees">0&deg;</div>
+                </div>
+            </div>
+            <h3>Light 1</h3>
+            <div>
+                <div>
+                    <div id="light1-pan" style="width: 30px; height: 30px; border: 1px solid grey"></div>
+                    <p>Red</p>
+                    <div class="flex">
+                        <input class="slider light-red" type="range" id="light1-red" min="0" max="255" value="255"/>
+                        <input class="light-color" id="light1-t-red" type="number" min="0" max="255" value="255"/>
+                    </div>
+                    <p>Green</p>
+                    <div class="flex">
+                        <input class="slider light-green" type="range" id="light1-green" min="0" max="255" value="255"/>
+                        <input class="light-color" id="light1-t-green" type="number" min="0" max="255" value="255"/>
+                    </div>
+                    <p>Blue</p>
+                    <div class="flex">
+                        <input class="slider light-blue" type="range" id="light1-blue" min="0" max="255" value="255"/>
+                        <input class="light-color" id="light1-t-blue" type="number" min="0" max="255" value="255"/>
+                    </div>
+                    <p>Intensity</p>
+                    <div class="flex">
+                        <input class="slider light-intensity" type="range" id="light1-intensity" min="0" max="200"
+                               value="100"/>
+                        <input class="light-color" id="light1-t-intensity" type="number" min="0" max="200" value="100"/>
+                    </div>
+                </div>
+            </div>
+            <h3>Light 2</h3>
+            <div>
+                <div>
+                    <div id="light2-pan" style="width: 30px; height: 30px; border: 1px solid grey"></div>
+                    <p>Red</p>
+                    <div class="flex">
+                        <input class="slider light-red" type="range" id="light2-red" min="0" max="255" value="255"/>
+                        <input class="light-color" id="light2-t-red" type="number" min="0" max="255" value="255"/>
+                    </div>
+                    <p>Green</p>
+                    <div class="flex">
+                        <input class="slider light-green" type="range" id="light2-green" min="0" max="255" value="255"/>
+                        <input class="light-color" id="light2-t-green" type="number" min="0" max="255" value="255"/>
+                    </div>
+                    <p>Blue</p>
+                    <div class="flex">
+                        <input class="slider light-blue" type="range" id="light2-blue" min="0" max="255" value="255"/>
+                        <input class="light-color" id="light2-t-blue" type="number" min="0" max="255" value="255"/>
+                    </div>
+                    <p>Intensity</p>
+                    <div class="flex">
+                        <input class="slider light-intensity" type="range" id="light2-intensity" min="0" max="200"
+                               value="0"/>
+                        <input class="light-color" id="light2-t-intensity" type="number" min="0" max="200" value="0"/>
+                    </div>
+                </div>
+            </div>
+            <h3>Light 3</h3>
+            <div>
+                <div>
+                    <div id="light3-pan" style="width: 30px; height: 30px; border: 1px solid grey"></div>
+                    <p>Red</p>
+                    <div class="flex">
+                        <input class="slider light-red" type="range" id="light3-red" min="0" max="255" value="255"/>
+                        <input class="light-color" id="light3-t-red" type="number" min="0" max="255" value="255"/>
+                    </div>
+                    <p>Green</p>
+                    <div class="flex">
+                        <input class="slider light-green" type="range" id="light3-green" min="0" max="255" value="255"/>
+                        <input class="light-color" id="light3-t-green" type="number" min="0" max="255" value="255"/>
+                    </div>
+                    <p>Blue</p>
+                    <div class="flex">
+                        <input class="slider light-blue" type="range" id="light3-blue" min="0" max="255" value="255"/>
+                        <input class="light-color" id="light3-t-blue" type="number" min="0" max="255" value="255"/>
+                    </div>
+                    <p>Intensity</p>
+                    <div class="flex">
+                        <input class="slider light-intensity" type="range" id="light3-intensity" min="0" max="200"
+                               value="0"/>
+                        <input class="light-color" id="light3-t-intensity" type="number" min="0" max="200" value="0"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="setting-views" class="sidebar">
+    <p class="text-center">Presets</p>
+    <a href="javascript:void(0)" class="closebtn" id="btn-close-views">&times;</a>
+    <p id="view-points-description">Isometic(Right)</p>
+    <div class="flex">
+        <div id="isometic-right"></div>
+        <div id="isometic-left"></div>
+        <div id="cabinet"></div>
+        <div id="miltary-right"></div>
+        <div id="miltary-left"></div>
+        <div id="cavalier"></div>
+    </div>
+    <div style="padding: 1rem; text-align: right;">
+        <input type="button" id="reset-button" value="Reset View"/>
+    </div>
+</div>
+<div id="main">
+    <!-- Base Elevation-->
+    <div id="controls">
+        <div class="item-3d-transform-symbol sety" style="display: none">
+            <div class="rotate"></div>
+        </div>
+        <div class="item-3d-transform-symbol setxz" style="display: none">
+            <div class="scale"></div>
+        </div>
+        <div id="base-elevation-form" style="display: none">
+            <input type="number" id="shape-base-elevation"/>
+            <div id="slider-set-height"></div>
+        </div>
+    </div>
+    <div id="container"></div>
+    <div class="navigation">
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
+             preserveAspectRatio="none" x="0px" y="0px" width="59px" height="116px" viewBox="0 0 59 116">
+            <defs>
+                <g id="orbitBackground_0_Layer0_0_FILL">
+                    <path fill="#FFFFFF" fill-opacity="0.6980392156862745" stroke="none"
+                          d="
+                    M 47.65 14.25
+                    Q 45.8419921875 10.4919921875 42.65 7.3 41.84375 6.49375 41 5.75 34.2068359375 0 25 0 14.65 0 7.3 7.3 4.6798828125 9.9380859375 3 12.95 2.6498046875 13.6041015625 2.35 14.25 0 19.139453125 0 25 0 29.687890625 1.5 33.75 3.3064453125 38.6564453125 7.3 42.65 14.65 50 25 50 35.35 50 42.65 42.65 46.6708984375 38.6564453125 48.5 33.75 50 29.687890625 50 25 50 19.144921875 47.65 14.25 Z">
+                    </path>
+                </g>
+                <g id="ZoomOutButton_0_Layer1_0_FILL">
+                    <path fill="#FFFFFF" fill-opacity="0.6980392156862745" stroke="none" d="
+                    M 18.1 0
+                    L 0.05 0 0.05 18.1 18.1 18.1 18.1 0 Z"></path>
+                </g>
+                <g id="ZoomInButton_0_Layer1_0_FILL">
+                    <path fill="#FFFFFF" fill-opacity="0.6980392156862745" stroke="none" d="
+                    M 18 0
+                    L 0 0 0 18 18 18 18 0 Z"></path>
+                </g>
+                <g id="TurnLeftButton_0_Layer1_0_FILL">
+                    <path fill="#FFFFFF" fill-opacity="0.6980392156862745" stroke="none" d="
+                    M 18 18
+                    L 18 0 0 0 0 18 18 18 Z"></path>
+                </g>
+                <g id="TurnLeftButton_0_Layer0_0_FILL">
+                    <path fill="#333333" stroke="none" d="
+                    M 13.9 12
+                    L 11.4 11.6
+                    Q 10.9 11.5 10.6 11.4 9.9 11.15 9.7 11.05 9.05 10.75 8.5 10.35 8.3 10.25 8.05 10 7.9 9.9 7.6 9.65
+                    L 9.9 8.25
+                    Q 10 8.2 10 8.15
+                    L 9.9 8.1
+                    Q 3.2 3.8 3.1 3.75
+                    L 3.35 12.15 5.6 10.8
+                    Q 6.6 11.9 7.55 12.45 8.6 13.1 9.3 13.35
+                    L 10.6 13.75
+                    Q 10.75 13.8 11.45 13.95
+                    L 12.6 14.15
+                    Q 13.85 14.3 14.7 14.25
+                    L 14.6 12.1
+                    Q 14.6 12 14.45 12
+                    L 13.9 12 Z"></path>
+                </g>
+                <g id="TurnRightButton_0_Layer1_0_FILL">
+                    <path fill="#FFFFFF" fill-opacity="0.6980392156862745" stroke="none" d="
+                    M 18 18
+                    L 18 0 0 0 0 18 18 18 Z"></path>
+                </g>
+                <g id="TurnRightButton_0_Layer0_0_FILL">
+                    <path fill="#333333" stroke="none" d="
+                    M 14.45 12.15
+                    L 14.7 3.75
+                    Q 14.6 3.8 7.9 8.1
+                    L 7.8 8.15
+                    Q 7.8 8.2 7.9 8.25
+                    L 10.2 9.65
+                    Q 9.9 9.9 9.75 10 9.5 10.25 9.3 10.35 8.75 10.75 8.1 11.05 7.9 11.15 7.2 11.4 6.9 11.5 6.4 11.6
+                    L 3.9 12 3.35 12
+                    Q 3.2 12 3.2 12.1
+                    L 3.1 14.25
+                    Q 3.95 14.3 5.2 14.15
+                    L 6.35 13.95
+                    Q 7.05 13.8 7.2 13.75
+                    L 8.5 13.35
+                    Q 9.2 13.1 10.25 12.45 11.2 11.9 12.2 10.8
+                    L 14.45 12.15 Z"></path>
+                </g>
+                <g id="CenterButton_0_Layer1_0_FILL">
+                    <path fill="#FFFFFF" fill-opacity="0.6980392156862745" stroke="none" d="
+                    M 9 -9
+                    L -9 -9 -9 9 9 9 9 -9 Z"></path>
+                </g>
+                <g id="CenterButton_0_Layer0_0_FILL">
+                    <path fill="#333333" fill-opacity="0.6980392156862745" stroke="none" d="
+                    M -3 7.5
+                    L -7.25 7.5 -7.25 3 -9 3 -9 9 -3 9 -3 7.5
+                    M -9 -3
+                    L -7.35 -3 -7.35 -7.4 -3 -7.4 -3 -9 -9 -9 -9 -3
+                    M 9 3
+                    L 7.25 3 7.25 7.5 3 7.5 3 9 9 9 9 3
+                    M 3 -7.4
+                    L 7.4 -7.4 7.4 -3 9 -3 9 -9 3 -9 3 -7.4 Z"></path>
+                </g>
+                <g id="orbitDirectionSign_0_Layer0_0_1_STROKES" style="cursor: pointer">
+                    <rect width="20" height="20" x="-8" y="-8" fill="#FFFFFF" opacity="0"></rect>
+                    <path stroke="#333333" stroke-width="4" stroke-linejoin="miter" stroke-linecap="butt"
+                          stroke-miterlimit="3"
+                          fill="none" d="M 0 8 L 0 0 8 0"></path>
+                </g>
+                <path id="ZoomOutButton_0_Layer0_0_1_STROKES" stroke="#333333" stroke-width="2.5"
+                      stroke-linejoin="miter"
+                      stroke-linecap="butt" stroke-miterlimit="10" fill="none" d="M 14.35 8.95 L 3.95 8.95"></path>
+                <path id="ZoomInButton_0_Layer0_0_1_STROKES" stroke="#333333" stroke-width="2.5" stroke-linejoin="miter"
+                      stroke-linecap="butt" stroke-miterlimit="10" fill="none"
+                      d="M 9.25 4.05 L 9.25 8.95 14.1 8.95 M 9.25 13.5 L 9.25 8.95 4.3 8.95"></path>
+            </defs>
+            <g transform="matrix(1, 0, 0, 1, 0, 0)">
+                <g transform="matrix( 1, 0, 0, 1, 4.75,0) ">
+                    <g transform="matrix( 1, 0, 0, 1, 0,0) ">
+                        <use xlink:href="#orbitBackground_0_Layer0_0_FILL"></use>
+                    </g>
+                </g>
+                <g id="orbit-down"
+                   transform="matrix( -0.70709228515625, -0.70709228515625, 0.70709228515625, -0.70709228515625, 29.75,30.65) ">
+                    <g transform="matrix( 1, 0, 0, 1, -8.6,-8.6) ">
+                        <g transform="matrix( 1, 0, 0, 1, 0,0) ">
+                            <use xlink:href="#orbitDirectionSign_0_Layer0_0_1_STROKES"></use>
+                        </g>
+                    </g>
+                </g>
+                <g id="orbit-left"
+                   transform="matrix( 0.70709228515625, -0.70709228515625, 0.70709228515625, 0.70709228515625, 24.1,25) ">
+                    <g transform="matrix( 1, 0, 0, 1, -8.6,-8.6) ">
+                        <g transform="matrix( 1, 0, 0, 1, 0,0) ">
+                            <use xlink:href="#orbitDirectionSign_0_Layer0_0_1_STROKES"></use>
+                        </g>
+                    </g>
+                </g>
+                <g id="orbit-up"
+                   transform="matrix( 0.70709228515625, 0.70709228515625, -0.70709228515625, 0.70709228515625, 29.75,19.35) ">
+                    <g transform="matrix( 1, 0, 0, 1, -8.6,-8.6) ">
+                        <g transform="matrix( 1, 0, 0, 1, 0,0) ">
+                            <use xlink:href="#orbitDirectionSign_0_Layer0_0_1_STROKES"></use>
+                        </g>
+                    </g>
+                </g>
+                <g id="orbit-right"
+                   transform="matrix( -0.70709228515625, 0.70709228515625, -0.70709228515625, -0.70709228515625, 35.4,25) ">
+                    <g transform="matrix( 1, 0, 0, 1, -8.6,-8.6) ">
+                        <g transform="matrix( 1, 0, 0, 1, 0,0) ">
+                            <use xlink:href="#orbitDirectionSign_0_Layer0_0_1_STROKES"></use>
+                        </g>
+                    </g>
+                </g>
+                <g id="orbit-zoom-in" transform="matrix( 1, 0, 0, 1, 20.2,58.35) ">
+                    <g transform="matrix( 1, 0, 0, 1, 0,0) ">
+                        <use xlink:href="#ZoomInButton_0_Layer1_0_FILL"></use>
+                    </g>
+                    <g transform="matrix( 1, 0, 0, 1, 0,0) ">
+                        <use xlink:href="#ZoomInButton_0_Layer0_0_1_STROKES"></use>
+                    </g>
+                </g>
+                <g id="orbit-zoom-out" transform="matrix( 0.997222900390625, 0, 0, 0.994476318359375, 20.15,77.6) ">
+                    <g transform="matrix( 1, 0, 0, 1, 0,0) ">
+                        <use xlink:href="#ZoomOutButton_0_Layer1_0_FILL"></use>
+                    </g>
+                    <g transform="matrix( 1, 0, 0, 1, 0,0) ">
+                        <use xlink:href="#ZoomOutButton_0_Layer0_0_1_STROKES"></use>
+                    </g>
+                </g>
+                <g id="orbit-rot-left" transform="matrix( 1, 0, 0, 1, 0,66.6) ">
+                    <g transform="matrix( 1, 0, 0, 1, 0,0) ">
+                        <use xlink:href="#TurnLeftButton_0_Layer1_0_FILL"></use>
+                    </g>
+                    <g transform="matrix( 1, 0, 0, 1, 0,0) ">
+                        <use xlink:href="#TurnLeftButton_0_Layer0_0_FILL"></use>
+                    </g>
+                </g>
+                <g id="orbit-rot-right" transform="matrix( 1, 0, 0, 1, 40.45,65.6) ">
+                    <g transform="matrix( 1, 0, 0, 1, 0,0) ">
+                        <use xlink:href="#TurnRightButton_0_Layer1_0_FILL"></use>
+                    </g>
+                    <g transform="matrix( 1, 0, 0, 1, 0,0) ">
+                        <use xlink:href="#TurnRightButton_0_Layer0_0_FILL"></use>
+                    </g>
+                </g>
+                <g id="orbit-reset" transform="matrix( 1, 0, 0, 1, 29.25,106.45) ">
+                    <g transform="matrix( 1, 0, 0, 1, 0,0) ">
+                        <use xlink:href="#CenterButton_0_Layer1_0_FILL"></use>
+                    </g>
+                    <g transform="matrix( 1, 0, 0, 1, 0,0) ">
+                        <use xlink:href="#CenterButton_0_Layer0_0_FILL"></use>
+                    </g>
+                </g>
+            </g>
+        </svg>
+    </div>
+    <div id="bottom-toolbar">
+        <div id="info-buttons">
+            <div id="export-png-icon" class="square-button" data-title="Export png">
+                P
+            </div>
+            <div id="export-jpeg-icon" class="square-button" data-title="Export jpg">
+                J
+            </div>
+            <div id="export-pdf-icon" class="square-button" data-title="Export pdf">
+                P
+            </div>
+            <div id="export-obj-icon" class="square-button" data-title="Export OBJ">
+                O
+            </div>
+            <div id="export-scene-icon" class="square-button" data-title="Export 3d plan"></div>
+            <div id="import-scene-icon" class="square-button" data-title="Import 3d plan"></div>
+            <div id="full-screen-button" class="square-button" data-title="FullScreen"></div>
+            <div id="share-icon-button" class="square-button" data-title="Share Plan"></div>
+            <div id="share-frame-button" class="square-button" data-title="Export Iframe">F</div>
+            <div id="export-scene-dae-button" class="square-button" data-title="Export Dae">D</div>
+            <input type="file" id="attachment" accept=".eventdraw" style="display: none"/>
+        </div>
+    </div>
+    <div id="top-toolbar">
+        <div id="mode-selection">
+            <div class="square-button" data-mode="tour" data-title="Walking Tour"></div>
+            <div class="square-button active" data-mode="360" data-title="Bird's Eye"></div>
+            <div class="square-button" data-mode="views" data-title="Presets Mode"></div>
+        </div>
+    </div>
+
+    <div class="menu">
+        <ul id="navigationMenu">
+            <li>
+                <a class="home" href="#" id="btn-background"></a>
+            </li>
+
+            <li>
+                <a class="services" href="#" id="btn-setting-wall"> </a>
+            </li>
+
+            <li>
+                <a class="floor" href="#" id="btn-floor"></a>
+            </li>
+
+            <li>
+                <a class="contact" href="#" id="btn-setting-pos-size"></a>
+            </li>
+
+            <li>
+                <a class="contact" href="#" id="btn-setting-environment"></a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="notification-container dismiss">
+    <div class="tabs">
+        <ul id="tab-links"></ul>
+    </div>
+</div>
+<div class="notification-container dismiss" id="art-setting">
+    <p>Art Settings</p>
+    <div class="setting-container">
+        <div class="property-title">
+            <span>Width</span>
+            <input type="number" value="0" id="art-width" style="
+              position: absolute;
+              width: 100px;
+              margin-top: -4px;
+              right: 20px;
+              text-align: right;
+            "/>
+        </div>
+    </div>
+    <div class="setting-container">
+        <div class="property-title">
+            <span>Height</span>
+            <input type="number" value="0" id="art-height" style="
+              position: absolute;
+              width: 100px;
+              margin-top: -4px;
+              right: 20px;
+              text-align: right;
+            "/>
+        </div>
+    </div>
+    <div class="setting-container">
+        <div class="check-setting-ground">
+            <input type="checkbox" id="art-aspect-ratio" checked name="chb-ground"/>
+            <label for="art-aspect-ratio" data-content="Disable">Aspect Ratio</label>
+        </div>
+    </div>
+    <div class="setting-container">
+        <div class="property-title">
+            <span>Rotate</span>
+            <input type="number" value="0" id="art-rotation" style="
+              position: absolute;
+              width: 100px;
+              margin-top: -4px;
+              right: 20px;
+              text-align: right;
+            "/>
+        </div>
+    </div>
+    <div class="setting-container">
+        <div class="property-title">
+            <span>Base Eval</span>
+            <input type="number" value="0" id="art-base" style="
+              position: absolute;
+              width: 100px;
+              margin-top: -4px;
+              right: 20px;
+              text-align: right;
+            "/>
+        </div>
+    </div>
+    <div class="setting-container">
+        <input type="button" id="btn-art-remove" value="Remove Art"/>
+    </div>
+</div>
+<div class="version_name">
+    <p class="version_name">v1.4</p>
+</div>
+<!-- Core Library -->
+<script src="./assets/js/bundle.js"></script>
+</body>
+
+</html>

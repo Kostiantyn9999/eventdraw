@@ -1,0 +1,35 @@
+{
+    "maps" : [
+        {
+            "path" : "textures/brick/bricks_1000.jpg"
+        },
+        {
+            "path" : "textures/brick/bricks_1001.jpg"
+        },
+       
+        {
+            "path" : "textures/brick/bricks_1003.jpg"
+        },
+        {
+            "path" : "textures/brick/bricks_1004.jpg"
+        },
+        {
+            "path" : "textures/brick/bricks_1005.jpg"
+        },
+        {
+            "path" : "textures/brick/bricks_1006.jpg"
+        },
+        {
+            "path" : "textures/brick/bricks_1007.jpg"
+        },
+        {
+            "path" : "textures/brick/bricks_1010.jpg"
+        }
+    ],
+    "arts" : [
+        {
+            "path" : "assets/textures/mural/1.jpg"
+        }
+    ],
+    "videos" : []
+}

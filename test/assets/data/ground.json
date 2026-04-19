@@ -1,0 +1,16 @@
+{
+    "maps" : [
+        {
+            "path" : "textures/ground/ground_2.jpg"
+        },
+        {
+            "path" : "textures/ground/ground_4.jpg"
+        },
+        {
+            "path" : "textures/ground/ground_1022.jpg"
+        },
+        {
+            "path" : "textures/ground/ground_1023.jpg"
+        }
+    ]
+}

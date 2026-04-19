@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react",
+    "baseUrl": "./",
+    "paths": {
+      "types/*": ["src/types/*"],
+      "assets/*": ["src/assets/*"],
+      "src/*": ["src/*"],
+      "components/*": ["src/components/*"],
+      "controllers/*": ["src/controllers/*"],
+      "models/*": ["src/models/*"],
+      "navigation" : ["src/navigation/*"]
+    }
+  },
+  "include": ["src/**/*", "index.d.ts", "bundle/sdk.d.ts"]
+}

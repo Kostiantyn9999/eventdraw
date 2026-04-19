@@ -1,0 +1,74 @@
+[
+    {
+        "id": 1,
+        "name" : "Wood",
+        "thumb" : "assets/images/thumbs/Concrete.jpg",
+        "children" : [
+            {
+                "path" : "assets/textures/wood/wood_1.jpg"
+            },
+            {
+                "path" : "assets/textures/wood/wood_2.jpg"
+            },
+            {
+                "path" : "assets/textures/wood/wood_3.jpg"
+            },
+            {
+                "path" : "assets/textures/wood/wood_4.jpg"
+            },
+            {
+                "path" : "assets/textures/wood/wood_5.jpg"
+            },
+            {
+                "path" : "assets/textures/wood/wood_6.jpg"
+            },
+            {
+                "path" : "assets/textures/wood/wood_7.jpg"
+            },
+            {
+                "path" : "assets/textures/wood/wood_8.jpg"
+            },
+            {
+                "path" : "assets/textures/wood/wood_9.jpg"
+            },
+            {
+                "path" : "assets/textures/wood/wood_10.jpg"
+            },
+            {
+                "path" : "assets/textures/wood/wood_11.jpg"
+            },
+            {
+                "path" : "assets/textures/wood/wood_12.jpg"
+            },
+            {
+                "path" : "assets/textures/wood/wood_13.jpg"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name" : "Metalic",
+        "thumb" : "assets/images/thumbs/Metalic.jpg",
+        "children" : [
+            {
+                "path" : "assets/textures/metalic/metal_1000.jpg"
+            },
+            {
+                "path" : "assets/textures/metalic/metal_1002.jpg"
+            },
+            {
+                "path" : "assets/textures/metalic/metal_1003.jpg"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "name" : "Concrete",
+        "thumb" : "assets/images/thumbs/Concrete.jpg",
+        "children" : [
+            {
+                "path" : "assets/textures/concrete/metal_1000.jpg"
+            }
+        ]
+    }
+]
