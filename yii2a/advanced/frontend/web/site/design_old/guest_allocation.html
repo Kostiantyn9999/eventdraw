@@ -1,0 +1,1898 @@
+<div class="sidebar_right">
+
+<!-- guest_allocation_table Start -->
+<div id="guest_allocation_table">
+
+  <div id="guest_allocation_table_view">
+    <h4>Guest Allocation</h4>
+    <div class="list_tab" id="list_tab">
+      <ul>
+        <li><button id="guest_allocation_table_guest_allocation_tab" class="selected">Guest Allocation</button></li>
+        <li><button id="guest_allocation_table_share_tab">Share</button></li>
+        <li><button id="guest_allocation_table_print_tab">Print</button></li>
+        <li><button id="guest_allocation_table_summary_tab">Summary</button></li>
+      </ul>
+
+<!-- guest_allocation_table_guest_allocation_tab_start       -->
+    <div id ="guest_allocation_table_guest_allocation" class="selected remove_class_selected">
+    <div class="button_guest">
+      <button id="guest_allocation_table_add_guest"><img src="./images/add-user-white.png"> Add guest</button><button id="guest_allocation_table_import_list"> <img src="./images/icons-import.png"> Import list</button>
+    </div>
+
+<!-------------------- table for import list --------------->
+            <div class="import_list_table">
+              <h4> Import List</h4>
+              <p>Please check your data is in the correct columns(first 3 lines of the data shown).</p>
+              <div>
+              <select id="guest_allocation_import_list_table_first_name">
+                <option value="" selected="selected">First Name</option>
+                <option value="">Daniele</option> 
+                <option value="">Xema</option>   
+                <option value="">Carlton</option>            
+              </select>
+          
+                  <select id="guest_allocation_import_list_table_last_name">
+                <option value="" selected="selected">Last Name</option>
+                <option value="">Bloggs</option> 
+                <option value="">mccll</option>   
+                <option value="">Bruce</option>            
+              </select>
+              </div>
+          
+            <div>
+              <select id="guest_allocation_import_list_table_table">
+                <option value="" selected="selected">Table</option>
+                <option value="">1</option> 
+                <option value="">1</option>   
+                <option value="">1</option>            
+              </select>
+          
+               <select id="guest_allocation_import_list_table_seat">
+                <option value="" selected="selected">Seat</option>
+                <option value="">2</option> 
+                <option value="">2</option>   
+                <option value="">2</option>            
+              </select>
+              </div>
+            <div>
+              <select id="guest_allocation_import_list_table_dietary_req.">
+                <option value="" selected="selected">Dietary requirement</option>
+                <option value="">-</option> 
+                <option value="">-</option>   
+                <option value="">-</option>            
+              </select>
+          
+              <select id="guest_allocation_import_list_table_not_required">
+                <option value="" selected="selected">Not requied</option>
+                <option value="">example@gmail.com</option> 
+                <option value="">example@gmail.com</option>   
+                <option value="">example@gmail.com</option>            
+              </select>
+            </div>
+            <p style="border-top: 1px solid #ccc; margin-top: 0"></p>
+            <div class="last-section_btn">
+                <button id="guest_allocation_import_list_cancel_btn">Cancel</button> <button id="guest_allocation_import_list_import_btn">Import</button>
+              </div>
+            </div>
+  
+  
+
+
+<!-------------------- table for import list end--------------->
+
+
+
+
+    <!-------------------- table for new guest --------------->
+
+    <div id="new_guest_table">
+  <div id="new_guest_table_view">
+    <h4>New Guest</h4>
+      <input type="hidden" id="guest_allocation_new_guest_table_item_id" value="" name="data_id">
+    <div>
+      <span>First name </span>
+      <span><input type="text" name="guest_allocation_new_guest_table_firstname" id="guest_allocation_new_guest_table_firstname" required></span>
+    </div>
+
+    <div>
+      <span>Last name</span>
+      <span><input type="text" name="guest_allocation_new_guest_table_lastname" id="guest_allocation_new_guest_table_lastname" required></span>
+    </div>
+
+    <div class="two_col">
+    <div class="two_col_field"> 
+      <div>
+        <span>Table number</span>
+        <span><input type="number" name="guest_allocation_new_guest_table_number" id="guest_allocation_new_guest_table_number" value="1" min="1" required></span>
+      </div>
+  
+      <div>
+        <span>Seat number</span>
+        <span><input type="number" name="guest_allocation_new_guest_table_seat_number" id="guest_allocation_new_guest_table_seat_number" value="1" min="1" required></span>
+      </div>
+    </div>
+    <div class="guest_table_image_svg">
+      <svg id="new_guest_table_image" style="left: 2px; top: 2px; width: 100%; height: 127px; display: block; position: relative; overflow: hidden; cursor: hand;"><g><g transform="rotate(0 135 60) translate(125 -8)" id="chair_1"> <rect stroke="#fff" id="rect_chair_1" height="11.86449" width="16.59524" y="14.90714" x="2.0" stroke-width="2" fill="#fff"></rect>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="1.35454" y1="14" x2="1.35454" y2="30.14961" id="svg_line1_chair_1" stroke-linejoin="null" stroke-linecap="null"></line>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="20.33507" y1="14" x2="20.33507" y2="30.14961" id="svg_line2_chair_1" stroke-linejoin="null" stroke-linecap="null"></line>  <text fill="#000000" stroke="#000" stroke-width="0" stroke-opacity="null" fill-opacity="null" x="10.6279" y="25" id="svg_chairNumber_chair_1" font-size="14" font-family="Helvetica, Arial, sans-serif" text-anchor="middle" xml:space="preserve" font-weight="normal">1</text>  <path stroke="black" stroke-width="2" id="svg_line3_chair_1" fill="#fff" d="m1.09004,14.67118c4.88466,-3.56157 14.65399,-3.56157 19.53865,0"></path></g><g transform="rotate(36 135 60) translate(125 -8)" id="chair_2"> <rect stroke="#fff" id="rect_chair_2" height="11.86449" width="16.59524" y="14.90714" x="2.0" stroke-width="2" fill="#fff"></rect>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="1.35454" y1="14" x2="1.35454" y2="30.14961" id="svg_line1_chair_2" stroke-linejoin="null" stroke-linecap="null"></line>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="20.33507" y1="14" x2="20.33507" y2="30.14961" id="svg_line2_chair_2" stroke-linejoin="null" stroke-linecap="null"></line>  <text fill="#000000" stroke="#000" stroke-width="0" stroke-opacity="null" fill-opacity="null" x="10.6279" y="25" id="svg_chairNumber_chair_2" font-size="14" font-family="Helvetica, Arial, sans-serif" text-anchor="middle" xml:space="preserve" font-weight="normal">2</text>  <path stroke="black" stroke-width="2" id="svg_line3_chair_2" fill="#fff" d="m1.09004,14.67118c4.88466,-3.56157 14.65399,-3.56157 19.53865,0"></path></g><g transform="rotate(72 135 60) translate(125 -8)" id="chair_3"> <rect stroke="#fff" id="rect_chair_3" height="11.86449" width="16.59524" y="14.90714" x="2.0" stroke-width="2" fill="#fff"></rect>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="1.35454" y1="14" x2="1.35454" y2="30.14961" id="svg_line1_chair_3" stroke-linejoin="null" stroke-linecap="null"></line>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="20.33507" y1="14" x2="20.33507" y2="30.14961" id="svg_line2_chair_3" stroke-linejoin="null" stroke-linecap="null"></line>  <text fill="#000000" stroke="#000" stroke-width="0" stroke-opacity="null" fill-opacity="null" x="10.6279" y="25" id="svg_chairNumber_chair_3" font-size="14" font-family="Helvetica, Arial, sans-serif" text-anchor="middle" xml:space="preserve" font-weight="normal">3</text>  <path stroke="black" stroke-width="2" id="svg_line3_chair_3" fill="#fff" d="m1.09004,14.67118c4.88466,-3.56157 14.65399,-3.56157 19.53865,0"></path></g><g transform="rotate(108 135 60) translate(125 -8)" id="chair_4"> <rect stroke="#fff" id="rect_chair_4" height="11.86449" width="16.59524" y="14.90714" x="2.0" stroke-width="2" fill="#fff"></rect>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="1.35454" y1="14" x2="1.35454" y2="30.14961" id="svg_line1_chair_4" stroke-linejoin="null" stroke-linecap="null"></line>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="20.33507" y1="14" x2="20.33507" y2="30.14961" id="svg_line2_chair_4" stroke-linejoin="null" stroke-linecap="null"></line>  <text fill="#000000" stroke="#000" stroke-width="0" stroke-opacity="null" fill-opacity="null" x="10.6279" y="25" id="svg_chairNumber_chair_4" font-size="14" font-family="Helvetica, Arial, sans-serif" text-anchor="middle" xml:space="preserve" font-weight="normal">4</text>  <path stroke="black" stroke-width="2" id="svg_line3_chair_4" fill="#fff" d="m1.09004,14.67118c4.88466,-3.56157 14.65399,-3.56157 19.53865,0"></path></g><g transform="rotate(144 135 60) translate(125 -8)" id="chair_5"> <rect stroke="#fff" id="rect_chair_5" height="11.86449" width="16.59524" y="14.90714" x="2.0" stroke-width="2" fill="#fff"></rect>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="1.35454" y1="14" x2="1.35454" y2="30.14961" id="svg_line1_chair_5" stroke-linejoin="null" stroke-linecap="null"></line>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="20.33507" y1="14" x2="20.33507" y2="30.14961" id="svg_line2_chair_5" stroke-linejoin="null" stroke-linecap="null"></line>  <text fill="#000000" stroke="#000" stroke-width="0" stroke-opacity="null" fill-opacity="null" x="10.6279" y="25" id="svg_chairNumber_chair_5" font-size="14" font-family="Helvetica, Arial, sans-serif" text-anchor="middle" xml:space="preserve" font-weight="normal">5</text>  <path stroke="black" stroke-width="2" id="svg_line3_chair_5" fill="#fff" d="m1.09004,14.67118c4.88466,-3.56157 14.65399,-3.56157 19.53865,0"></path></g><g transform="rotate(180 135 60) translate(125 -8)" id="chair_6"> <rect stroke="#fff" id="rect_chair_6" height="11.86449" width="16.59524" y="14.90714" x="2.0" stroke-width="2" fill="#fff"></rect>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="1.35454" y1="14" x2="1.35454" y2="30.14961" id="svg_line1_chair_6" stroke-linejoin="null" stroke-linecap="null"></line>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="20.33507" y1="14" x2="20.33507" y2="30.14961" id="svg_line2_chair_6" stroke-linejoin="null" stroke-linecap="null"></line>  <text fill="#000000" stroke="#000" stroke-width="0" stroke-opacity="null" fill-opacity="null" x="10.6279" y="25" id="svg_chairNumber_chair_6" font-size="14" font-family="Helvetica, Arial, sans-serif" text-anchor="middle" xml:space="preserve" font-weight="normal">6</text>  <path stroke="black" stroke-width="2" id="svg_line3_chair_6" fill="#fff" d="m1.09004,14.67118c4.88466,-3.56157 14.65399,-3.56157 19.53865,0"></path></g><g transform="rotate(216 135 60) translate(125 -8)" id="chair_7"> <rect stroke="#fff" id="rect_chair_7" height="11.86449" width="16.59524" y="14.90714" x="2.0" stroke-width="2" fill="#fff"></rect>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="1.35454" y1="14" x2="1.35454" y2="30.14961" id="svg_line1_chair_7" stroke-linejoin="null" stroke-linecap="null"></line>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="20.33507" y1="14" x2="20.33507" y2="30.14961" id="svg_line2_chair_7" stroke-linejoin="null" stroke-linecap="null"></line>  <text fill="#000000" stroke="#000" stroke-width="0" stroke-opacity="null" fill-opacity="null" x="10.6279" y="25" id="svg_chairNumber_chair_7" font-size="14" font-family="Helvetica, Arial, sans-serif" text-anchor="middle" xml:space="preserve" font-weight="normal">7</text>  <path stroke="black" stroke-width="2" id="svg_line3_chair_7" fill="#fff" d="m1.09004,14.67118c4.88466,-3.56157 14.65399,-3.56157 19.53865,0"></path></g><g transform="rotate(252 135 60) translate(125 -8)" id="chair_8"> <rect stroke="#fff" id="rect_chair_8" height="11.86449" width="16.59524" y="14.90714" x="2.0" stroke-width="2" fill="#fff"></rect>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="1.35454" y1="14" x2="1.35454" y2="30.14961" id="svg_line1_chair_8" stroke-linejoin="null" stroke-linecap="null"></line>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="20.33507" y1="14" x2="20.33507" y2="30.14961" id="svg_line2_chair_8" stroke-linejoin="null" stroke-linecap="null"></line>  <text fill="#000000" stroke="#000" stroke-width="0" stroke-opacity="null" fill-opacity="null" x="10.6279" y="25" id="svg_chairNumber_chair_8" font-size="14" font-family="Helvetica, Arial, sans-serif" text-anchor="middle" xml:space="preserve" font-weight="normal">8</text>  <path stroke="black" stroke-width="2" id="svg_line3_chair_8" fill="#fff" d="m1.09004,14.67118c4.88466,-3.56157 14.65399,-3.56157 19.53865,0"></path></g><g transform="rotate(288 135 60) translate(125 -8)" id="chair_9"> <rect stroke="#fff" id="rect_chair_9" height="11.86449" width="16.59524" y="14.90714" x="2.0" stroke-width="2" fill="#fff"></rect>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="1.35454" y1="14" x2="1.35454" y2="30.14961" id="svg_line1_chair_9" stroke-linejoin="null" stroke-linecap="null"></line>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="20.33507" y1="14" x2="20.33507" y2="30.14961" id="svg_line2_chair_9" stroke-linejoin="null" stroke-linecap="null"></line>  <text fill="#000000" stroke="#000" stroke-width="0" stroke-opacity="null" fill-opacity="null" x="10.6279" y="25" id="svg_chairNumber_chair_9" font-size="14" font-family="Helvetica, Arial, sans-serif" text-anchor="middle" xml:space="preserve" font-weight="normal">9</text>  <path stroke="black" stroke-width="2" id="svg_line3_chair_9" fill="#fff" d="m1.09004,14.67118c4.88466,-3.56157 14.65399,-3.56157 19.53865,0"></path></g><g transform="rotate(324 135 60) translate(125 -8)" id="chair_10"> <rect stroke="#fff" id="rect_chair_10" height="11.86449" width="16.59524" y="14.90714" x="2.0" stroke-width="2" fill="#fff"></rect>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="1.35454" y1="14" x2="1.35454" y2="30.14961" id="svg_line1_chair_10" stroke-linejoin="null" stroke-linecap="null"></line>  <line stroke="#000" stroke-width="2" fill="none" stroke-opacity="null" fill-opacity="null" x1="20.33507" y1="14" x2="20.33507" y2="30.14961" id="svg_line2_chair_10" stroke-linejoin="null" stroke-linecap="null"></line>  <text fill="#000000" stroke="#000" stroke-width="0" stroke-opacity="null" fill-opacity="null" x="10.6279" y="25" id="svg_chairNumber_chair_10" font-size="14" font-family="Helvetica, Arial, sans-serif" text-anchor="middle" xml:space="preserve" font-weight="normal">10</text>  <path stroke="black" stroke-width="2" id="svg_line3_chair_10" fill="#fff" d="m1.09004,14.67118c4.88466,-3.56157 14.65399,-3.56157 19.53865,0"></path></g><ellipse fill="#fff" stroke-width="2" cx="135" cy="60" id="svg_circle" rx="40" ry="40" stroke="#000"></ellipse></g></svg>
+</div>
+
+    </div>
+    <div>
+      <span>Seat Type </span>
+      <span>
+        <select id="guest_allocation_new_guest_table_seat_type" >
+          <!-- <option value="Adult" selected="selected">Adult</option>
+          <option value="Child (children's meal)">Child (children's meal)</option>
+          <option value="Child (full meal)">Child (full meal)</option>
+          <option value="Child (no meal)">Child (no meal)</option>    
+          <option value="High chair(children's meal)">High chair(children's meal)</option>    
+          <option value="High chair(no meal)">High chair(no meal)</option> -->              
+        </select>
+      </span>
+    </div>
+
+    <div><span>Dietary requirements</span>
+    	<div id="guest_allocation_new_guest_table_add_dietary_option"></div>
+      <button id="guest_allocation_new_guest_table_add_dietary"><img src="./images/btn-image.png"> Add dietary req.</button>
+    </div>
+
+<!-- radio_btn_list_dietary_requirment_start -->
+    <div id="guest_allocation_new_guest_add_user_dietary" class="die_req_list">
+
+      <button id="guest_allocation_new_guest_table_create_new"><img src="./images/btn-image.png"> Create new</button>
+      <p style="border-bottom: 1px solid #ccc;"></p>  
+       <div class="last-section_btn"> 
+      <button id="guest_allocation_new_guest_table_add_dietary_cancel">Cancel</button>    
+      <button id="guest_allocation_new_guest_table_add_dietary_done">Done</button>  
+       </div>
+    </div> <!-- radio_btn_list_dietary_requirment_end -->
+
+<!-- create new_dietary_start -->
+    <div class="create_new_dietary">
+        <h4> New dietary requirement</h4>
+        <input id="dietary_id_hidden" type="hidden" name="dietary_id" value=''>
+        <div>
+          <span>Dietary requirement </span>
+          <span><input type="text" name="guest_allocation_create_new_dietary_dietary_req" id="guest_allocation_create_new_dietary_dietary_req">
+          </span>
+        </div>
+        <div class="colour_sele_box">
+          <p> COLOR</p>
+            <div class="color_select" style="display: block;">
+                <span data-color="ffc9d2" style="background-color: #ffc9d2" class="active_plate"></span>
+                <span data-color="ff9c8e" style="background-color: #ff9c8e"></span>
+                <span data-color="ffd69f" style="background-color: #ffd69f"></span>
+                <span data-color="efeb93" style="background-color: #efeb93"></span>
+                <span data-color="b5f5c1" style="background-color: #b5f5c1"></span>
+                <span data-color="bae6e6" style="background-color: #bae6e6"></span>
+                <span data-color="bec2fd" style="background-color: #bec2fd"></span>
+                <span data-color="d7dede" style="background-color: #d7dede"></span>
+
+                <span data-color="a8518a" style="background-color: #a8518a"></span>
+                <span data-color="e04e3a" style="background-color: #e04e3a"></span>
+                <span data-color="f58442" style="background-color: #f58442"></span>
+                <span data-color="fac64d" style="background-color: #fac64d"></span>
+                <span data-color="7ac4a4" style="background-color: #7ac4a4"></span>
+                <span data-color="59baff" style="background-color: #59baff"></span>
+                <span data-color="737beb" style="background-color: #737beb"></span>
+                <span data-color="88989a" style="background-color: #88989a"></span>
+
+                <span data-color="744363" style="background-color: #744363"></span>
+                <span data-color="9a3628" style="background-color: #9a3628"></span>
+                <span data-color="bf5110" style="background-color: #bf5110"></span>
+                <span data-color="be8913" style="background-color: #be8913"></span>
+                <span data-color="4d8f8f" style="background-color: #4d8f8f"></span>
+                <span data-color="145a8b" style="background-color: #145a8b"></span>
+                <span data-color="404590" style="background-color: #404590"></span>
+                <span data-color="4b5553" style="background-color: #4b5553"></span>
+
+             </div>
+          </div>
+          <p style="border-top: 1px solid #ccc;     margin-bottom: 8px;"></p>
+    <div class="last-section_btn">
+      <button id="guest_allocation_create_new_dietary_cancel_btn">Cancel</button> <button id="guest_allocation_create_new_dietary_save_btn">Save</button>
+    </div>
+
+    </div>
+<!-- create new_dietary_end -->
+
+
+
+
+
+    <div class="last-section_btn">
+      <button id="guest_allocation_new_guest_table_cancel_btn">Cancel</button> <button id="guest_allocation_new_guest_table_save_btn">Save</button>
+    </div>
+
+  </div><!-- new_guest_table_view -->
+
+</div>     <!-------------------- table for new guest end--------------->
+
+      <div class="filter_button_sec">
+      <span><input type="text" placeholder="Search guests" name="guest_allocation_table_search_guests" id="guest_allocation_table_search_guests"><img src="./images/loupe.png" class="search_icon"></span>
+        <button id="guest_allocation_table_filter"><img src="./images/filter.png">Filter</button>
+
+      <!-- Filter button table -->
+      <div class="filter_btn_table">
+            <h2>Filter Guest</h2>
+            <button id="guest_allocation_table_guest_allocation_clr_btn">Clear all</button>
+            <div class="filter_guest_row">
+            <h3 class="title">Table number </h3>
+            
+            <div class="table_details">
+              <div id="guest_filter_table_number_html" class="first_row">
+                               
+              </div>                        
+            </div>
+          </div>
+            <div class="filter_guest_row">
+            <h3 class="title">Seat type </h3>
+            <!-- seat type filter -->
+            <div id="guest_filter_seat_type" class="table_details seat_type_con">
+
+
+
+            </div>
+            <!-- seat type filter -->
+
+            </div>
+            <div class="filter_guest_row">
+            <h3 class="title">Dietary requirements </h3>
+            <!-- Dietary filter -->
+            <div id="guest_allocation_filter_dietary" class="table_details seat_type_con">                
+
+            </div>
+            <!-- Dietary filter -->
+          </div>
+    <div class="last-section_btn">
+      <button id="guest_allocation_table_guest_allocation_filter_cancel">Cancel</button> <button id="guest_allocation_table_guest_allocation_filter_apply">Apply</button>
+    </div>
+    </div> <!-- Filter button table end-->
+    
+
+
+<div class="add_to_table_popupform">
+<h4>Add to table</h4>
+<div>
+        <span>Table number</span>
+        <span><input type="number" name="guest_allocation_add_to_table_table_number" id="guest_allocation_add_to_table_table_number" value="1" min="1"></span>
+      </div>
+
+  <div class="last-section_btn">
+      <button id="guest_allocation_table_add_to_table_cancel_btn">Cancel</button> <button id="guest_allocation_table_add_to_table_save_btn">Save</button>
+    </div>
+</div>
+
+    <div  id="guest_list_table_head" class="arrows">
+      <span style="margin-left: 10px;"><input type="checkbox" name="guest_allocation_table_search_checkbox" id="guest_allocation_table_search_checkbox" value="all">
+      <label for="guest_allocation_table_search_checkbox"></label></span> <span id="guest_allocation_table_search_name" data-sort="data_first">NAME <svg class="arrow_down" viewBox="4 2 9 11.999" width="9" height="11">
+            <path id="arrow_down" d="M 8.309080123901367 13.9616003036499 C 8.496039390563965 14.03855991363525 8.71092700958252 13.99572086334229 8.854080200195313 13.85295009613037 L 12.85346984863281 9.853549957275391 C 13.04878520965576 9.658340454101563 13.04878520965576 9.341758728027344 12.85352325439453 9.146495819091797 C 12.65826034545898 8.951233863830566 12.34167861938477 8.951233863830566 12.14641571044922 9.146495819091797 L 9 12.29300022125244 L 9 2.5 C 9 2.223857641220093 8.776142120361328 2 8.5 2 C 8.223857879638672 2 8 2.223857641220093 8 2.5 L 8 12.29300022125244 L 4.853519916534424 9.146510124206543 C 4.658311367034912 8.951193809509277 4.341729164123535 8.951193809509277 4.146466732025146 9.146455764770508 C 3.951204538345337 9.341717720031738 3.951204299926758 9.658300399780273 4.146466732025146 9.85356330871582 L 8.145870208740234 13.85299968719482 C 8.192574501037598 13.89961528778076 8.248043060302734 13.93652534484863 8.309080123901367 13.96160125732422 Z">
+            </path>
+          </svg>
+        
+        </span>
+      <span style="margin-left: 87px;" id="guest_allocation_table_search_table" data-sort="data_tableno">TABLE 
+          <svg class="arrow_down" viewBox="4 2 9 11.999" width="9" height="11">
+            <path id="arrow_down" d="M 8.309080123901367 13.9616003036499 C 8.496039390563965 14.03855991363525 8.71092700958252 13.99572086334229 8.854080200195313 13.85295009613037 L 12.85346984863281 9.853549957275391 C 13.04878520965576 9.658340454101563 13.04878520965576 9.341758728027344 12.85352325439453 9.146495819091797 C 12.65826034545898 8.951233863830566 12.34167861938477 8.951233863830566 12.14641571044922 9.146495819091797 L 9 12.29300022125244 L 9 2.5 C 9 2.223857641220093 8.776142120361328 2 8.5 2 C 8.223857879638672 2 8 2.223857641220093 8 2.5 L 8 12.29300022125244 L 4.853519916534424 9.146510124206543 C 4.658311367034912 8.951193809509277 4.341729164123535 8.951193809509277 4.146466732025146 9.146455764770508 C 3.951204538345337 9.341717720031738 3.951204299926758 9.658300399780273 4.146466732025146 9.85356330871582 L 8.145870208740234 13.85299968719482 C 8.192574501037598 13.89961528778076 8.248043060302734 13.93652534484863 8.309080123901367 13.96160125732422 Z">
+            </path>
+          </svg>
+        </span>
+
+
+      <span style="margin-left: 10px;" id="guest_allocation_table_search_seat" data-sort="data_seatnumber">SEAT  <svg class="arrow_down" viewBox="4 2 9 11.999" width="9" height="11">
+            <path id="arrow_down" d="M 8.309080123901367 13.9616003036499 C 8.496039390563965 14.03855991363525 8.71092700958252 13.99572086334229 8.854080200195313 13.85295009613037 L 12.85346984863281 9.853549957275391 C 13.04878520965576 9.658340454101563 13.04878520965576 9.341758728027344 12.85352325439453 9.146495819091797 C 12.65826034545898 8.951233863830566 12.34167861938477 8.951233863830566 12.14641571044922 9.146495819091797 L 9 12.29300022125244 L 9 2.5 C 9 2.223857641220093 8.776142120361328 2 8.5 2 C 8.223857879638672 2 8 2.223857641220093 8 2.5 L 8 12.29300022125244 L 4.853519916534424 9.146510124206543 C 4.658311367034912 8.951193809509277 4.341729164123535 8.951193809509277 4.146466732025146 9.146455764770508 C 3.951204538345337 9.341717720031738 3.951204299926758 9.658300399780273 4.146466732025146 9.85356330871582 L 8.145870208740234 13.85299968719482 C 8.192574501037598 13.89961528778076 8.248043060302734 13.93652534484863 8.309080123901367 13.96160125732422 Z">
+            </path>
+          </svg>
+        </span>
+
+        <!-- select options -->
+<div class="select_options">
+        <button id="guest_allocation_table_delete_btn"><svg class="_4" viewBox="2 1 12 14" width="12" height="14">
+      <path id="_2" d="M 9.5 6 C 9.367367744445801 5.999922275543213 9.240145683288574 6.052575588226318 9.146360397338867 6.146360874176025 C 9.05257511138916 6.240145683288574 8.999921798706055 6.367367267608643 8.999998092651367 6.499999523162842 L 9 11.5 C 9 11.77614212036133 9.223857879638672 12 9.5 12 C 9.776142120361328 12 10 11.77614212036133 10 11.5 L 10 6.5 C 10.00007629394531 6.367367744445801 9.947422981262207 6.240146160125732 9.853638648986816 6.146361351013184 C 9.759853363037109 6.052576541900635 9.632632255554199 5.999922752380371 9.5 5.999999523162842 Z">
+      </path><path id="_3" d="M 6.5 6 C 6.367367744445801 5.999922752380371 6.240146160125732 6.052576541900635 6.146361351013184 6.146361351013184 C 6.052576541900635 6.240146160125732 5.999922752380371 6.367367744445801 5.999999523162842 6.499999523162842 L 6 11.5 C 6 11.77614212036133 6.223857402801514 12 6.5 12 C 6.776142120361328 12 7 11.77614212036133 7 11.5 L 7 6.5 C 7.000076770782471 6.367367744445801 6.947422981262207 6.240146160125732 6.853638172149658 6.146361351013184 C 6.759853363037109 6.052576065063477 6.632631301879883 5.999922752380371 6.499999523162842 5.999999523162842 Z">
+      </path><path id="_4" d="M 13.5 3 L 11 3 L 11 2.5 C 10.99909687042236 1.671947717666626 10.32805252075195 1.000904083251953 9.500000953674316 1.000000357627869 L 6.5 1 C 5.671947479248047 1.000904083251953 5.000903606414795 1.671947836875916 5 2.500000238418579 L 5 3 L 2.5 3 C 2.223857641220093 3 2 3.223857641220093 2 3.5 C 2 3.776142358779907 2.223857641220093 4 2.5 4 L 3 4 L 3 14 C 3.000370025634766 14.55213260650635 3.447868824005127 14.99963092803955 4.000000476837158 15 L 12 15 C 12.55213165283203 14.99963092803955 12.99963092803955 14.55213165283203 13 14 L 13 4 L 13.5 4 C 13.77614212036133 4 14 3.776142358779907 14 3.5 C 14 3.223857641220093 13.77614212036133 3 13.5 3 Z M 6 2.5 C 6.000358104705811 2.224006175994873 6.224006175994873 2.00035834312439 6.499999523162842 2 L 9.5 2 C 9.775993347167969 2.000358581542969 9.999641418457031 2.224006414413452 9.999999046325684 2.5 L 10 3 L 6 3 L 6 2.5 Z M 12.00100040435791 14 L 12 14.5 L 12 14 L 4 14 L 4 4 L 12 4 L 12 14 Z">
+      </path>
+    </svg>Delete</button> <button id="guest_allocation_table_add_to_table_btn"><svg id="table_icon_btn" enable-background="new 0 0 512 512" height="512" viewBox="0 0 512 512" width="512" xmlns="http://www.w3.org/2000/svg"><path d="m448.689 275.718c-12.835-7.41-30.955-14.132-50.703-19.719 19.748-5.586 37.868-12.309 50.703-19.719 37.852-21.854 50.867-70.428 29.013-108.28s-70.428-50.867-108.28-29.013c-12.835 7.41-27.718 19.742-42.43 34.052 5.036-19.897 8.275-38.951 8.275-53.772 0-43.708-35.559-79.267-79.267-79.267s-79.267 35.559-79.267 79.267c0 14.822 3.239 33.878 8.276 53.775-14.714-14.311-29.597-26.644-42.433-34.054-37.852-21.854-86.426-8.838-108.28 29.015s-8.838 86.426 29.015 108.28c12.835 7.41 30.955 14.132 50.704 19.719-19.749 5.586-37.869 12.309-50.704 19.719-37.852 21.853-50.867 70.427-29.013 108.279s70.428 50.867 108.28 29.013c12.835-7.41 27.718-19.742 42.431-34.053-5.037 19.897-8.275 38.952-8.275 53.772-.001 43.709 35.558 79.268 79.266 79.268s79.267-35.559 79.267-79.267c0-14.822-3.239-33.877-8.276-53.775 14.714 14.311 29.597 26.644 42.433 34.054 37.852 21.854 86.426 8.838 108.28-29.015 21.854-37.852 8.838-86.426-29.015-108.279zm-370.378-65.416c-23.527-13.583-31.616-43.773-18.034-67.299s43.773-31.616 67.299-18.033c19.412 11.207 50.656 41.532 75.123 72.357-6.04 5.49-11.231 11.911-15.347 19.041s-7.083 14.836-8.816 22.812c-38.929-5.777-80.813-17.671-100.225-28.878zm49.267 176.731c-23.526 13.583-53.717 5.493-67.299-18.033-13.583-23.526-5.494-53.717 18.033-67.3 19.412-11.208 61.296-23.102 100.226-28.879 1.734 7.976 4.7 15.682 8.816 22.812s9.307 13.552 15.347 19.041c-24.468 30.826-55.711 61.151-75.123 72.359zm128.422 94.967c-27.166 0-49.267-22.101-49.267-49.267 0-22.415 10.641-64.635 25.103-101.237 7.774 2.486 15.931 3.771 24.164 3.771s16.39-1.284 24.164-3.771c14.462 36.603 25.103 78.822 25.103 101.237 0 27.166-22.101 49.267-49.267 49.267zm0-176.733c-27.166 0-49.267-22.101-49.267-49.267s22.101-49.267 49.267-49.267 49.267 22.101 49.267 49.267-22.101 49.267-49.267 49.267zm24.164-124.763c-7.774-2.486-15.931-3.771-24.164-3.771s-16.39 1.284-24.164 3.771c-14.462-36.602-25.103-78.821-25.103-101.237 0-27.166 22.101-49.267 49.267-49.267s49.267 22.101 49.267 49.267c0 22.416-10.641 64.635-25.103 101.237zm104.258-55.537c23.526-13.583 53.717-5.493 67.299 18.033 13.583 23.526 5.494 53.717-18.033 67.3-19.413 11.208-61.296 23.103-100.226 28.879-1.734-7.976-4.7-15.682-8.816-22.812s-9.307-13.552-15.347-19.041c24.467-30.826 55.71-61.151 75.123-72.359zm67.301 244.031c-13.583 23.526-43.773 31.616-67.299 18.034-19.413-11.208-50.656-41.532-75.123-72.357 6.04-5.49 11.231-11.911 15.347-19.041s7.083-14.836 8.816-22.812c38.929 5.776 80.813 17.67 100.226 28.878 23.526 13.581 31.616 43.771 18.033 67.298z"/></svg>Add to table</button>
+</div>
+<!-- select options -->   
+    </div>  
+
+ <!-- table guest list    -->
+<div class="new_geust_all_list" >
+   
+</div><!-- table guest list end    -->
+
+<div id="guest_list_status">  
+  <p class="list_note">There are currently no guests in your list.</p>
+  <p class="filter_note">There are no guests that match your search.</p>
+</div>
+
+ </div> 
+</div><!-- guest_allocation_table_guest_allocation_tab_end-->
+
+<!-- guest_allocation_table_guest_share_tab_start-->
+    <div id ="guest_allocation_table_share" class="remove_class_selected">
+          <div>
+            <span>Event Name: </span>
+            <span><input type="text" name="guest_allocation_table_share_event_name" id="guest_allocation_table_share_event_name"></span>
+          </div>
+
+          <div>
+            <span>Submission deadline: </span>
+            <span><input type="date" name="guest_allocation_table_share_submission_dealine" id="guest_allocation_table_share_submission_dealine"></span>
+          </div>          
+          <div>
+            <span>Password Protect: </span>
+            <span>
+              <select id="guest_allocation_table_share_password_protect" >
+                <option value="no" selected="selected">No</option>
+                <option value="yes">Yes</option>          
+              </select>
+            </span>
+          </div>
+         <div class="password_user" style="display: none">
+            <span>Password: </span>
+            <span><input type="password" name="guest_allocation_table_share_passowrd" id="guest_allocation_table_share_passowrd"><svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 511.992 511.992" style="enable-background:new 0 0 511.992 511.992;" xml:space="preserve" onclick="passwordVisible()">
+				<g>
+					<g>
+						<path d="M510.096,249.937c-4.032-5.867-100.928-143.275-254.101-143.275C124.56,106.662,7.44,243.281,2.512,249.105
+							c-3.349,3.968-3.349,9.792,0,13.781C7.44,268.71,124.56,405.329,255.995,405.329S504.549,268.71,509.477,262.886
+							C512.571,259.217,512.848,253.905,510.096,249.937z M255.995,383.996c-105.365,0-205.547-100.48-230.997-128
+							c25.408-27.541,125.483-128,230.997-128c123.285,0,210.304,100.331,231.552,127.424
+							C463.013,282.065,362.256,383.996,255.995,383.996z"/>
+					</g>
+				</g>
+				<g>
+					<g>
+						<path d="M255.995,170.662c-47.061,0-85.333,38.272-85.333,85.333s38.272,85.333,85.333,85.333s85.333-38.272,85.333-85.333
+							S303.056,170.662,255.995,170.662z M255.995,319.996c-35.285,0-64-28.715-64-64s28.715-64,64-64s64,28.715,64,64
+							S291.28,319.996,255.995,319.996z"/>
+					</g>
+				</g>
+			</svg></span>
+          </div>
+
+          <div class="box-content" style="margin-top: 15px;">
+            <h4>Guest List URL</h4>
+
+<!-- on off switch btn -->
+              <div class="toggle-button-cover">
+                  <div class="button-cover">
+                    <div class="button b2" id="button-10">
+                      <input type="checkbox" class="checkbox">
+                      <div class="knobs">
+                        <span>ON</span>
+                      </div>
+                      <div class="layer"></div>
+                    </div>
+                  </div>
+                </div>
+<!-- on off switch btn end-->
+
+            <p>Share a URL with someone so they can add their guest lsit allocate seats</p>
+
+
+                <div class="sharable_url_table">
+                  <div>
+                    <span>SHARABLE URL </span>
+                    <span><input type="text" name="guest_allocation_table_share_geust_list_url_sharable_url" id="guest_allocation_table_share_geust_list_url_sharable_url" class="disabled">
+                    </span>
+                  </div>
+                  <div>
+                    <button id="guest_allocation_table_share_geust_list_url_copy"><svg class="copy" viewBox="1 1 14 14" width="14" height="14">
+                        <path id="copy" d="M 10.5 15 L 2.5 15 C 1.671947479248047 14.99909782409668 1.000903725624084 14.32805347442627 1.000000357627869 13.50000095367432 L 1 5.5 C 1.000904202461243 4.671947479248047 1.671947956085205 4.000904083251953 2.500000476837158 4.000000476837158 C 2.776142597198486 4 3.000000238418579 4.223857879638672 3.000000238418579 4.5 C 3.000000238418579 4.776142597198486 2.776142597198486 5 2.500000238418579 5 C 2.224006175994873 5.000358104705811 2.000358104705811 5.224006175994873 1.99999988079071 5.5 L 2 13.5 C 2.000550031661987 13.77591419219971 2.224085807800293 13.99945068359375 2.500000238418579 14 L 10.5 14 C 10.77591419219971 13.99945068359375 10.99945068359375 13.77591419219971 11 13.5 C 11 13.22385787963867 11.22385787963867 13 11.5 13 C 11.77614212036133 13 12 13.22385787963867 12 13.5 C 11.99909687042236 14.32805347442627 11.32805347442627 14.99909782409668 10.50000095367432 15.00000190734863 Z M 15 10.5 L 15 2.5 C 14.99909782409668 1.671947479248047 14.32805347442627 1.000903725624084 13.50000095367432 1.000000357627869 L 5.5 1 C 4.671947956085205 1.000904083251953 4.000904083251953 1.671947836875916 4.000000476837158 2.500000238418579 L 4 10.5 C 4.000904083251953 11.32805347442627 4.671948432922363 11.99909687042236 5.500000476837158 12.00000095367432 L 13.5 12 C 14.32805347442627 11.99909687042236 14.99909782409668 11.32805347442627 15.00000190734863 10.5 Z M 13.5 2 C 13.77599334716797 2.000358104705811 13.99964141845703 2.224005937576294 13.99999904632568 2.5 L 14 10.5 C 13.99945068359375 10.77591419219971 13.77591419219971 10.99945068359375 13.5 11 L 5.5 11 C 5.224085807800293 10.99945068359375 5.000549793243408 10.77591419219971 5 10.5 L 5 2.5 C 5.000358581542969 2.224006175994873 5.224006652832031 2.00035834312439 5.5 2 L 13.5 2 Z">
+                        </path></svg>Copy</button>
+
+                        <button id="guest_allocation_table_share_geust_list_url_open"><svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="48px" height="48px"><path d="M 3 3 L 3 21 L 21 21 L 21 12 L 19 12 L 19 19 L 5 19 L 5 5 L 12 5 L 12 3 L 3 3 z M 14 3 L 14 5 L 17.585938 5 L 8.2929688 14.292969 L 9.7070312 15.707031 L 19 6.4140625 L 19 10 L 21 10 L 21 3 L 14 3 z"/></svg>Open</button>
+                        <div class="staus_select_box">
+                            <span>Status </span>
+                            <span>
+                              <select id="guest_allocation_table_share_geust_list_url_status_drop">
+                                <option value="" selected="selected"><img src="./images/icons-window-pink.png">Active</option>
+                                <option value="">Completed</option>          
+                              </select>
+                            </span>
+                        </div>
+
+                  </div>
+                  <div class="note_box">
+                    Note: once this geust list is marked as completed, it's status will change frome "Active" to "Completed" adnd further changes cannot be made from the sharable URL. If update need to be made after this point, swtch the status back to "Active".
+                    
+                  </div>
+                </div>
+                </div>
+
+
+          <div class="box-content">
+            <h4>Preconfigured spreadsheet</h4>
+            <button id="guest_allocation_table_share_download"> <img src="./images/icons-import.png">Download</button>
+            <p>Download a spreadsheet template based on your current floor plan to share with the event organiser</p>
+          </div>
+
+    </div> <!-- guest_allocation_table_guest_share_tab_end-->
+
+<!-- guest_allocation_table_guest_print_tab_start -->
+    <div id ="guest_allocation_table_print" class="remove_class_selected">
+      <h4>Print</h4>
+      <div>
+        <label class="title_label" for="guest_allocation_table_print_floor_plan_only">Floor plan only
+          <input type="radio" id="guest_allocation_table_print_floor_plan_only" name="print_option" checked="checked" value="floor_plan_only">
+          <span class="checkmark"></span></label>
+      </div>
+
+            <div>
+        <label class="title_label" for="guest_allocation_table_print_floor_plan_with_guest_list">Floor plan with guest list (alphabetical)
+          <input type="radio" id="guest_allocation_table_print_floor_plan_with_guest_list" name="print_option" value="floor_plan_with_guest_list_alpha">
+          <span class="checkmark"></span></label>
+      </div>
+
+      <div>
+        <label class="title_label">Floor plan with guest list (by table)
+          <input type="radio" id="guest_allocation_table_print_floor_plan_with_guest_list_by_table" name="print_option" value="floor_plan_with_guest_list_table">
+          <span class="checkmark"></span></label>
+      </div>
+
+     <div>
+        <label class="title_label">Guest list (alphabetical)
+          <input type="radio" id="guest_allocation_table_print_guest_list_alpha" name="print_option" value="guest_list_alpha">
+          <span class="checkmark"></span></label>
+      </div>
+      <div>
+        <label class="title_label">Guest list (by table)
+          <input type="radio" id="guest_allocation_table_print_guest_list_by_table" name="print_option" value="guest_list_table">
+          <span class="checkmark"></span></label>
+      </div>
+      <div>
+        <label class="title_label">Dietary requirments (by table)
+          <input type="radio" id="guest_allocation_table_print_die_reqir_by_table" name="print_option" value="guest_list_dietary_by_table">
+          <span class="checkmark"></span></label>
+      </div>
+      <div class="last-section_btn">
+          <button id="guest_allocation_table_print_btn">Print</button>
+    </div>
+
+      <div class="box-content">
+            <h4>Export guest list</h4>
+            <button id="guest_allocation_table_print_download"> <img src="./images/icons-import.png">Download</button>
+            <p>Export the guest lsit to a spreadsheet.</p>
+          </div>
+
+      <div id="print_tab_confirm_popup">
+        <button id="print_tab_confirm_popup_pdf">Print to PDF</button><br/>
+        <button id="print_tab_confirm_popup_xls">Download as XLS</button>
+        <span id="print_tab_confirm_popup_cancel">Cancel</span>    
+      </div>    
+
+
+    </div> <!-- guest_allocation_table_guest_print_tab_end --> 
+
+<!-- guest_allocation_table_guest_summery_tab_start -->
+    <div id ="guest_allocation_table_summary" class="remove_class_selected">
+      <div class="">
+
+            <button id="guest_allocation_table_summary_export_report">
+      <svg class="export_w" viewBox="3 1 10 14" width="10" height="14">
+      <path id="export_w" d="M 12 1 L 6.5 1 C 6.36717414855957 1.000387787818909 6.239884376525879 1.053258299827576 6.145870685577393 1.147089958190918 L 3.147089958190918 4.145870208740234 C 3.053232431411743 4.239866733551025 3.000357151031494 4.367167472839355 3 4.499999523162842 L 3 14 C 3.000370025634766 14.55213260650635 3.447868824005127 14.99963092803955 4.000000476837158 15 L 12 15 C 12.55213165283203 14.99963092803955 12.99963092803955 14.55213165283203 13 14 L 13 2 C 12.99944972991943 1.447943210601807 12.55205631256104 1.000550508499146 12 0.9999998807907104 Z M 6 2.707000017166138 L 6 4 L 4.706999778747559 4 L 6 2.707000017166138 Z M 12 2 L 12 14 L 4 14 L 4 5 L 6.5 5 C 6.632631778717041 5.000076770782471 6.759853363037109 4.947422981262207 6.853638172149658 4.853638172149658 C 6.947422981262207 4.759853363037109 7.000076770782471 4.632631301879883 7 4.499999523162842 L 7 2 L 12 2 L 12 1.998999953269958 L 12.5 2 L 12 2 Z M 8.690919876098633 6.038449764251709 C 8.751958847045898 6.063539028167725 8.807428359985352 6.100461959838867 8.854129791259766 6.147089958190918 L 10.85351943969727 8.146479606628418 C 11.04883480072021 8.34168815612793 11.04883480072021 8.658270835876465 10.85357284545898 8.853532791137695 C 10.65831089019775 9.048794746398926 10.34172821044922 9.048794746398926 10.14646625518799 8.853532791137695 L 9 7.706999778747559 L 9 11.5 C 9 11.77614212036133 8.776142120361328 12 8.5 12 C 8.223857879638672 12 8 11.77614212036133 8 11.5 L 8 7.706999778747559 L 6.853519916534424 8.853520393371582 C 6.658311367034912 9.048836708068848 6.341729164123535 9.048836708068848 6.146466732025146 8.853574752807617 C 5.951204299926758 8.658312797546387 5.951204299926758 8.341730117797852 6.146466732025146 8.146467208862305 L 8.145870208740234 6.147089958190918 C 8.289031028747559 6.004331111907959 8.503912925720215 5.961496829986572 8.690871238708496 6.038450241088867 Z">
+      </path>
+    </svg>Export report</button>
+            <div class="guest_allocation_table_summary_row">
+            <h3 class="title">Tables </h3>
+            <div class="table_details">
+                <table id="guest_allocation_table_summary_tables_data">
+                 <!--  <tr>
+                    <th>Table #</th>
+                    <th>Chairs</th>
+                  </tr>
+
+                  <tr>
+                    <td>1</td>
+                    <td>10/12 <span>(80%)</span></td>
+                  </tr>
+
+                   <tr>
+                    <td>2</td>
+                    <td>2/12 <span>(16%)</span></td>
+                  </tr>
+                  
+                  <tr>
+                    <td>3</td>
+                    <td>12/12 <span>(100%)</span></td>
+                  </tr>  
+                  <tr>
+                    <td><strong>Total chair</strong></td>
+                    <td><strong>24/36 </strong><span>(66%)</span></td>
+                  </tr>  --> 
+                </table>
+            </div>
+            </div>
+            <div class="guest_allocation_table_summary_row">
+            <h3 class="title">Seating types </h3>
+            <div class="table_details" id="guest_allocation_table_summary_seating_types">
+                <table>
+                  <thead>                    
+                    <tr>
+                      <th>Table #</th>
+                      <th>Seat #</th>
+                      <th>Seating type</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    
+                  </tbody>
+
+                  <!-- <tr>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>High chair (no meal)</td>
+                  </tr>
+
+                   <tr>
+                    <td>23</td>
+                    <td>6</td>
+                    <td>High chair (children's meal)</td>
+                  </tr> -->
+                </table>
+            </div>                                                               
+
+           </div>
+            <div class="guest_allocation_table_summary_row">
+            <h3 class="title">Dietary requirements </h3>
+            <div class="table_details" style="margin-top: 10px">
+              <p class="req_number">Requirment <span>Numbers</span></p>
+
+              <div id="guest_allocation_table_summary_diet_requriments">
+                  <div class="guest_allocation_table_summary_row_die">
+                    <div class="title"><span class="svg_icon_radio"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="12" fill="#59BAFD" class="" viewBox="0 0 16 16" stroke="#59BAFD" stroke-width="2px"><path fill-rule="evenodd" d="M0 3a2 2 0 0 1 2-2h7.08a2 2 0 0 1 1.519.698l4.843 5.651a1 1 0 0 1 0 1.302L10.6 14.3a2 2 0 0 1-1.52.7H2a2 2 0 0 1-2-2V3zm9.854 2.854a.5.5 0 0 0-.708-.708L7 7.293 4.854 5.146a.5.5 0 1 0-.708.708L6.293 8l-2.147 2.146a.5.5 0 0 0 .708.708L7 8.707l2.146 2.147a.5.5 0 0 0 .708-.708L7.707 8l2.147-2.146z"></path></svg></span>Gluten free<span class="chair_qty"> 2 </span>
+                    </div>
+
+                    <div class="table_details_inner">
+                        <table>
+                          <tr>
+                            <td>Digby Plumber</td>
+                            <td>Table 1</td>
+                            <td>Seat 1</td>
+                          </tr>
+                          <tr>
+                            <td>Deniele Bloggs</td>
+                            <td>Table 1</td>
+                            <td>Seat 2</td>
+                          </tr>
+        
+                        </table>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div> <!-- guest_allocation_table_guest_summery_tab_start_end-->
+
+    </div>
+  </div><!-- guest_allocation_table_view -->
+
+</div>
+<!--  guest_allocation_table End -->
+
+<div id="allcation_user_delete_confirmation">
+  <p>Are you Sure to Remove these Guest(s)?</p>
+  <button id="allcation_user_delete_confirmation_yes">Yes</button>
+  <button id="allcation_user_delete_confirmation_no">No</button>
+</div>
+
+</div><!--  sidebar_right --> 
+
+
+<style type="text/css">
+
+/* print_tab_confirm_popup */
+div#print_tab_confirm_popup {
+    display: block;
+    position: absolute;
+    width: 250px;
+    background-color: #fff;
+    z-index: 9;
+    margin: 0 auto;
+    left: 8px;
+    right: 0;
+    top: 110px;
+    border: 1px solid #ccc;
+    padding: 15px 10px 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0px #0000004a;
+    display: none; text-align: center;
+}
+div#print_tab_confirm_popup span { cursor: pointer; display: inline-block; margin-top: 10px; }
+div#print_tab_confirm_popup button {
+    font-size: 14px;
+    padding: 7px 17px;
+    font-weight: bold;
+    border-radius: 4px;
+    border:none;
+    margin: 0 10px;
+    cursor: pointer;
+    color: #fff!important; 
+   background: rgba(168,81,138,1);
+   width: 77%;
+   display: block;
+
+    }
+div#print_tab_confirm_popup button:hover {opacity:0.8;}
+
+/* print_tab_confirm_popup */
+
+
+
+div#allcation_user_delete_confirmation {
+    position: absolute;
+    top: 120px;
+    z-index: 9;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+    font-size: 14px; display: none;
+}
+
+div#allcation_user_delete_confirmation button {
+    font-size: 14px;
+    padding: 7px 17px;
+    font-weight: bold;
+    border-radius: 4px;
+    border:none;
+    margin: 0 10px;
+    cursor: pointer;
+    }
+div#allcation_user_delete_confirmation button:hover {opacity:0.8;}
+ div#allcation_user_delete_confirmation button#allcation_user_delete_confirmation_yes   { color: #fff!important; 
+   background: rgba(168,81,138,1); }
+
+.button
+{
+    position: relative;
+    top: 50%;
+    width: 74px;
+}
+
+.button.r, .button.r .layer
+{
+    border-radius: 100px;
+}
+
+.button.b2 {
+    border-radius: 2px;
+    height: 25px;
+    float: right;
+    margin-top: -25px;
+    font-family: 'Open Sans', sans-serif;
+        background-color: #F7F8F8;
+    border: 1px solid #ccc;
+}
+div#guest_allocation_table .toggle-button-cover input[type="checkbox"] {
+    visibility: visible;
+}
+.checkbox
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+}
+
+.knobs
+{
+    z-index: 2;
+}
+
+.layer
+{
+    width: 100%;
+    background-color: #ebf7fc;
+    transition: 0.3s ease all;
+    z-index: 1;
+}
+
+/* Button 10 */
+#button-10 .knobs:before, #button-10 .knobs:after, #button-10 .knobs span
+{
+    position: absolute;
+    top: 0px;
+    width: 20px;
+    height: 5px;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1;
+    padding: 9px 4px;
+    border-radius: 2px;
+    transition: 0.3s ease all;
+    line-height: 0.8;
+}
+
+#button-10 .knobs:before
+{
+    content: '';
+    left: 0px;
+    background-color: #FFFFFF;
+    border: 1px solid #ccc;}
+
+#button-10 .knobs:after
+{
+    content: 'OFF';
+    right: 4px;
+    color: #4e4e4e;
+}
+
+#button-10 .knobs span
+{
+    display: inline-block;
+    left: 4px;
+    color: transparent;
+    z-index: 1;
+    line-height: 0.8;
+}
+
+#button-10 .checkbox:checked + .knobs span
+{
+    color: #fff;
+}
+
+#button-10 .checkbox:checked + .knobs:before
+{
+    left: 44px;
+    /*background-color: #4D8F8F;*/
+}
+
+#button-10 .checkbox:checked + .knobs:after
+{
+    color: transparent;
+        border: 1px solid #4d8f8f;
+        right:0;
+}
+.button.b2.active {
+    background-color: #4d8f8f;
+    color: #fff !important;
+}
+#button-10 .checkbox:checked ~ .layer
+{
+    background-color: #fcebeb;
+}
+
+  body {color: #25302e;}
+div#guest_allocation_table {
+    max-width: 270px;
+}
+#list_tab ul button {
+    font-size: 13px;
+    font-family: 'Open Sans', sans-serif;
+    color: grey;
+    text-decoration: none;
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+div#guest_allocation_table_guest_allocation, div#guest_allocation_table_share, div#guest_allocation_table_print, div#guest_allocation_table_summary 
+{
+    display: none
+}
+div#guest_allocation_table_guest_allocation.selected, div#guest_allocation_table_share.selected, div#guest_allocation_table_print.selected, div#guest_allocation_table_summary.selected 
+{
+    display: block;
+}
+button.selected {
+    border-bottom: 2px solid #000 !important;
+        color: #000 !important;
+}
+
+
+
+
+
+div#guest_allocation_table > div h4 {
+    text-align: left;
+    margin-bottom: 5px;
+    font-size: 15px;
+    color: #25302e;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.arrows span {
+    font-size: 11px;
+    font-family: 'open sans', sans-serif;
+    cursor: pointer;
+    color: grey;
+}
+div.sidebar_right input {
+    border: 1px solid #d7dede;
+    border-radius: 3px;
+    background-color: #f7f8f8;
+        font-size: 14px;
+    padding: 7px 5px;
+    /*width: 100%;*/
+}
+svg.arrow_down {
+    fill: grey;
+    vertical-align: text-top;
+}
+.active svg.arrow_down {
+    transform: rotate(180deg);
+    fill:#000;
+}
+span.active  {
+    transform: rotate(180deg);
+    color:#000;
+}
+div#guest_allocation_table_view div#list_tab > div > div {
+    padding-bottom: 15px;
+}
+div#guest_allocation_table #list_tab ul {padding-left: 0;    
+  border-bottom: 1px solid #ccc;
+    }
+
+
+div#guest_allocation_table #list_tab ul li{
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 13px;
+        font-family: 'Open Sans', sans-serif;
+        cursor: pointer;
+}
+
+div#guest_allocation_table .button_guest button {
+    margin-right: 10px;
+    margin-top: -5px !important;
+    background-color: transparent;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+        padding: 4px;
+        cursor: pointer;
+}
+div#guest_allocation_table .arrows {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    margin-top: 15px;
+  }
+div#guest_allocation_table p.note {
+    font-size: 11px;
+    color: #88989a;
+    font-weight: 400;
+    font-style: italic;
+    font-family: 'Open Sans', sans-serif;
+    line-height: 15px;
+    clear: both;
+}
+
+div#guest_allocation_table button img
+{
+   width: 13px;;
+    vertical-align: middle;
+}
+button#guest_allocation_new_guest_table_add_dietary img {
+    width: 16px !important;
+    vertical-align: bottom !important;
+}
+
+button#guest_allocation_new_guest_table_add_dietary {
+    padding-bottom: 2px !important;
+}
+
+button#guest_allocation_new_guest_table_create_new img {
+    width: 16px !important;
+}
+div#guest_allocation_table .filter_button_sec button {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    padding: 6px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+div#guest_allocation_table .filter_button_sec button img {
+    vertical-align: top;
+    margin-right: 5px;
+    width: 18px;
+}
+div#guest_allocation_table .filter_button_sec .search_icon {
+    position: absolute;
+    width: 16px;
+    margin-left: -23px;
+    margin-top: 8px;
+}
+div#guest_allocation_table label {
+  cursor: pointer;
+  position: absolute;
+  left: 5px;
+      color: #25302e;
+}
+div#guest_allocation_table input[type="checkbox"] {
+  visibility: hidden;
+}
+div#guest_allocation_table input[type="checkbox"] + label:before {
+  border: 1px solid #ccc;
+  content: "\00a0";
+  display: inline-block;
+  font: 16px/1em sans-serif;
+  height: 20px;
+  padding: 0;
+  vertical-align: top;
+  width: 20px;
+  border-radius: 3px;
+  background-color: #f7f8f8;
+      margin-right: 5px;
+}
+div#guest_allocation_table input[type="checkbox"]:checked + label:before {
+  background-color:#88979a;
+  color: #fff;
+  text-align: center;
+    background-image: url(./design/icons/check-24px.svg);
+    content: '';
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 10px;
+}
+div#guest_allocation_table input[type="checkbox"]:checked + label:after {
+  font-weight: bold;
+}
+
+div#guest_allocation_table input[type="checkbox"]:focus + label::before {
+    outline: rgb(59, 153, 252) auto 5px;
+}
+div#guest_allocation_table .button_guest button:first-child {
+    background-color: rgba(168,81,138,1);
+    color: #fff;
+}
+
+
+
+div#new_guest_table > div >  div > span:nth-child(1) {
+max-width: 250px;
+    width: 100%;
+    display: block;
+    font-size: 13px;
+    line-height: 19px;
+    color: grey;
+    font-weight: 500;
+    font-family: 'Open Sans', sans-serif;
+    
+}
+div#new_guest_table > div >  div > span:nth-child(2) {
+    max-width: 100%;
+    width: 100%;
+    display: inline-block;
+}
+div#new_guest_table > div >  div > span:nth-child(2) input, div#new_guest_table > div >  div > span:nth-child(2) select, div#new_guest_table input {
+    max-width: 100%;
+    width: 95%;
+    display: inline-block;
+        padding: 8px 5px;
+}
+
+div#new_guest_table > div h4 {
+    text-align: left;
+    margin-bottom: 10px;
+    font-size: 15px;
+    font-family: 'Open Sans', sans-serif;
+    margin-top: 0;
+}
+
+
+div#new_guest_table > div >  div button { 
+  width: auto;
+    border: 1px solid #ccc;
+    background-color: transparent;
+    border-radius: 3px;
+    color: #3a3939;
+    padding: 3px 7px 0px;
+    cursor: pointer;
+
+}
+button#new_guest_table_add_dietary img {
+    position: relative;
+    top: -2px;
+    vertical-align: middle;
+}
+
+div#new_guest_table_view input {
+    border: 1px solid #d7dede;
+    border-radius: 3px;
+    background-color: #f7f8f8
+}
+
+div#new_guest_table_view > div {
+    margin-bottom: 7px;
+}
+div#new_guest_table_view select {
+    border: 1px solid #ccc;
+    opacity: 0.6;
+    background-color: #f7f8f8
+}
+.two_col_field {
+    width: 50%;
+   
+}
+.two_col > div > div {
+    margin-bottom: 10px;
+}
+.two_col span 
+{
+    color: grey;
+    font-size: 14px;
+    font-family: 'Open Sans', sans-serif;
+    display: block;
+}
+.two_col {
+    border: 1px solid #d7dede;
+    height: 132px;
+    border-radius: 3px;
+    padding: 10px 10px 0;
+}
+.two_col input {
+    margin-top: 5px;
+}
+.guest_table_image_svg {
+    position: relative;
+    top: -128px;
+    left: 55px;
+}
+.last-section_btn button {
+    font-size: 14px;
+    color: #fff!important;
+    background: rgba(168,81,138,1) !important;
+    padding: 7px 17px !important;
+    text-decoration: none;
+    border-radius: 4px;
+    margin: 10px 0 0;
+    border: 0;
+    cursor: pointer;
+}
+.last-section_btn {
+    text-align: right;
+}
+#guest_allocation_new_guest_table_cancel_btn, #guest_allocation_table_guest_allocation_filter_cancel, #guest_allocation_create_new_dietary_cancel_btn, button#guest_allocation_import_list_cancel_btn, button#guest_allocation_table_add_to_table_cancel_btn
+{
+  background-color: transparent !important;
+    color: grey !important;
+    border: 1px solid #ccc;
+}
+img#new_guest_table_image {
+    margin-top: 5px;
+    margin-left: 5px;
+}
+div#new_guest_table_view > .two_col input {
+    width: 90%;
+    position: relative;
+    z-index: 1;
+}
+div#new_guest_table {
+    display: none;
+    position: absolute;
+    width: 270px;
+    background-color: #fff;
+    z-index: 9;
+}
+div#new_guest_table.active {
+    display: block;
+}
+
+div#list_tab > #guest_allocation_table_share > div {
+    width: 250px;
+}
+
+#guest_allocation_table_share input[type="date"] {
+    width: 130px;
+        height: 12px;
+}
+
+#guest_allocation_table_share select {
+    width: 50px;
+    height: 24px;
+    margin-left: 19px;
+    background-color: #f7f8f8;
+    border-color: #ccc;
+    border-radius: 2px;
+}
+input#guest_allocation_table_share_event_name{
+    width: 130px;
+    margin-left: 48px;
+    padding: 5px 5px;
+}
+input#guest_allocation_table_share_passowrd {
+    width: 100px;
+    margin-left: 63px;
+    padding: 5px 5px;
+    border-right: 0;
+}
+#guest_allocation_table_share span svg {
+    position: absolute;
+    width: 22px;
+    border: 1px solid #ccc;
+    padding: 3px 3px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    margin-top: 0px;
+    cursor: pointer;
+    color: #25302e;
+}
+svg#Capa_1 {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+div#guest_allocation_table_view div#list_tab > #guest_allocation_table_share> div {
+    padding-bottom: 7px;
+}
+li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab a {
+    font-size: 13px;
+    font-family: 'Open Sans', sans-serif;
+    color: grey;
+    text-decoration: none;
+}
+#guest_allocation_table_share span {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    margin-top: 0;
+}
+
+#guest_allocation_table_share p {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    margin-top: 0;
+    white-space: normal;
+    color: #25302e;
+}
+.box-content {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 10px;
+        margin-bottom: 10px;
+}
+#guest_allocation_table_share h4 {
+    margin: 0;
+    font-size: 13px !important;
+}
+.box-content button {
+    float: right;
+    font-size: 11px;
+    margin-top: -22px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    background-color: transparent;
+    padding: 4px;
+    cursor: pointer;
+}
+.box-content button img
+{
+  margin-right: 3px;
+}
+div#button-on-off {
+    /* float: right; */
+    /*margin-top: -32px;*/
+}
+
+.title {
+    color: #000;
+    cursor: pointer;
+    padding: 10px 0;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 12px;
+    transition: 0.4s;
+    margin: 0;
+    border-top: 1px solid #ccc;
+    font-family: 'open sans', sans-serif;
+}
+
+.table_details {
+  padding: 0 18px;
+  display: none;
+  background-color: white;
+  overflow: hidden;
+}
+
+.active .table_details
+{
+    display: block;
+}
+h3.title:before {
+    background-image: url(./design/icons/down_arrow_select.svg);
+    width: 15px;
+    height: 15px;
+    content: '';
+    display: inline-block;
+    background-repeat: no-repeat;
+    position: absolute;
+    right: 7px;
+    margin-top: 3px;
+    background-size: 8px;
+}
+button#guest_allocation_table_guest_allocation_clr_btn {
+    float: right;
+    margin-top: -39px;
+    border: 0 !important;
+    text-decoration: underline;
+    font-size: 13px !important;
+}
+
+.filter_btn_table h2 {
+    font-size: 18px;
+    font-family: 'open sans', sans-serif;
+    text-align: left;
+    color: #25302e;
+}
+.filter_btn_table {
+    display: none;
+}
+
+
+.filter_btn_table.show {
+    display: block;
+    position: absolute;
+    width: 250px;
+    background-color: #fff;
+    z-index: 9;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 100px;
+    border: 1px solid #ccc;
+    padding: 10px 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0px #0000004a;
+}
+div#guest_allocation_table .filter_guest_row label
+{
+    position: inherit;
+    color: #000;
+}
+
+div#guest_allocation_table .filter_guest_row .first_row div, div#guest_allocation_table .filter_guest_row .second_row div {
+    display: inline;
+    margin-right: 10px;
+    margin-top: 4px;
+}
+
+div#guest_allocation_table .filter_guest_row .first_row, div#guest_allocation_table .filter_guest_row .second_row {
+    margin-bottom: 10px;
+    margin-left: -30px;
+}
+.table_details.seat_type_con > div {
+    margin-left: -30px;
+    margin-bottom: 10px;
+}
+.table_details span label {
+    font-family: 'open sans', sans-serif;
+    font-size: 12px;
+}
+.table_details.seat_type_con img {
+    width: 18px;
+    margin-right: 5px;
+}
+.filter_btn_table .last-section_btn {
+    /*margin-top: 100px;*/
+}
+
+div#guest_allocation_table_print span {
+    font-size: 13px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+div#guest_allocation_table_print > div {
+    padding-bottom: 10px !important;
+}
+div#guest_allocation_table_print .last-section_btn {
+    text-align: left;
+}
+div#guest_allocation_table_print p {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+    margin-top: 0;
+    margin-bottom: 0;
+    }
+
+div#guest_allocation_table_print h4 {
+    margin-top: 0;
+    font-size: 14px !important;
+}
+div#guest_allocation_table_print  .box-content {
+    margin-top: 15px;
+}
+#guest_allocation_table_summary_export_report {
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    padding: 2px 5px;
+    font-family: 'open sans', sans-serif;
+    font-size: 12px;
+    margin-top: -5px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+#guest_allocation_table_summary_export_report svg {
+    vertical-align: text-top;
+    margin-right: 5px;
+}
+div#guest_allocation_table_summary {
+    position: relative;
+}
+
+div#guest_allocation_table_summary h3.title:before {
+    right: 0;
+    margin-top: 5px;
+}
+div#guest_allocation_table_summary h3.title {
+    font-size: 13px;
+}
+.guest_allocation_table_summary_row table {
+    width: 100%;
+    font-size: 12px;
+    font-family: 'open sans', sans-serif;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    border-collapse: collapse;
+}
+
+.guest_allocation_table_summary_row .table_details {
+    padding: 0;
+}
+
+.guest_allocation_table_summary_row th:last-child {
+    text-align: right;
+    padding-bottom: 10px;
+}
+
+.guest_allocation_table_summary_row th {
+    text-align: left;
+    padding-bottom: 10px;
+    color: #444;
+} 
+.guest_allocation_table_summary_row td:last-child {
+    text-align: right !important;
+}
+
+.guest_allocation_table_summary_row tr, .guest_allocation_table_summary_row td {
+    border-bottom: 1px solid #ccc !important;
+    padding: 5px 0 !important;
+}
+
+.guest_allocation_table_summary_row tr:last-child td, .guest_allocation_table_summary_row tr:last-child {
+    border: 0 !important;
+}
+
+.guest_allocation_table_summary_row td span {
+    color: grey;
+}
+.guest_allocation_table_summary_row  .title img {
+    width: 18px;
+    margin-right: 5px;
+}
+
+.guest_allocation_table_summary_row_die div {
+    padding: 7px 0;
+    border-bottom: 1px solid #ccc;
+    margin: 0 !important;
+    border-top: 0;
+}
+
+.guest_allocation_table_summary_row_die p.numbers_die {
+    float: right;
+    display: block;
+    margin-top: -18px;
+    font-size: 13px !important;
+    font-family: 'open sans', sans-serif;
+    margin-right: 25px;
+}
+.guest_allocation_table_summary_row_die  span.svg_icon_radio svg {
+    vertical-align: text-top;
+}
+.table_details_inner {
+    display: none;
+}
+
+.select .table_details_inner {
+    display: block;
+}
+.table_details_inner tr td {
+    color: #25302e;
+}
+p.req_number {
+    font-family: 'open sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 0;
+    color: #444;
+}
+
+p.req_number span {
+    margin-left: 147px;
+}
+ div.title:before {
+    background-image: url(./design/icons/down_arrow_select.svg);
+    width: 15px;
+    height: 15px;
+    content: '';
+    display: inline-block;
+    background-repeat: no-repeat;
+    position: absolute;
+    right: 0;
+    margin-top: 5px;
+    background-size: 8px;
+}
+span.chair_qty {
+    float: right;
+    margin-right: 20px;
+}
+.table_details_inner td {
+    font-size: 11px;
+}
+.table_details_inner td:first-child {
+    width: 165px;
+}
+
+.table_details_inner table {
+    width: 91% !important;
+    margin-left: 14px;
+}
+.die_req_list input {
+    width: auto !important;
+}
+.die_req_list img {
+    width: 18px;
+    margin-right: 5px;
+}
+.die_req_list > div {
+    margin: 18px 0;
+}
+
+.die_req_list  label.title_label {
+    position: relative!important;
+    margin-left: 22px;
+    font-size: 13px;
+    font-family: 'Open Sans', sans-serif;
+    display: block;
+}
+
+.die_req_list.active .checkmark {
+    top: -7px;
+    left: -28px;
+    border-radius: 3px !important;
+    border: 1px solid #ccc;
+    width: 20px;
+    height: 20px;
+}
+
+.die_req_list.active .title_label .checkmark:after {
+    content: '';
+    position: relative;
+    background-color: #88979a;
+    color: #fff;
+    text-align: center;
+    background-image: url(./design/icons/check-24px.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 11px;
+    width: 10px;
+    height: 10px;
+    top: 5px;
+    left: 5px;
+}
+.die_req_list {
+    display: none;
+}
+
+.die_req_list.active {
+    background-color: #fff;
+    display: block;
+    position: absolute;
+    border: 1px solid #ccc;
+    padding: 10px 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0px #0000004a;
+    width: 180px;
+    bottom: 100px;
+    z-index: 2;
+}
+img.edit_pencil {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    background-repeat: no-repeat;
+    position: absolute;
+    right: 0px;
+    background-size: 13px;
+    opacity: 0.7;
+    margin-top: -15px;
+    cursor: pointer;
+}
+
+button#guest_allocation_new_guest_table_add_dietary_done {
+    font-size: 11px;
+    color: #fff !important;
+    background: rgba(168,81,138,1) !important;
+    padding: 5px 10px !important;
+    margin: 0px 0 0;
+    float: right;
+    cursor: pointer;
+}
+button#guest_allocation_new_guest_table_add_dietary_cancel {
+    font-size: 11px;
+    color: grey !important;
+    background: #fff !important;
+    padding: 5px 10px !important;
+    margin: 0px 5px 0;
+}
+.die_req_list .last-section_btn {
+    margin: 0 0 5px!important;
+}
+button#guest_allocation_new_guest_table_create_new {
+    font-size: 11px;
+    cursor: pointer;
+}
+#guest_allocation_new_guest_table_add_dietary_option p {
+    display: inline-block;
+    margin-right: 5px !important;
+}
+button#guest_allocation_new_guest_table_create_new img {
+    margin-right: 0;
+    padding: 0 0px 2px;
+}
+li.ui-tabs-active.ui-state-active a {
+    color: #000 !important;
+}
+.create_new_dietary h4 {
+    font-size: 14px !important;
+    margin-bottom: 20px !important;
+}
+
+.create_new_dietary span {
+    font-size: 12px;
+    color: grey;
+    font-family: 'Open Sans', sans-serif;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.create_new_dietary {
+    position: absolute;
+    z-index: 1;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0px #0000004a;
+    width: 205px;
+    top: 85px;
+    display: none;
+}
+.color_select > span {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+}
+.color_select {
+    max-width: 100%;
+    white-space: normal;
+    display: none;
+    background: #fff;
+    margin-top: 5px;
+}
+
+.colour_sele_box p {
+    font-family: 'Open Sans', sans-serif;
+    margin-bottom: 0;
+    font-size: 12px;
+    color: grey;
+    margin-top: 25px;
+}
+.active.create_new_dietary 
+{
+  display: block;
+}
+
+.create_new_dietary input {width: 94% !important;}
+
+.import_list_table select {
+    width: 115px;
+    margin-bottom: 40px;
+    height: 30px;
+    background-color: #f7f8f8;
+    border-color: #ccc;
+    border-radius: 2px;
+    margin-right: 13px;
+}
+.import_list_table {
+  display: none;
+     position: absolute;
+    width: 250px;
+    background-color: #fff;
+    z-index: 9;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 100px;
+    border: 1px solid #ccc;
+    padding: 10px 10px 10px 10px !important;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0px #0000004a;
+}
+
+.import_list_table h4 {
+    font-size: 20px !important;
+    margin-top: 10px;
+}
+
+.import_list_table p {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+    margin-top: 24px;
+    white-space: normal;
+
+}
+.import_list_table.active {
+    display: block;
+}
+.title_label input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkmark {
+  position: absolute;
+  top: -3px;
+  left: -30px;
+  height: 23px;
+  width: 23px;
+  background-color: #eee;
+  border-radius: 50%;
+}
+.title_label:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+.title_label input:checked ~ .checkmark {
+  background-color: #88989A;
+}
+
+.title_label:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.title_label input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.title_label .checkmark:after {
+  top: 8px;
+  left: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  content:'';
+  position: relative;
+}
+
+div#guest_allocation_table_print > div {
+    margin: 25px 0;
+}
+
+div#guest_allocation_table_print > div label {left: 35px;font-family: 'Open Sans', sans-serif;font-size: 14px;}
+.sharable_url_table input[type="text"] {
+    width: 146px !important;
+    margin-left: 0 !important;
+    color: #25302e;
+
+}
+.sharable_url_table button {
+    float: inherit;
+    margin-right: 2px;
+    margin-top: 5px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.sharable_url_table button svg.copy {
+    vertical-align: bottom;
+    margin-right: 4px;
+}
+button#guest_allocation_table_share_geust_list_url_open svg {
+    width: 15px;
+    height: 15px;
+    vertical-align: bottom;
+    margin-right: 3px;
+}
+
+button#guest_allocation_table_share_geust_list_url_open {
+    padding: 3px;
+}
+.note_box {
+    padding: 10px;
+    line-height: 1.5;
+    background-color: #F7F8F8;
+    border: 1px solid #ccc;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 12px;
+    margin-top: 7px;
+    border-radius: 3px;
+    font-style: italic;
+    color: grey;
+    white-space: normal;
+}
+.sharable_url_table {
+    display: none;
+}
+
+.active.sharable_url_table
+{
+    display: block;
+}
+.staus_select_box {
+    float: right;
+    margin-top: 5px;
+}
+
+.staus_select_box select {
+    margin-left: 0 !important;
+    width: auto !important;
+}
+.color_select > span.active_plate:after {
+    content: url(./images/checked_icons_white.png);
+    position: absolute;
+    left: 5px;
+    top: 5px;
+}
+#guest_allocation_new_guest_table_add_dietary_option span {border: 1px solid #ccc;font-family: 'Open Sans', sans-serif;font-size: 13px;padding: 3px;border-radius: 3px;}
+
+#guest_allocation_new_guest_table_add_dietary_option p {
+    margin: 0px 0 8px;
+}
+
+#guest_allocation_new_guest_table_add_dietary_option
+{
+  white-space: normal;
+}
+#guest_allocation_new_guest_table_add_dietary_option p  span:last-child {border-left: 0 !important;margin-left: -1px;border-radius: 0 3px 3px 0px;font-size: 15px;padding: 1px 3px 3px; color: grey; cursor: pointer;}
+
+#guest_allocation_new_guest_table_add_dietary_option p span:first-child {
+    border-right: 0 !important;
+    border-radius: 3px 0 0px 3px;
+        color: #25302e;
+}
+svg#Capa_1.active {
+    background-color: grey;
+    fill: #fff;
+}
+p.select_dietary svg {
+    vertical-align: middle;
+    margin-right: 0px;
+    width: 10px;
+}
+.new_guest_entry span {
+    font-family: 'open sans', sans-serif;
+    font-size: 13px;
+    color: #25302e;
+}
+.new_guest_entry {
+    margin-top: 5px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+}
+.select_options button {
+    font-size: 13px !important;
+    padding: 3px 5px !important;
+}
+.select_options button svg
+{
+    vertical-align: text-top;
+    margin-right: 6px;
+}
+
+.select_options {
+    /*margin-top: 15px;*/
+    display: none;
+}
+.select_options.select {
+    display: block;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 2px;
+}
+
+.arrows.select {
+    display: none;
+}
+.arrows
+{
+  display: block;
+}
+svg#table_icon_btn {
+    width: 15px;
+    height: 15px;
+}
+.add_to_table_popupform span {
+    font-family: 'open sans', sans-serif;
+    font-size: 13px;
+    color: grey;
+    display: block;
+    margin-top: 2px;    
+}
+
+.add_to_table_popupform.popup {
+    display: block;
+}
+.add_to_table_popupform {
+    width: 204px;
+    padding: 0 10px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0px #0000004a;
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    z-index: 9;
+    margin-top: 7px;
+}
+
+.add_to_table_popupform .last-section_btn button {font-size: 11px !important; border-radius: 5px !important}
+
+.add_to_table_popupform > div {
+    margin-top: 15px;
+}
+
+.add_to_table_popupform input {
+    max-width: 110px;
+}
+.add_to_table_popupform .last-section_btn {
+    border-top: 1px solid #ccc;
+}
+input#guest_allocation_table_delete_checkbox {
+    margin-right: 12PX;
+}
+span.custom_width {
+    width: 150px;
+    display: inline-block;
+    margin-left: 10px;
+        white-space: normal;
+}
+.custom_width svg {
+    margin-left: -3px;
+}
+span.custom_width_1 {
+    width: 46px;
+    display: inline-block;
+}
+.disabled
+{
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+#guest_list_status p {display: none;    white-space: normal;}
+div#guest_filter_table_number_html > div {
+    display: inline-block!important;
+    margin-right: 19px!important;
+}
+div#guest_filter_table_number_html > div  input {
+    display: none!important;
+}
+
+div#guest_filter_table_number_html {
+    white-space: normal;
+    margin-left: 0!important;
+}
+</style>

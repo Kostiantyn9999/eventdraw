@@ -1,0 +1,241 @@
+<div class="sidebar_right">
+	<span class="close_sidebar" id="hide_selected_area" style="top: 0;padding: 5px;cursor: pointer;position: absolute;right: 0;">
+	
+			<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABlBMVEV7mr3///+wksspAAAAAnRSTlP/AOW3MEoAAAAdSURBVAgdY9jXwCDDwNDRwHCwgeExmASygSL7GgB12QiqNHZZIwAAAABJRU5ErkJggg==" title="Close" class="" style="">
+	
+	</span>
+	
+	<!-- zigzag_table Start -->
+	<div id="zigzag_table">
+		<div id="table_inner_details">
+			<h4>Selected Area</h4>
+	
+			<div>
+				<span>Width:</span>
+				<span id="selected_area_width"> </span>
+			</div>
+	
+			<div>
+				<span>Height: </span>
+				<span id="selected_area_height"> </span>
+			</div>
+
+			<div>
+				<span>Area: </span>
+				<span id="selected_area_area"> </span>
+			</div>
+
+		</div>
+
+		 <div style="text-align: center; margin-top: 15px;">
+			<button id="btn_selected_area_export_pdf" style="width: 170px;cursor: grab;">Export to PDF</button>
+		 </div>
+
+		 <div style="text-align: center; margin-top: 15px;">
+		 <select id = "selected_area_page_format" value = "A4" style="margin-bottom: 8px; width: 202px;">
+			<option value="Letter">US-Letter (8,5" x 11")</option>
+			<option value="Legal">US-Legal (8,5" x 14")</option>
+			<option value="Tabloid">US-Tabloid (279 mm x 432 mm)</option>
+			<option value="A0">A0 (841 mm x 1189 mm)</option>
+			<option value="A1">A1 (594 mm x 841 mm)</option>
+			<option value="A2">A2 (420 mm x 594 mm)</option>
+			<option value="A3">A3 (297 mm x 420 mm)</option>
+			<option selected="selected" value="A4">A4 (210 mm x 297 mm)</option>
+			<option value="A5">A5 (148 mm x 210 mm)</option>
+			<option value="A6">A6 (105 mm x 148 mm)</option>
+			<option value="A7">A7 (74 mm x 105 mm)</option>
+		 </select>
+
+		   <br>
+			<input id = "selected_area_page_portrait" name="format-printdialog" type="radio" value="P" checked="checked" style="margin-right: 6px;">
+			 <span style="max-width: 100px;">Portrait</span>
+			
+			 <input id = "selected_area_page_landscape" name="format-printdialog" type="radio" value="L" checked="checked" style="margin-left: 10px; margin-right: 6px;">
+			 <span style="width: 100px;">Landscape</span>
+		</div>
+
+		 <br/>
+
+		 <h4>Preview</h4>
+
+		 <div >
+			<img id="selected_area_preview" style="max-width: 280px; display: block;margin-left: auto;margin-right: auto;"/>
+		 </div>
+	</div><!-- zigzag_table end -->
+	
+	
+	
+	
+	
+	
+	
+	
+		
+</div><!-- Side_bar end -->
+	
+	<style type="text/css">
+		.geSidebarContainer.geFormatContainer {
+		overflow-x: auto!important;
+		z-index: 99!important;
+		overflow: visible!important;
+	}
+	div#zigzag_table {
+		position: relative;
+		max-width: 270px;
+		/*    margin-left: auto;
+			border-left: 1px solid #ccc;
+			padding-left: 10px;
+			padding-top: 1px;
+			min-height: 460px;*/
+	}
+	
+	div#zigzag_table > div >  div > span:nth-child(1) {
+	max-width: 250px;
+		width: 38%;
+		display: inline-block;
+		font-size: 14px;
+		line-height: 19px;
+		color: #25302e;
+		font-weight: 500;
+		font-family: 'Open Sans', sans-serif;
+	}
+	div#zigzag_table > div >  div > span:nth-child(2) {
+		max-width: 80px;
+		font-size: 14px;
+		width: 40%;
+		display: inline-block;
+	}
+	div#zigzag_table > div >  div > span:nth-child(2) input, div#zigzag_table > div >  div > span:nth-child(2) select {
+		max-width: 180px;
+		width: 100%;
+		display: inline-block;
+	}
+	
+	div#zigzag_table > div >  div > span:nth-child(2) input[type="checkbox"] {
+		max-width: 180px;
+		width: auto;
+		display: inline-block;
+		position: relative;
+		margin: 0;
+	}
+	
+	div#zigzag_table > div h4, #zigzag_table_no_object h4 {
+		text-align: left;
+		margin-bottom: 5px;
+		font-size: 15px;
+			font-family: 'Open Sans', sans-serif;
+			margin-bottom: 15px;
+	}
+	
+	div#zigzag_table > div >  div button { width: 90%; margin-top: 15px;}
+	
+	div#zigzag_table input {
+		border: 1px solid #d7dede;
+		border-radius: 3px;
+		background-color: #f7f8f8
+	}
+	
+	div#table_inner_details > div, div#chair_info_view > div, div#rectangular_table_view > div {
+		margin-bottom: 7px;
+	}
+	div#zigzag_table select {
+		border: 1px solid #ccc;
+		opacity: 0.6;
+		background-color: #f7f8f8
+	}/*
+	div#zigzag_table img.pattern {
+		position: absolute;
+		width: 220px;
+		left: -235px;
+		top: 90px;
+		padding: 10px;
+		border: 1px solid #ccc;
+		box-shadow: 0 0 15px #0000003d;
+		outline: 0;
+		background-color: transparent !important;
+		border-radius: 10px;
+		display: none;
+	}*/
+	div#zigzag_table .table_icon > div {
+		display: inline-block;
+		padding-bottom: 0 !important;
+	}
+	div#zigzag_table .table_icon > div {
+		display: inline-block;
+		padding-bottom: 0 !important;
+	}
+	div#zigzag_table .left-to-right {
+		float: left;
+		margin-right: 6px;
+		padding-bottom: 0 !important;
+	}
+	div#zigzag_table .table_icon img {
+		margin-right: 3px;
+		width: 18px;
+		border: 1px solid #ccc;
+		padding: 3px;
+		border-radius: 3px;
+	}
+	div#zigzag_table .top-to-bottom {
+		border-left: 1px solid #ccc;
+		float: left;
+		padding-bottom: 0 !important;
+		padding-left: 6px;
+	}
+	div#zigzag_table p.note {
+		font-size: 11px;
+		color: #88989a;
+		font-weight: 400;
+		font-style: italic;
+		font-family: 'Open Sans', sans-serif;
+		line-height: 15px;
+		clear: both;
+		white-space: normal;
+	}
+	div#zigzag_table h5.sub-heading {
+		text-transform: uppercase;
+		margin-top: 10px;
+		font-size: 11px !important;
+		line-height: 30px;
+		color: #88989a;
+		font-weight: 400;
+		font-family: 'Open Sans', sans-serif;
+		margin-bottom: 0;
+		text-align: left !important
+	}
+	div#zigzag_table img.hover_element:hover + img.pattern {
+		display: block;
+	}
+	div#zigzag_table img.pattern {
+		position: absolute;
+		width: 220px !important;
+		margin-left: -20px;
+		top: 230px;
+		padding: 10px !important;
+		border: 1px solid #ccc !important;
+		box-shadow: 0 0 15px #0000003d;
+		outline: 0;
+		background-color: #fff !important;
+		border-radius: 10px !important;
+		left: 30px;
+		display: none;
+	}
+	div#zigzag_table button {
+		font-size: 14px;
+		color: #fff!important;
+		background: rgba(168,81,138,1);
+		padding: 7px 17px;
+		text-decoration: none;
+		font-weight: bold;
+		border-radius: 4px;
+		margin: 10px 0 0;
+		border: 0;
+	}
+	div#zigzag_table img.hover_element:hover, div#zigzag_table img.hover_element.active_layout {
+		background-color: #88979a;
+	}
+	
+	div#zigzag_table p.note.layout_text.active_note {
+		display: block!important;
+	}
+	</style>

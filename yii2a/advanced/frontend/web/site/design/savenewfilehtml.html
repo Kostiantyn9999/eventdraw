@@ -1,0 +1,151 @@
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<div id="savewindownew" class="geDialog testttttt" style="width: 510px;height: 550px;left: 0;top: 30px;z-index: 10005;right: 0;margin: auto;">
+    <div class="savewindownewinner">
+        <img
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABlBMVEV7mr3///+wksspAAAAAnRSTlP/AOW3MEoAAAAdSURBVAgdY9jXwCDDwNDRwHCwgeExmASygSL7GgB12QiqNHZZIwAAAABJRU5ErkJggg=="
+            title="Close"
+            class="geDialogClose"
+            style="top: 14px;left: 550px;z-index: 10005;"
+        />
+
+        <div class="d-flex">Template name:<input id="savewindownew_templatename" type="text" style="margin-bottom: 2px; margin-left: 5px; margin-top: 2px; width: 400px;" /></div>
+        <div class="d-flex">
+            Client name:
+            <select id="savewindownew_clientname" style="margin-top: 4px; width: 420px;">
+                              
+            </select>
+        </div>
+        <p>Rewrite existing template:</p>
+
+        <div id="savewindownew_selectedclienttemplist">
+            
+        </div>
+        <div class="bottombuttonsavewindow">
+        	<div class="col-2"><img class="showbulattin showbulattinimage" src="https://staging.eventdraw.com.au/frontend/web/site/design/images/tick-img.png" alt="">  </div>
+                     <div class="col-2"><button class="notice-btn showbulattin" id="savewindownew_showbulattin">Notify Users via Bulletin</button> </div>
+                     <div class="col-2"><img class="viamailnoticeimg" src="https://staging.eventdraw.com.au/frontend/web/site/design/images/circle.png"></div>
+                     <div class="col-2"><button class="notice-btn viamailnotice" id="savewindownew_viamailnotice">Notify Users via mail</button></div>
+            <button class="geBtn" id="savewindownew_cancelbtn">Cancel</button>
+            <button class="geBtn gePrimaryBtn" id="savewindownew_savebtn">Save template</button>
+        </div>
+    </div>
+</div>
+<style>
+#savewindownew.geDialog, #savewindownew.geTransDialog > div {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0px #0000004a;
+    font-size: 13px;
+    font-family: 'Open Sans', sans-serif;
+    border-radius: 5px;
+    border: 0 !important;
+    /* height: auto !important; */
+}
+#savewindownew.geDialog {
+    position: absolute;
+    background: white;
+    line-height: 1em;
+    overflow: hidden;
+    padding: 30px;
+    border: 1px solid #acacac;
+    -webkit-box-shadow: 0px 0px 2px 2px #d5d5d5;
+    -moz-box-shadow: 0px 0px 2px 2px #d5d5d5;
+    box-shadow: 0px 0px 2px 2px #d5d5d5;
+    _filter: progid:DXImageTransform.Microsoft.DropShadow(OffX=2, OffY=2, Color='#d5d5d5', Positive='true');
+    z-index: 2;
+}
+#savewindownew .geDialogClose {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    opacity: 0.5;
+    cursor: pointer;
+    _filter: alpha(opacity = 50);
+}
+
+div#savewindownew_selectedclienttemplist {
+    width: 500px;
+    margin-top: 6px;
+    overflow: auto;
+    border: 1px solid rgb(211, 211, 211);
+    height: 360px;
+}
+
+#savewindownew .d-flex , #savewindownew p {
+    font-weight: 700;
+}
+
+#savewindownew .d-flex {
+    margin-bottom: 20px;
+}
+
+#savewindownew button.geBtn {
+    font-size: 11px !important;
+    border-radius: 4px !important;
+
+}
+#savewindownew .geBtn, #savewindownew .mxWindow .geBtn {
+    background-image: none;
+    background-color: #f5f5f5;
+    border-radius: 2px;
+    border: 1px solid #d8d8d8;
+    color: #333;
+    cursor: default;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.25px;
+    height: 29px;
+    line-height: 27px;
+    margin: 0 0 0 8px;
+    min-width: 72px;
+    outline: 0;
+    padding: 0 8px;
+    cursor: pointer;
+}
+#savewindownew button.geBtn.gePrimaryBtn, #savewindownew .geTransDialog button {
+    font-size: 11px;
+    color: #fff !important;
+    background: rgba(168, 81, 138, 1) !important;
+    border-color: rgba(168, 81, 138, 1) !important;
+    border-radius: 4px;
+}
+#savewindownew .bottombuttonsavewindow {
+    margin-top: 35px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#savewindownew .notice-btn {
+    background: transparent;
+    max-width: 120px;
+    border-radius: 35px;
+    border: 2px solid #a8518a;
+    padding: 3px 0;
+    cursor: pointer;
+}
+#savewindownew .col-2 img {
+    cursor: pointer;
+}
+</style>
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+			jQuery('.notice-btn').click(function(){
+		console.log(jQuery(this).attr('id'));
+		jQuery('.showbulattin, .viamailnoticeimg').attr('src' , 'https://staging.eventdraw.com.au/frontend/web/site/design/images/circle.png')
+
+		jQuery(this).parent().prev().find('img').attr('src', 'https://staging.eventdraw.com.au/frontend/web/site/design/images/tick-img.png');
+
+		});
+		jQuery('.viamailnoticeimg').click(function(){
+		jQuery('#savewindownew_viamailnotice').trigger('click');
+		})
+
+		jQuery('.showbulattinimage').click(function(){
+		jQuery('#savewindownew_showbulattin').trigger('click');
+		})
+		jQuery('div#savewindownew_selectedclienttemplist > div').click(function(){
+    jQuery('div#savewindownew_selectedclienttemplist > div').css('background' , '');
+		jQuery(this).css('background' , 'rgb(235, 242, 249)');
+		})
+	}) //ready function
+</script>

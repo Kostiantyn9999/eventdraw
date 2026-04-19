@@ -1,0 +1,111 @@
+
+<div class="popup_box" >    
+    <div class="extra_details">
+        <h4>To assist our team with customised training and support for you, please choose one of the below!</h4>
+
+        <div style="    border-bottom: 5px solid;">
+            <h1><sup>*</sup> VENUE / PROPERTY <label> <input type="radio" id="userType_venue" class="userType" name="user_type" value="1"><span></span></label></h1>
+            <p>I'm a professionals working at Hotel, Wedding Venue, Performing Arts Venues, Convention Centres, Stadiums, Casino, Theatre's, Schools, Universities, Goverment, Council or Other Venues etc</p>
+        </div>
+
+        <div>
+            <h1><sup>*</sup> EVENT ORGANISER  <label><input type="radio" id="userType_organiser" class="userType" name="user_type" value="2"><span></span></label></h1>
+            <p>I'm an independent Event Planner AV Company / Staging Company, Festival Planner of Caterer using many different venues for my events.</p>
+        </div>
+      <!--   <span id="userType_close" class="close">X</span> -->
+    </div>
+    <?php ActiveForm::end(); ?>
+</div>
+<script>
+jQuery(document).ready(function(){
+    jQuery('span.close').click(function(){
+        jQuery('.popup_box').hide();
+    });    
+});
+</script>
+<style type="text/css">
+.popup_box .extra_details h4 {font-size: 18px;}
+.popup_box h1, .popup_box h4, .popup_box p {
+    font-weight: lighter;
+}
+
+.popup_box .extra_details p {font-size: 14px; line-height:20px}
+ .popup_box   span.close:hover { color: #000; opacity:.8; }
+ .popup_box   span.close {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: red;
+    z-index: 2;
+    opacity: 1;
+    color: #fff;
+    width: 22px;
+    height: 22px;
+    border-radius: 60px;
+    padding: 5px;
+    font-size: 20px;
+    cursor: pointer;
+}
+ .popup_box   .extra_details {
+    text-align: center;
+    font-size: 12px;
+}
+
+.popup_box .extra_details h1 {
+    font-size: 20px;
+    text-align: left;
+}
+
+
+.popup_box .extra_details h1 label input {
+    opacity: 0;
+    position: absolute;
+    top: 5px;
+    left: 4px;
+}
+
+.popup_box .extra_details h1 label {
+    display: inline-block;
+    width: 20px;
+    padding: 5px;
+    border: 2px solid;
+    border-radius: 50px;
+    height: 20px;
+    position: relative;
+    float: right;
+    cursor:pointer;
+}
+.popup_box .extra_details h1 label:hover span{
+    background:#a8518a;
+}
+.extra_details h1 label input:checked + span {
+    font-weight: bold;    background:#a8518a;
+}
+.extra_details h1 label span {
+    border: 1px solid #aaa;
+    padding: 4px;display:inline-block;width: 10px;height: 10px;border: 1px solid;border-radius: 10px;position: absolute;left: 5px;top: 5px;}
+
+    .popup_box {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #00000038;
+    width: 100%;
+    height: 100%;
+    padding: 5vh;
+}
+
+.popup_box .extra_details {
+    position: absolute;
+    top: 18vh;
+    max-width: 500px;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    background: #fff;
+    padding: 30px;
+    border-radius: 20px;
+    color: #a8518a;
+}
+
+</style>

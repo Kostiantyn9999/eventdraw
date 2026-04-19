@@ -1,0 +1,17 @@
+# Track only application *.php and *.html (whitelist). Everything else is ignored.
+*
+!*/
+!.gitignore
+!**/*.php
+!**/*.html
+
+# Local env template / secrets — never commit (copy to server env or a private file).
+**/ENV.local
+
+# Do not commit Composer dependencies (still lots of .php)
+advanced/vendor/
+
+# Typical Yii / tooling trees (even if they contain .php)
+**/node_modules/
+**/runtime/
+**/.idea/

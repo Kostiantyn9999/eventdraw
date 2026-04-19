@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toolbar</title>
+<link rel="stylesheet" type="text/css" id="applicationStylesheet" href="Toolbar_new.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@1,200&family=Source+Sans+Pro:wght@300&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- <script id="applicationScript" type="text/javascript" src="Toolbar.js"></script> -->
+
+</head>
+<body>
+<div id="Toolbar">
+
+	<div id="top_header">
+		<div class="left_top_header">
+			<div class="logo">
+				<img id="ED_logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAE8AAABQCAYAAABYtCjIAAAABHNCSVQICAgIfAhkiAAAEhBJREFUeF7t3AOwZUkSBuB/1rZt27Zt24zY3Vjbtm3bs5i1bduYtXdmFV9H5Yvzbt+Di96+3dEV8aL73XdOnay/En9m1rn7ZXPG4ZPcJMnpkhwyyW+T+OzQSX6d5CNJPp/kH5si8n4bIMihklwlyTWTfCXJx5J8McmfkxwmyYmTnDvJudpnz03yiw2QO5sA3qmSPCTJY5N8aQCUIye5f5LvJnlxkoN3N4C7CryjJTlcM7//JvlDkr/1LPbsSa6a5METwLhukmMleV6Sg3quZ/JHb8//T5J/tef3XT/hsfMvWTd4TOxESU7b/BXtOGyS3yR5S4+/OnMSoNCqsXHjNi/N6wPDfBdIcog2GZ/5g2bqX12nz1wXeEdMQugLJztcwQ+THNicPk25YpI3N6c/C9A6wTtukhsk+XuSz7Zgc5wkfk6eBHgfTfLjsV2a8vd1gHeUJJdJcrbm8D/VhGMyhp2/SAP22Ul+OSPYusCrwHOyJG9I8qPOc46Q5CxNDr7zlUm+MQWgoWtWBQ8wl0pyniQfTvLJtuuzzzxmkpsl+WmS1+wi8ASe6zSNe3/zdd1HWesJk1w5ybGTvCDJz1YBcFXwTtH81ZeTHJDknwNO/EJJLt7A6+76OjSPZnENzPNVSX43AMrxk1yv+UAaunTUXgU80fSSSU6Q5OU9Gtddgwh89RYFX9gBeh3gmeNaSd6a5HMj2mTNNpLsgtgXltW+VcBjshdtgeIlI7tNPs9CS5jNu5LwjcZpGkF+VGcRrhWl/Uuby38CX9bxuo7G8GE3bIT6WRM1iQWIyHyfSLzUWAU8D2QCN03y/SSvnSAB+gCAYzTz/VOSSye5T5J3tOBy1CS4IfBskMgJvN+3zfpVI9TfbM/jOu6c5MkzQaJPnJMmuVWSTyd52wSZey9ZFTwTCxjnT/L6CREMgbXYuzRgfp5EtJZuAfInLVL/tfEx8nEPrjle82k0jeN3DVBP3zTZ5iHEQ8OG2KwzJXnSgI+ehOk6wMPmkVeJPHOaR16BRtv4JrRFtGMun2jJPu1aZNBIAKBHF2zP5uvkxQh5X+ASke/QtL7cxiLP3XbtVPDs/L/bbs97mMT98s0M5Kflo8q0+TUO2uciM1pjkesYigfnbEEAJRIAPtNoUXcjAX7L5jNp3bxBMxH+oWi9dd8YeATjI87bdvPrSb41xzwQVMyegG9qD/cZ7bhc0zrM/kNJ/rgOxObMwbxtoiBGbs/i11RnDOZ9xyRPmBMk4IBcSyv9i69+eyAf3zHhEHh2gCD8Gd/EiVN7AtGecti1DiDfumkfgIHmXtfTNP7s/zG4B6QdHfHMtzcy/LgkH2+b25UD1TpjM38FDGBbJ7cipVRLnDv6wKO+Ui47yQxRC874Yi3N4bSBojgJ2BqcMS1VQbGIDyR53/8DsTnPOGtbA1cBEHkvc/1Lu5Yr4oNtMPrDqmgrd3K+Rqn4cUWIuWbcBx5HjI9RXxXcbvVW1AOQXJFPqeIloc6Q5DHtM+z9O7sJuHosWVnPA1rNUEDjTpgnzUS1aBhFIGtFa7icutEwoMpaun6812ztELZuB/CgeXU40fMkbefsEp73vUYDFCvdp6qyCYMVAfAKLaOQyqn+kJcZqwChPbMDJ2V5qtwUgZVtG/M0jxqjE3jTGPum7up3uN6Vmo/A9xDaTRv84EOTfK2ZoqLAWFTlnrCII7V7tmnfLHguUtU15qrqHEQEFpHWDruHn9jEwVoEMRv9iAWokpSS/2fyLGxrzILHZK/RVPo9ExBw/9Uaz5Lf7m4fNyay1E/VGrF/4sQ8mH+0RsGPb+wFT9h2ISqCl40NIV6dDtDvHbt4Q/6Ox92m1f3eOEEmqSB/iZoJnr3giU4SfdyGmgoWO0WZdjcqoi4m4j5/ghCbdIkAIuNRVZnlq105uSJmy9zfOaZ5wrhSDb/Hvj/Y/p3NPZkrB6zXqgw0Flg2CTiySONUna0LgLP5uEjLCq1R8NRHFgiLI+5YTx/PO2WLMlQWSfbT5UGikGxCNUSQ2BMHGkL7ZCAaQzVQMJUfgQVYTBWX3WkMpWe00AMgDyycyEOkPAikoxFPS6K+ticOzELwwGff3daogMGkrVdxwefzOOCg5nXBoOLYuKwDA5d18AP84kv3RNQ6MlMM2RLuJ5DgrHygXBx5HhxjVZXuzRraAPSjHqdsvhFnRsYWOfB3fZV7Nf9Gy5yVAWRfkNw21SLg1Y1OMSk9edDeMC6RRMqGx/Wa6KI+b28AZsoa1P7qTMuU67euWUbzFnrA3nzxPvBW2N194K0IHj6HUSuzs33/BypaohJRAPu9/i5g+L976l7/d60fjN29rnOcQfPI8DfPM1zvmu48FeV87nnd+8xldK8xd/1ec/u35HR/zdGFqdZEBsMaSq7yf67pPpM8dZ37DnaBdEzBD6+RhuA6MgukWC1fdVjTRn3P0SxHtbTvtPoQTKV5J5JUXOXGorGjr3oaulU4k2IiQFEcZ0oMpXGlcmTUAsnhWJjr1BR97viEQR6poKqPQzwW4V60Au/UeyC3ueXcZEGtUCkFi27TSWVFY0o9r7ica+X0ymtSUrRFenajVmrTkfNcz7h244L7A49gDt5IQ0xgosu2yqnJ1L70OO/ZqsOEe1ESx8X0R5/TBMT7MPNbtJSNcMI/kq2vSyCs3okBA5AO5jjnQqj927EJACqLGTpdtAuVcPRWp59sQPHvbVvV2nW0VbFTFfzeTWv8/ugkz+ioHYL/9Na7fWr73Dq1D27e7ieLspXPVJ3v1wq9FAkO8uEDSn11u5SZFTWrQU0bdPFf1hoktIimWSjNUHXRzntKA9exWBpBO8zhOJkFAl8CrgJDc+WOrlOxqJMCtIjWyzXtsMXQYnNUA1sqBQjXKFowM3M+vJ1A0Om6byuROZGgCkJjqkFe5knDrUkZ7W4dbifDYCXPbM8hn81hZXog1gs8lkXRDizwqDkTgLDFKwQAzrhrY+E6Y4ix2haTM4FcUFFRSqMYSlAbgWxanHofEBzWJuzD2plif9NDKH90juYGVGz76oJMCFCu0VM1zC2x97tc+x5Ne2iHPFwPmdXQWIMG0zw1SxWTB7aOWSmmucjMXZHx+m39LAgO+jU209wHFXhAoRV8k4qKxZafoF2OYgGJqVoEE9TgUX14fANL48epTzukN+DhFsqHqMDcrpmVIitiyt8sCh4ttokFnvSKafGvrAZIfrgSsnELD2o+EECuo+Ua5CzFAUftyAo6/Kp8HbDk05oUDxRC7tTmVBhhEVuRlOYBkO+gTVS+miNM0O/+dZRLpcUOGXYIeOp5dplQdhrw1TNw6NEiNZ0J73rlbC5gVfA4f9pIZrIBDog2mpvRiGLairrk4UbITFFUkykA/1g5Op/MiqzPppAPkDSZT2ctguMOxSrNEzAA6EEEqhxPeOawHVPgT2gk7dyBfBME4EyeSTJbgvJZdpNvpGlUXanHbmsQceTdQ4WKDX4vn9fx71v/BQ7Nc41FGDRLKd2cAgWzZRl8Gd/qd6ZXh7v1ooFDMQQHczLHrqugiXAwh7kpS/l1x9hY2A5NLfB8oMTEmRoisMMzbJtz5lvq2ATfUmquOeJhBGIefCG/QijUBo3Rw3W9z+323dtui7I1UAeaP+TzgPDI5nNttqDDhLUAaLXIyYeJ9kyszsbYaBSGxlkTt0Ie5SibIXIy36omCwg2UnQXoFiLTae5XnfYOkkPPMgyLSrukCB/YheZAhOr6oljByJh1fD4LWZA8/AsD7LDopPTBHZOid7BRVzM4IcsTmSv5oveL80GAErBRGYb7WgNwW2cOS1W5KNZ+KZoWLQKyEB0nWhJy4FsQ9Espg0o4PmbIVCqFjNTm8K6RF0aiX7Bw+eC4tYZwOpF0AofMjtA4Dj8ASCLKvAHTLh+598A7D0LAx1RtmYu/IIjGpyz8r0NqAzEPP7fPTMi2loQOWwAGbqDJdAIzycj2ZgsaykZsQTBzqYCnysxJ5/leT63XvOTDTVhUSgJTmqeAgZg1ul+97jG2PbS4L7cdmaXFvl1H3iLoDVz7TLgicbMYun3F1aQd6NuXRQ8fgJ/Ekn3hjI8367QIZtCiscOhG/bvKngcdhYtheGddIc+/fa5p48ZECisHRT4EHFKATCXKWqwfWNgWdn5ILIrmiFO5kc3UAt9uTuGY1DhusNTS1IoInSKFmdZe4FsA88u4Jm0DIcy8EfxBHtELbxQeTz1Xuo6lk3Qs6S6i0gNAc/lfzL0aWZapoLgcdEHTXAyGUXKix2o/idB8sIlIgQye6Z5D0FS2tU1HTawRmUCn6yCFUVBQEWp0KkTOXfncas5klFHBkDlKzDTfPUF9GVGyLGe9oJqUrrmKlsad7JAFkPH6+nC2gp3bazeZDsgsccvdAGeWmIdG1e/b/ukxXwGXLUoS9W2DRtVCm38fJ2pbahNXJZ3jACJvPujbb1CqgT4lO0yfWqFNImB35mU6pNA408LIa5Ssvk5GNf2iAVlPvDRL7bCx57Z+fUWRFgytEDTZLbtzINbd3kwcoECCV6RYYpZwq9q6H4AcRBzbNwdu5go8Jm1czGAGG+gocXQLzsMumQzNiku+DvChgKmqrhYy801+P1a7imKpD2ap4/sHFqjb/xB0NA2A2VDODpduFIBFNu2rTUjYXQNuZKg1AQBdGhr1YSWKzNqwS6hVUA3gJwNtq6QQETKX5FTyRyj11UT8PQRWbNHY5YMVUJW3NoUwBEO9T1bKq6otqc4FhvLsku5qVl1qj2p/i5k8nORttClPYxQ5rlyGz3qzzUuewG36EvoTaGB4nMrlf3Z/r4n3fOxhzyLrDOrSkFNMxBkRblUl02FE1FUHU+lqW5zoy7L7RUYEHdVKgXevcM29YLAAo/Vp0kwAFHDmgXu+9dCDaojtDPV9hp5tH9fpNdCVZ3bmYqO9L5k/STR2VZu6Hrz4DoGgpCXllUJQnWqWJdnbqdZB/KbU3qCL1UTRahX8EX2qVZwuhUgBK5CKYtyVRkKcxD65EZL1SxWBJlfEz2o9nk/55tA7U9VZ71IrpJP4ZRbz7y33ojKuHyeEFTU6x3jBUGPBCPw3PYvq7+vFfagSwXluuWphGmXh7W6wSg+ydVLBYEr767QGfN4oEg+iuvswS9C5EWod/2Ikp7DnekpeDHPe4fffFwDDxzE8wu4n3zFq6pwwkL5854dAOFeyXbQFTFqNcz5crrCCjm52IEOQHLwlkGH1cnHmofaCNSr+kz+7e6Bq+Tjk7a4CngDSmBIOHgDs0Uned9b4BncMA0ApDMxGcApIl8yqKBhYaI9nwWGaRaHD/fDJh5i9dc0tEDMOqx8lgVPH5RZOZbmMnQjqFB6oO0lENnFjRa9AM6dyCqoQ6VV5PPorkPpqcFQNNZgUY33mZepwbq+1eGQOEP9Y71mqdkGIMArwIebXJgxoKcx5tiho5rich4Ex/q+XwqU6KF2pGcNZphfhzSZzQTOLS3jpLpo+BijkvoAdvAscEsvTYlCCL0K41VwBMgpC6+F2rKq6IWriHNtLrfZEZzNLpxxDFfg7fxn/W+GCAReqV0fK7Pl3VB4iOdF9TQnvta1FRElwXPfTgfzUMixyKTna6vikOgu75RpNP59/nsd+vNrgNQzrV0j0cg9UxR4damjOXWApeaJbqlF7P0WBY8D+SHHGGQHwoWfbvuGbpuamjOufnpjlXBM79KkOqHQ4vb3saeeRb/6sgYGmUDRvsUQ8iuAp55RTwmoMchE5n33QL8l0qNIOEsymxkXRU8cvB9ihP8orL6PC7Kh+KBaI3O3yABnqKOq4LHHNEFJFnqo7sminUBkpmo+Smwdl/NLPnWAZ65pId8Xx2nrfltHj8nH3eN4CIfX3msCh4BOHyOXL3f7uJtfBoz5tAtSGQVWOaNdYHHJNEg9EXeLUqjRlJH8rEKQWLeBi4F5DrAqwdXKieqErp7Mokv6vtaoXWBRw7PtlnoE3+GQEsNcUJ9lrW2CtYJXoGISxEeX6OViO/Q14W43oFHBxfHvvcdPcIV+ay+r3mjacplNo/7YAVj8+52zVtKgFZ50YxRjRn6JkUuQFFTVqLhtGhKt6x8vfftCs1bRkhZh6qt4oKgo7ZWPhOPq8YUjUIx+K0xPreMHAvdsyngMW8apX8iXwZMaZaaoFqgQuWOl0cmZCILgbDsxf8DDA9Tm4fgsagAAAAASUVORK5CYII=">
+			</div>
+			<div class="nav_bar">
+				
+				<div class="menu">
+					<ul>
+						<li class="dropdown"><a href="#" id="toolbar_file">File</a>
+							<ul class="dropdown-content">
+								<li id="toolbar_file_new">New...</li>
+								<li id="toolbar_file_open">Open...</li>
+								<li class="short_cut border-top-bottom"  id="toolbar_file_save">Save<span>Ctrl+S</span></li>
+								<li id="toolbar_file_rename">Rename</li>
+								<li id="toolbar_file_import">Import</li>
+								<li class="dropdown-sub menu_child_items" data_val="Export as" id="toolbar_file_export">Export as
+									<ul class="dropdown-sub-content">
+										<li id="toolbar_file_export_png">PNG</li>
+										<li id="toolbar_file_export_jpeg">JPEG</li>
+										<li id="toolbar_file_export_svg">SVG</li>
+										<li id="toolbar_file_export_pdf" class="border_top">PDF</li>
+										<li id="toolbar_file_export_vsox">VSDX (beta)</li>
+										<li id="toolbar_file_export_html" class="border_top">HTML</li>
+										<li id="toolbar_file_export_xml">XML</li>
+										<li id="toolbar_file_export_url">URL</li>
+										<li id="toolbar_file_export_advanced" class="border_top">Advanced...</li>
+									</ul>
+								</li>
+								<li id="toolbar_file_page_setup">Page Setup...</li>
+								<li class="short_cut" id="toolbar_file_print">Print<span>Ctrl+P</span></li>
+								<li class="border-top-bottom" id="toolbar_file_approve">Approve floor plan...</li>
+								<li id="toolbar_file_close">Close</li>
+							</ul>
+						</li>
+						<li class="dropdown"><a href="#" id="toolbar_edit">Edit</a>
+							<ul class="dropdown-content">
+								<li id="toolbar_edit_undo"class="short_cut">Undo<span>Ctrl+Z</span></li>
+								<li id="toolbar_edit_redo" class="short_cut disable">Redo<span>Ctrl+Y</span></li>
+								<li id="toolbar_edit_cut" class="short_cut border_top">Cut<span>Ctrl+X</span></li>
+								<li id="toolbar_edit_copy" class="short_cut">Copy<span>Ctrl+C</span></li>
+								<li id="toolbar_edit_paste" class="short_cut disable">Paste<span>Ctrl+P</span></li>
+								<li id="toolbar_edit_del" class="short_cut">Delete<span>Delete</span></li>
+								<li id="toolbar_edit_duplicate" class="short_cut border_top">Duplicate<span>Ctrl+D</span></li>
+								<li id="toolbar_edit_find" class="border_top">Find...</li>
+								<li id="toolbar_edit_editdata" class="short_cut">Edit Data...<span>Ctrl+M</span></li>
+								<li id="toolbar_edit_addedit_shape" class="short_cut">Add/Edit Shape message...<span>Alt+Sift+T</span></li>
+								<li id="toolbar_edit_editstyle" class="short_cut border_top">Edit style...<span>Ctrl+E</span></li>
+								<li id="toolbar_edit_editgeo" class="short_cut">Edit Geometry...<span>Ctrl+Shift+M</span></li>
+								<li id="toolbar_edit_edit" class="short_cut border_top">Edit<span>F2/Enter</span></li>
+								<li id="toolbar_edit_addedit_link" class="short_cut border_top">Add/Edit Link...<span>Alt+Shift+L</span></li>
+								<li id="toolbar_edit_lock" class="short_cut border_top">Lock/Unlock<span>Ctrl+L</span></li>
+							</ul>
+						</li>
+						<li class="dropdown"><a href="#" id="toolbar_view">View</a>
+							<ul class="dropdown-content">
+								<li id="toolbar_view_region" class="short_cut">Region Zoom...<span>Ctrl+Shift+O</span></li>
+								<li id="toolbar_view_layers" class="short_cut">Layers<span>Ctrl+Shift+L</span></li>
+								<li id="toolbar_view_search" class="border-top-bottom">Search</li>
+								<li id="toolbar_view_pagescale">Page Scale...</li>
+								<li id="toolbar_view_scrollbar" class="border_top">Scrollbars</li>
+								<li id="toolbar_view_shapemsg">Shape Message</li>
+								<li id="toolbar_view_grid" class="border_top">Grid</li>
+								<li id="toolbar_view_ruler" class="">Ruler</li>
+								<li id="toolbar_view_guides">Guides</li>
+								<li id="toolbar_view_shadow" class="short_cut">Shadow</li>
+							</ul>
+						</li>
+						<li class="dropdown"><a href="#" id="toolbar_arrange">Arrange</a>
+							<ul class="dropdown-content">
+								<li id="toolbar_arrange_right90" class="short_cut">Rotate Right 90</li>
+								<li id="toolbar_arrange_left90" class="short_cut">Rotate Left 90</li>
+								<li id="toolbar_arrange_rotation" class="border-top-bottom">Rotation</li>
+								<li id="toolbar_arrange_flipvert">Flip Vertical</li>
+								<li id="toolbar_arrange_fliphori">Flip Horizontal</li>
+								<li id="toolbar_arrange_front" class="border_top short_cut">To Front<span>Ctrl+Shift+F</span></li>
+								<li id="toolbar_arrange_back" class="short_cut">To Back <span>Ctrl+Shift+B</span></li>
+								<li id="toolbar_arrange_align" data_val="Align" class="border_top menu_sub_child_items dropdown-sub disable">Align
+									<ul class="dropdown-sub-content">
+										<li id="toolbar_arrange_align_left">Left Align</li>
+										<li id="toolbar_arrange_align_center">Center</li>
+										<li id="toolbar_arrange_align_right">Right Align</li>
+										<li id="toolbar_arrange_align_top" class="border_top">Top Align</li>
+										<li id="toolbar_arrange_align_middle">Middle</li>
+										<li id="toolbar_arrange_align_bottom">Bottom Align</li>
+									</ul>
+								</li>
+								<li id="toolbar_arrange_distri" data_val="Distribute" class="dropdown-sub menu_sub_child_items disable">Distribute
+									<ul class="dropdown-sub-content">
+										<li id="toolbar_arrange_distri_horizontal">Horizontal</li>
+										<li id="toolbar_arrange_distri_vertical">Vertical</li>
+									</ul>
+
+								</li>
+								<li id="toolbar_arrange_group" class="short_cut border_top">Group<span>Ctrl+G</span></li>
+								<li id="toolbar_arrange_ungroup" class="short_cut">Ungroup <span>Ctrl+Shift+U</span></li>
+								<li id="toolbar_arrange_remove" class="disable">Remove from Group</li>
+							</ul>
+						</li>
+
+						<li class="dropdown"><a href="#" id="toolbar_extras">Extras</a>
+							<ul class="dropdown-content">
+								<li id="toolbar_extras_chngmeas">Change Measurement Units</li>
+								<li id="toolbar_extras_invreport">Inventory Report</li>
+								<li id="toolbar_extras_tabzizag">Table Numbering(zigzag)</li>
+								<li id="toolbar_extras_tabletheatre">Theatre style Numbering</li>
+								<li id="toolbar_extras_sizepos">Size & Position</li>
+								<li id="toolbar_extras_chngspace" class="disable">Change Spacing</li>
+								<li id="toolbar_extras_scaleitems" class="">Scale Items</li>
+								<li id="toolbar_extras_pagesize" class="">Page Size</li>
+								<li id="toolbar_extras_expdf" class="short_cut">Export as PDF</li>
+								<li id="toolbar_extras_showvideo" class="border-top-bottom">Show Video at Startup</li>
+								<!-- <li id="toolbar_extras_theme" class="dropdown-sub menu_child_items" drop_p_id="theme" data_val="theme" >Theme
+									<ul class="dropdown-sub-content">
+										<li id="toolbar_extras_theme_automatic">Automatic</li>
+										<li id="toolbar_extras_theme_kennedy" class="border_top">Kennedy</li>
+										<li id="toolbar_extras_theme_minimal">Minimal</li>
+										<li id="toolbar_extras_theme_adas">Adas</li>
+										<li id="toolbar_extras_theme_dark">Dark</li>
+									</ul>
+								 </li> -->
+								<!-- <li id="toolbar_extras_copyconnect">Copy On Connect</li>
+								<li id="toolbar_extras_colex" class="short_cut">Collapse/Expand</li>
+								<li id="toolbar_extras_autosave" class="disable border-top-bottom">Autosave</li> -->
+								<li id="toolbar_extras_createshap">Create Shape...</li>
+								<li id="toolbar_extras_editdiag">Edit Diagram...</li>
+								<li id="toolbar_extras_startscreen" class="border-top-bottom checked_menu">Show Start Screen</li>
+								<li id="toolbar_extras_tags">Tags</li>
+							</ul>
+						</li>
+						<li class="dropdown"><a href="#" id="toolbar_help">Help</a>
+							<ul class="dropdown-content">
+								<li id="toolbar_help_visit">Visit EventDraw...</li>
+								<li id="toolbar_help_about" class="short_cut">About Event Draw<span>F1</span></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+
+			</div>
+
+			
+		</div>
+
+		<div class="header_center_sec">
+			<div class="site-title" id="toolbar_site_title">Untitled Diagram</div>
+			<div class="change_notice" id="toolbar_change_notice">Unsaved changes!</div>
+		</div>
+		<div class="right_top_header">
+			
+			<!-- <div class="save_changes"><a href="#">Save</a></div> -->
+			
+			<!-- <div class="profile_img">
+				<svg class="profile_gl" viewBox="0 0 32 32">
+					<path id="profile_gl" d="M 16 0 C 7.163443565368652 0 0 7.163444519042969 0 16 C 0 24.83655548095703 7.163444519042969 32 16 32 C 24.83655548095703 32 32 24.83655548095703 32 15.99999904632568 C 31.98989486694336 7.167632102966309 24.83236694335938 0.01010513305664063 16 0 Z M 16 2 C 21.21604156494141 1.99317741394043 26.00219535827637 4.890393257141113 28.4146728515625 9.515009880065918 C 30.82715225219727 14.13962554931641 30.46478271484375 19.72262001037598 27.47473907470703 23.99658203125 C 26.72214317321777 23.38588333129883 25.85560035705566 22.93096923828125 24.92553901672363 22.6583194732666 C 23.11839866638184 22.09362030029297 21.20421981811523 21.9389591217041 20.4964599609375 21.67053985595703 L 20.4952392578125 21.67053985595703 C 20.39989852905273 21.63454055786133 20.34301948547363 21.5869197845459 20.26281929016113 21.43347930908203 C 20.18064117431641 21.25381851196289 20.12504386901855 21.06315422058105 20.09778213500977 20.86747932434082 C 20.57724189758301 20.361572265625 20.99503135681152 19.80060386657715 21.34239959716797 19.19631958007813 C 22.41386795043945 17.31329345703125 22.99270248413086 15.19027900695801 23.02525901794434 13.02399826049805 C 23.0252685546875 9.143745422363281 19.87970352172852 5.99817943572998 15.99944972991943 5.99817943572998 C 12.11919593811035 5.99817943572998 8.973629951477051 9.143746376037598 8.973629951477051 13.02399921417236 C 9.006034851074219 15.19026374816895 9.584837913513184 17.31328201293945 10.65638160705566 19.19624137878418 C 10.9894847869873 19.77442169189453 11.3867712020874 20.31316184997559 11.84070205688477 20.80223846435547 C 11.81794357299805 21.02365112304688 11.7655553817749 21.24100685119629 11.6849422454834 21.44847679138184 C 11.60938262939453 21.61925888061523 11.55712223052979 21.65295791625977 11.50598239898682 21.67163848876953 C 10.79598236083984 21.93883895874023 8.881722450256348 22.0945987701416 7.075682163238525 22.6594181060791 C 6.145394802093506 22.93173599243164 5.278646469116211 23.38658142089844 4.526003360748291 23.9974193572998 C 1.535436630249023 19.72357368469238 1.172669410705566 14.14034748077393 3.585046768188477 9.515447616577148 C 5.997421264648438 4.890547752380371 10.7837495803833 1.993121147155762 15.99999618530273 1.999998092651367 Z">
+					</path>
+				</svg>
+
+				<div class="user_login_menu">
+					<ul>
+					<li><a href="#" id="user_login_menu_setting">Settings</a>
+					</li>
+					<li><a href="#" id="user_login_menu_logout">Logout</a>
+					</li>	
+					</ul>				
+				</div>
+			</div>
+		</div> -->
+
+	</div>
+	
+</div>
+
+<!-- Tool Bar -->
+<div id="toolbar_section">
+	<div class="copy_sec">
+		<h5 class="sec_title">Copy</h5>
+		<div class="left-sec">
+			<div class="dist">
+				<span>Dist.</span>
+				<span data-title="Dist">
+					
+				<input type="number" name="dist" class="border_solid p_all_5 input_field" value="0"  style="max-width: 65px;" id="toolbar_dist_input">
+				</span>
+			</div>
+			<div class="dist">
+				<span>Units</span>
+				<span style="max-width: 100px;display: inline-block; width:75px;">
+					<select id="toolbar_units" class="custom_dropdown_field unit_width" data-title="Units">
+						<option value="meters" selected="selected" class="selected_li">Meters</option>
+						<option value="cm">cm</option>					
+						<option value="mm">mm</option>					
+						<option value="inches">inches</option>					
+						<option value="feet">feet</option>
+					</select>					
+				</span>
+			</div>
+			<div class="dist">
+				<span>Qty.</span>
+				<span style="max-width: 100px;display: inline-block; width:auto;">
+					<select id="toolbar_qty" class="custom_dropdown_field" data-title="Qty">
+					<option value="1" selected="selected" class="selected_li">1</option>
+					<option value="2">2</option>					
+					<option value="3">3</option>					
+					<option value="4">4</option>					
+					<option value="5">5</option>					
+					<option value="6">6</option>					
+					<option value="7">7</option>					
+					<option value="8">8</option>					
+					<option value="9">9</option>					
+					<option value="10">10</option>					
+					<option value="11">11</option>					
+					<option value="12">12</option>					
+					<option value="13">13</option>					
+					<option value="14">14</option>					
+					<option value="15">15</option>	
+					</select>										
+				</span>				
+			</div>
+			
+		</div>
+		<div class="right-sec direction_sec">
+			<div class="">
+				<button class="field_button_only input_button" id="toolbar_arrow_up" data-title="Up">
+					<svg class="arrow" viewBox="4 2 9 11.999" width="9" height="11">
+						<path id="arrow" d="M 8.690919876098633 2.037899971008301 C 8.503961563110352 1.960941076278687 8.289073944091797 2.003780364990234 8.145920753479004 2.146550178527832 L 4.146480083465576 6.145999908447266 C 3.951164245605469 6.341208457946777 3.951164484024048 6.657791137695313 4.146426677703857 6.853053092956543 C 4.341689109802246 7.048315525054932 4.658271312713623 7.048315048217773 4.853533744812012 6.853053092956543 L 8 3.706490039825439 L 8 13.49949073791504 C 8 13.77563285827637 8.223857879638672 13.99949073791504 8.5 13.99949073791504 C 8.776142120361328 13.99949073791504 9 13.77563285827637 9 13.49949073791504 L 9 3.706490516662598 L 12.14647960662842 6.853000164031982 C 12.34168815612793 7.04831600189209 12.65827083587646 7.048315525054932 12.8535327911377 6.853053569793701 C 13.04879474639893 6.657791137695313 13.04879474639893 6.341208934783936 12.8535327911377 6.145946979522705 L 8.854129791259766 2.146549940109253 C 8.807430267333984 2.099916696548462 8.751960754394531 2.062990188598633 8.690919876098633 2.037899971008301 Z">
+						</path>
+					</svg>
+				</button>
+			</div>
+			<div class="">
+				<button class="input_button field_button_only" id="toolbar_arrow_left" data-title="Left">
+					<svg class="arrow_ff" viewBox="2 3 11.999 9" width="11" height="9" >
+						<path id="arrow_ff" d="M 2.037899971008301 7.309080123901367 C 1.960941076278687 7.496038913726807 2.003780364990234 7.710926055908203 2.146549940109253 7.854080200195313 L 6.145939826965332 11.85346984863281 C 6.341164588928223 12.04872989654541 6.657715320587158 12.04872989654541 6.852957725524902 11.85348701477051 C 7.048200130462646 11.65824508666992 7.048200607299805 11.34169387817383 6.852957725524902 11.14645195007324 L 3.706480026245117 8 L 13.49948024749756 8 C 13.77562236785889 8 13.99948024749756 7.776142120361328 13.99948024749756 7.5 C 13.99948024749756 7.223857402801514 13.77562236785889 7 13.49948024749756 7 L 3.706480026245117 7 L 6.853000164031982 3.853519916534424 C 7.048260688781738 3.658295154571533 7.04826021194458 3.341744422912598 6.853017807006836 3.146502017974854 C 6.657775402069092 2.95125937461853 6.341224670410156 2.95125937461853 6.145981788635254 3.146502017974854 L 2.146549940109253 7.145870208740234 C 2.099916934967041 7.192569732666016 2.062990665435791 7.248039245605469 2.037899971008301 7.309080123901367 Z">
+						</path>
+					</svg>
+				</button>
+				<a href="#" class="input_button center_icon no-border" id="toolbar_btn_btw_arrow" data-title="Center">
+					<svg class="copy" viewBox="1 1 14 14" width="14" height="14">
+						<path id="copy" d="M 10.5 15 L 2.5 15 C 1.671947479248047 14.99909782409668 1.000903725624084 14.32805347442627 1.000000357627869 13.50000095367432 L 1 5.5 C 1.000904202461243 4.671947479248047 1.671947956085205 4.000904083251953 2.500000476837158 4.000000476837158 C 2.776142597198486 4 3.000000238418579 4.223857879638672 3.000000238418579 4.5 C 3.000000238418579 4.776142597198486 2.776142597198486 5 2.500000238418579 5 C 2.224006175994873 5.000358104705811 2.000358104705811 5.224006175994873 1.99999988079071 5.5 L 2 13.5 C 2.000550031661987 13.77591419219971 2.224085807800293 13.99945068359375 2.500000238418579 14 L 10.5 14 C 10.77591419219971 13.99945068359375 10.99945068359375 13.77591419219971 11 13.5 C 11 13.22385787963867 11.22385787963867 13 11.5 13 C 11.77614212036133 13 12 13.22385787963867 12 13.5 C 11.99909687042236 14.32805347442627 11.32805347442627 14.99909782409668 10.50000095367432 15.00000190734863 Z M 15 10.5 L 15 2.5 C 14.99909782409668 1.671947479248047 14.32805347442627 1.000903725624084 13.50000095367432 1.000000357627869 L 5.5 1 C 4.671947956085205 1.000904083251953 4.000904083251953 1.671947836875916 4.000000476837158 2.500000238418579 L 4 10.5 C 4.000904083251953 11.32805347442627 4.671948432922363 11.99909687042236 5.500000476837158 12.00000095367432 L 13.5 12 C 14.32805347442627 11.99909687042236 14.99909782409668 11.32805347442627 15.00000190734863 10.5 Z M 13.5 2 C 13.77599334716797 2.000358104705811 13.99964141845703 2.224005937576294 13.99999904632568 2.5 L 14 10.5 C 13.99945068359375 10.77591419219971 13.77591419219971 10.99945068359375 13.5 11 L 5.5 11 C 5.224085807800293 10.99945068359375 5.000549793243408 10.77591419219971 5 10.5 L 5 2.5 C 5.000358581542969 2.224006175994873 5.224006652832031 2.00035834312439 5.5 2 L 13.5 2 Z">
+						</path>
+					</svg>
+				</a>
+				<button class="field_button_only input_button" id="toolbar_arrow_right"  data-title="Right">
+					<svg class="arrow_fk" viewBox="2 3 11.999 9" width="11" height="9">
+						<path id="arrow_fk" d="M 13.96154975891113 7.690919876098633 C 14.03850364685059 7.503962516784668 13.9956693649292 7.289080142974854 13.8529109954834 7.145919799804688 L 9.853520393371582 3.146480083465576 C 9.65831184387207 2.951164245605469 9.341729164123535 2.951164484024048 9.146467208862305 3.146426677703857 C 8.951205253601074 3.341688871383667 8.951205253601074 3.658271312713623 9.146467208862305 3.853533267974854 L 12.29300022125244 7 L 2.5 7 C 2.223857641220093 7 2 7.223857879638672 2 7.5 C 2 7.776142597198486 2.223857641220093 8 2.5 8 L 12.29300022125244 8 L 9.146479606628418 11.14647960662842 C 8.951163291931152 11.34168815612793 8.951163291931152 11.65826988220215 9.146425247192383 11.8535327911377 C 9.34168815612793 12.04879474639893 9.658269882202148 12.04879474639893 9.853532791137695 11.8535327911377 L 13.85286903381348 7.854089736938477 C 13.89950656890869 7.807403087615967 13.93644332885742 7.751947402954102 13.96154880523682 7.690919876098633 Z">
+						</path>
+					</svg>
+				</button>
+			</div>
+			<div class="">
+				<button class="field_button_only input_button" id="toolbar_arrow_down" data-title="Down">
+					<svg class="arrow_down" viewBox="4 2 9 11.999" width="9" height="11">
+						<path id="arrow_down" d="M 8.309080123901367 13.9616003036499 C 8.496039390563965 14.03855991363525 8.71092700958252 13.99572086334229 8.854080200195313 13.85295009613037 L 12.85346984863281 9.853549957275391 C 13.04878520965576 9.658340454101563 13.04878520965576 9.341758728027344 12.85352325439453 9.146495819091797 C 12.65826034545898 8.951233863830566 12.34167861938477 8.951233863830566 12.14641571044922 9.146495819091797 L 9 12.29300022125244 L 9 2.5 C 9 2.223857641220093 8.776142120361328 2 8.5 2 C 8.223857879638672 2 8 2.223857641220093 8 2.5 L 8 12.29300022125244 L 4.853519916534424 9.146510124206543 C 4.658311367034912 8.951193809509277 4.341729164123535 8.951193809509277 4.146466732025146 9.146455764770508 C 3.951204538345337 9.341717720031738 3.951204299926758 9.658300399780273 4.146466732025146 9.85356330871582 L 8.145870208740234 13.85299968719482 C 8.192574501037598 13.89961528778076 8.248043060302734 13.93652534484863 8.309080123901367 13.96160125732422 Z">
+						</path>
+					</svg>
+				</button>
+			</div>			
+		</div>
+		
+	</div>
+	<div class="arrange_sec">
+		<div class="arrange">
+		<h5 class="sec_title">Arrange</h5>
+
+		<a href="#" class="size_&_pos mb_5 dis_inline_block border_solid p_all_5 input_button size-position" id="toolbar_size_position" data-title="Size & Pos.">
+			<svg class="size" viewBox="2 2 12 12" width="12" height="12">
+				<path id="size" d="M 13.5 6 C 13.6326322555542 6.000076770782471 13.75985336303711 5.947422981262207 13.85363864898682 5.853638172149658 C 13.94742298126221 5.759853363037109 14.00007629394531 5.632631778717041 14 5.5 L 14 2.5 C 14.00007724761963 2.36736798286438 13.94742298126221 2.240146398544312 13.85363864898682 2.146361351013184 C 13.75985336303711 2.052576541900635 13.6326322555542 1.999922752380371 13.5 1.999999642372131 L 10.5 2 C 10.22385787963867 2 10 2.223857641220093 10 2.5 C 10 2.776142358779907 10.22385787963867 3 10.5 3 L 12.29300022125244 3 L 8 7.293000221252441 L 3.707000017166138 3 L 5.5 3 C 5.776142597198486 3 6 2.776142358779907 6 2.5 C 6 2.223857641220093 5.776142120361328 2 5.5 2 L 2.5 2 C 2.36736798286438 1.999922633171082 2.240146160125732 2.052576303482056 2.146361351013184 2.146361351013184 C 2.052576303482056 2.240146160125732 1.999922633171082 2.36736798286438 1.999999761581421 2.499999761581421 L 2 5.5 C 2 5.776142120361328 2.223857641220093 6 2.5 6 C 2.776142358779907 6 3 5.776142597198486 3 5.5 L 3 3.707000017166138 L 7.293000221252441 8 L 3 12.29300022125244 L 3 10.5 C 3 10.22385787963867 2.776142358779907 10 2.5 10 C 2.223857641220093 10 2 10.22385787963867 2 10.5 L 2 13.5 C 1.999922752380371 13.6326322555542 2.052576541900635 13.75985336303711 2.146361351013184 13.85363864898682 C 2.240146160125732 13.94742298126221 2.36736798286438 14.00007724761963 2.499999761581421 14 L 5.5 14 C 5.776142597198486 14 6 13.77614212036133 6 13.5 C 6 13.22385787963867 5.776142120361328 13 5.5 13 L 3.707000017166138 13 L 8 8.706999778747559 L 12.29300022125244 13 L 10.5 13 C 10.22385787963867 13 10 13.22385787963867 10 13.5 C 10 13.77614212036133 10.22385787963867 14 10.5 14 L 13.5 14 C 13.6326322555542 14.00007629394531 13.75985336303711 13.94742298126221 13.85363864898682 13.85363864898682 C 13.94742298126221 13.75985336303711 14.00007629394531 13.6326322555542 14 13.5 L 14 10.5 C 14 10.22385787963867 13.77614212036133 10 13.5 10 C 13.22385787963867 10 13 10.22385787963867 13 10.5 L 13 12.29300022125244 L 8.706999778747559 8 L 13 3.707000017166138 L 13 5.5 C 12.99992179870605 5.632632255554199 13.05257511138916 5.759853839874268 13.14636039733887 5.853638648986816 C 13.24014568328857 5.947423934936523 13.3673677444458 6.000077247619629 13.5 6 Z">
+				</path>
+			</svg>
+		  Size & Pos.</a>
+
+
+		<select id="toolbar_alignment" class="align border_solid mb_5 dropdown_field_button" data-title="Alignment">
+					<option value="align_space" data-icon="align_1.svg" class="hide_f_list">Align & Space</option>
+					<option value="align_across" data-icon="method-draw-image2ss.svg">Align Across</option>
+					<option value="align_down" data-icon="method-draw-imagedownalgin.svg">Align Down</option>
+					<option value="space_across" data-icon="icon-add-white-space-50.png.png">Space Across</option>
+					<option value="space_down" data-icon="icon-add-down-space-50.png">Space Down</option>
+
+		</select>
+
+
+		<select class="rotate border_solid mb_5 dropdown_field_button" style="width: 133px !important;" id="toolbar_rotate_option" data-title="Rotate">
+					<option value="rotate_1" data-icon="rotate_1.svg" class="hide_f_list">Rotate</option>
+					<option value="rotate_left_90" data-icon="icons-rotate-left-50.svg">Rotate Left 90°</option>
+					<option value="rotate_right_90" data-icon="icons-rotate-right-50.png">Rotate Right 90°</option>
+					<option value="rotatation" data-icon="rotate_1.svg" data-icon="rotate_1">Rotation</option>
+					<option value="flip_vertical" data-icon="icons-flip-vertical-50.png">Flip Vertical</option>
+					<option value="flip_horizontal" data-icon="icons-flip-horizontal-50.svg">Flip Horizontal</option>
+
+		</select>
+			
+		</div>
+		<div class="layers">
+		<h5 class="sec_title">Layers</h5>
+		
+		<a href="#" class="dis_inline_block border_solid p_all_5 input_button mb_5" id="toolbar_layer_mngt" data-title="Layer manager">
+			<svg class="layers" viewBox="2 1 12 14" width="12" height="14">
+			<path id="layers" d="M 13.98840045928955 4.904109954833984 C 13.97914791107178 4.869350910186768 13.96617603302002 4.835689544677734 13.94971084594727 4.803709983825684 C 13.94243049621582 4.778901100158691 13.9331226348877 4.754733085632324 13.9218807220459 4.731450080871582 L 13.91522026062012 4.724550247192383 C 13.89355945587158 4.696891784667969 13.86905097961426 4.671586036682129 13.84210109710693 4.649049758911133 C 13.82202053070068 4.625815868377686 13.79987621307373 4.604448795318604 13.77593994140625 4.585210800170898 L 13.76854991912842 4.578120231628418 L 8.268549919128418 1.078120231628418 C 8.104762077331543 0.9736310243606567 7.895237445831299 0.9736310839653015 7.731450080871582 1.078120350837708 L 2.231450080871582 4.578120231628418 L 2.223819971084595 4.585450172424316 C 2.201040744781494 4.603923320770264 2.179902076721191 4.624332904815674 2.160640239715576 4.646450042724609 C 2.132617235183716 4.669711112976074 2.107183456420898 4.695925712585449 2.084780216217041 4.724639892578125 L 2.078119993209839 4.731480121612549 C 2.066878080368042 4.754762649536133 2.057569980621338 4.778931140899658 2.05029034614563 4.80374002456665 C 2.033824920654297 4.835719585418701 2.020853042602539 4.869380950927734 2.011600255966187 4.904139995574951 C 2.007561683654785 4.935928344726563 2.006690502166748 4.968039512634277 2.009000062942505 5 C 2.006678581237793 5.031969547271729 2.007539510726929 5.064090251922607 2.011569976806641 5.095889568328857 C 2.020823001861572 5.130649089813232 2.033794641494751 5.164309978485107 2.050260305404663 5.196290016174316 C 2.05754017829895 5.221098899841309 2.066848039627075 5.245267391204834 2.078089952468872 5.268550395965576 L 2.084749937057495 5.275390148162842 C 2.10686469078064 5.303687572479248 2.131929159164429 5.329549789428711 2.159519910812378 5.352540016174316 C 2.179160833358765 5.375118732452393 2.20074725151062 5.395928859710693 2.224029779434204 5.414730548858643 L 2.231420040130615 5.42188024520874 L 7.731420040130615 8.921880722045898 C 7.895303249359131 9.026041984558105 8.104637145996094 9.026041984558105 8.268520355224609 8.921880722045898 L 13.76852035522461 5.421880722045898 C 13.82747840881348 5.383644104003906 13.8776388168335 5.333315849304199 13.91567897796631 5.274230480194092 L 13.92185020446777 5.268550872802734 C 13.93309211730957 5.245267391204834 13.9423999786377 5.221099376678467 13.94967937469482 5.196290493011475 C 13.96614551544189 5.164310932159424 13.97911739349365 5.130650043487549 13.98837089538574 5.095890998840332 C 13.9924201965332 5.064093112945557 13.99330043792725 5.03197193145752 13.99099922180176 5 C 13.99330997467041 4.968029022216797 13.99243927001953 4.93590784072876 13.98839950561523 4.904109477996826 Z M 8 7.907229900360107 L 3.431519985198975 5 L 8 2.092770099639893 L 12.56847953796387 5 L 8 7.907229900360107 Z M 13.92187976837158 7.731450080871582 C 14.06993198394775 7.964493751525879 14.00132846832275 8.273409843444824 13.76854991912842 8.421879768371582 L 8.268549919128418 11.92187976837158 C 8.104666709899902 12.02604103088379 7.895333290100098 12.02604103088379 7.731450080871582 11.92187976837158 L 2.231450080871582 8.421879768371582 C 1.998452305793762 8.273563385009766 1.929804086685181 7.964447498321533 2.078120231628418 7.731449604034424 C 2.226436376571655 7.498451709747314 2.535552501678467 7.429803371429443 2.768550395965576 7.57811975479126 L 8 10.90723037719727 L 13.23145008087158 7.578120231628418 C 13.46476364135742 7.431615352630615 13.77251148223877 7.499959468841553 13.92187976837158 7.731450080871582 Z M 13.92187976837158 10.73145008087158 C 14.06999206542969 10.96448421478271 14.00137901306152 11.27344608306885 13.76855087280273 11.42188167572021 L 8.268549919128418 14.92187976837158 C 8.104666709899902 15.02604103088379 7.895333290100098 15.02604103088379 7.731450080871582 14.92187976837158 L 2.231450080871582 11.42187976837158 C 1.998452186584473 11.27356433868408 1.929803848266602 10.96444797515869 2.078119993209839 10.73145008087158 C 2.226436138153076 10.49845218658447 2.535552501678467 10.4298038482666 2.768550395965576 10.57812023162842 L 8 13.90723037719727 L 13.23145008087158 10.57812023162842 C 13.4647216796875 10.43136501312256 13.77265644073486 10.49975109100342 13.9218807220459 10.73144912719727 Z">
+			</path>
+		</svg>
+
+		 Layer manager</a>	
+
+		 <select class="align border_solid mb_5 dropdown_field_button" style="width: 150px" id="toolbar_bring_front_back_drop" data-title="Bring Front/Back">
+					<option value="bring_front_back" data-icon="bring_1.svg" class="hide_f_list">Bring Front/Back</option>
+					<option value="bring_front" data-icon="icons-bring-to-front-50.png">Bring Front</option>	
+					<option value="bring_back" data-icon="icons-send-to-back-50.svg">Bring Back</option>					
+		</select>
+
+		<select class="align border_solid mb_5 dropdown_field_button" id="toolbar_group_ungroup_drop" data-title="Group/Ungroup">
+					<option value="group_ungroup" data-icon="bring_1.svg" class="hide_f_list">Group/Ungroup</option>
+					<option value="group" data-icon="icons-group-objects-50.svg">Group</option>	
+					<option value="ungroup" data-icon="icons-ungroup-objects-50.png">Ungroup</option>					
+		</select>
+
+		</div>
+		<div class="tables">
+		<h5 class="sec_title">Tables</h5>
+
+		<a href="#" class="mb_5 dis_inline_block border_solid p_all_5 input_button modify_table_box" id="toolbar_modify_table_btn" data-title="Modify Table">
+
+			<svg class="table" viewBox="1 1 14 14" width="14" height="14">
+				<path id="table" d="M 15 8 C 14.99873828887939 6.895954132080078 14.10404682159424 6.001262664794922 13.00000095367432 6 L 12.82769966125488 6 L 12.94921970367432 5.878419876098633 C 13.73047256469727 5.097571849822998 13.73047256469727 3.831137180328369 12.94921970367432 3.050289630889893 C 12.15831470489502 2.293697834014893 10.91199493408203 2.293697834014893 10.12108993530273 3.050290107727051 L 10 3.171449899673462 L 10 3 C 10 1.895430445671082 9.104569435119629 0.9999997615814209 7.999999523162842 1 C 6.895430564880371 1 6 1.89543080329895 6 3.000000238418579 L 6 3.171449899673462 L 5.878910064697266 3.050289869308472 C 5.087710380554199 2.29443359375 3.841980934143066 2.29443359375 3.050780296325684 3.050289154052734 C 2.269525766372681 3.831136465072632 2.269525766372681 5.097571849822998 3.050779819488525 5.878419399261475 L 3.172300100326538 6 L 3 6 C 1.895430445671082 6 1 6.895430564880371 1 8 C 1 9.104569435119629 1.895430564880371 10 3 10 L 3.171880006790161 10 L 3.050780057907104 10.12108993530273 C 2.269813537597656 10.90205669403076 2.269813776016235 12.16825389862061 3.050780296325684 12.94922065734863 C 3.831746578216553 13.73018646240234 5.097943782806396 13.73018646240234 5.878910064697266 12.94922065734863 L 6 12.82812023162842 L 6 13 C 6 14.10456943511963 6.895430564880371 15 8 15 C 9.104569435119629 15 10 14.10456943511963 10 13 L 10 12.82812023162842 L 10.12108993530273 12.94922065734863 C 10.90205669403076 13.73018836975098 12.16825389862061 13.73018741607666 12.94922065734863 12.94922065734863 C 13.73018646240234 12.16825485229492 13.73018646240234 10.90205764770508 12.94922065734863 10.12109088897705 L 12.82812023162842 10 L 13 10 C 14.10397529602051 9.998567581176758 14.99856662750244 9.103975296020508 14.99999809265137 8 Z M 14 8 C 13.9994478225708 8.552056312561035 13.55205631256104 8.999448776245117 13 9.000000953674316 L 11.86719036102295 9 C 12.04427051544189 8.345091819763184 12.04427051544189 7.654907703399658 11.86719036102295 7 L 13 7 C 13.55205631256104 7.000551700592041 13.99944877624512 7.447944641113281 13.99999904632568 8.000000953674316 Z M 9.1072998046875 10.76146984100342 C 8.398650169372559 11.05683612823486 7.60136890411377 11.05686187744141 6.8927001953125 10.76153945922852 C 5.764616966247559 10.30928802490234 5.024999141693115 9.216389656066895 5.024528026580811 8.001028060913086 C 5.024056434631348 6.785665988922119 5.762825965881348 5.692194938659668 6.890559196472168 5.239068984985352 C 7.60032320022583 4.941829204559326 8.399677276611328 4.941829681396484 9.109439849853516 5.239069938659668 C 10.23719310760498 5.692157745361328 10.97598934173584 6.785625457763672 10.97551918029785 8.000992774963379 C 10.97504806518555 9.21635913848877 10.23540496826172 10.30925464630127 9.107300758361816 10.7614688873291 Z M 10.8281192779541 3.757319927215576 C 11.22378921508789 3.379744291305542 11.84626483917236 3.379532814025879 12.24219036102295 3.756839990615845 L 12.24218940734863 3.757319927215576 C 12.63281726837158 4.147745132446289 12.63281726837158 4.780964851379395 12.24218940734863 5.171390056610107 L 11.43651962280273 5.977540016174316 C 11.09362411499023 5.393190383911133 10.60681056976318 4.906376838684082 10.0224609375 4.563481330871582 L 10.8281192779541 3.757319927215576 Z M 7 3 C 7 2.447715282440186 7.447715282440186 1.99999988079071 8 2 C 8.552285194396973 2 9 2.447715282440186 9 3.000000238418579 L 9 4.132810115814209 C 8.345091819763184 3.955729961395264 7.654907703399658 3.955729961395264 7 4.132809638977051 L 7 3 Z M 3.757810115814209 3.756839990615845 C 4.148508071899414 3.366682052612305 4.781447887420654 3.366896867752075 5.17188024520874 3.757319927215576 L 5.977540016174316 4.563479900360107 C 5.393190383911133 4.906375885009766 4.906375885009766 5.393190383911133 4.563480377197266 5.977540493011475 L 3.75780987739563 5.171390056610107 C 3.367183208465576 4.780776977539063 3.367183208465576 4.147453308105469 3.75780987739563 3.756840467453003 Z M 2 8 C 2.000550985336304 7.447943687438965 2.447943687438965 7.000551223754883 3.000000238418579 7 L 4.132810115814209 7 C 3.955729961395264 7.654908180236816 3.955729961395264 8.3450927734375 4.132810592651367 9.000000953674316 L 3 9 C 2.447943449020386 8.999449729919434 2.000550746917725 8.552056312561035 1.99999988079071 8 Z M 5.171879768371582 12.24218940734863 C 4.776473522186279 12.62060546875 4.153215408325195 12.62060546875 3.757809638977051 12.24218845367432 C 3.367182731628418 11.85176277160645 3.367182970046997 11.21854400634766 3.757810115814209 10.8281192779541 L 4.563479423522949 10.02245903015137 C 4.906513214111328 10.60670375823975 5.393296718597412 11.09348678588867 5.977540493011475 11.43651962280273 L 5.171879768371582 12.24218940734863 Z M 9 13 C 9 13.55228424072266 8.552285194396973 14 8 14 C 7.447715282440186 14 7 13.55228519439697 7 13 L 7 11.86719036102295 C 7.655080318450928 12.04296970367432 8.34492015838623 12.04296970367432 9 11.86718940734863 L 9 13 Z M 12.24218940734863 12.24219036102295 C 11.84658908843994 12.62012195587158 11.22372055053711 12.62012195587158 10.8281192779541 12.24219036102295 L 10.02245903015137 11.43652057647705 C 10.60670375823975 11.09348773956299 11.09348678588867 10.60670471191406 11.43651962280273 10.0224609375 L 12.24218845367432 10.82812118530273 C 12.63281631469727 11.21854686737061 12.63281631469727 11.85176563262939 12.24218845367432 12.24219131469727 Z">
+				</path>
+			</svg>
+
+		 Modify Table
+</a>
+
+
+
+		<br/>
+		<select id="toolbar_numbering" class="align border_solid mb_5 dropdown_field_button" data-title="Numbering">
+					<option value="#numbering" class="hide_f_list">#  Numbering</option>
+					<option value="table_number_zigzag" class="test">Table numbering (zigzag)</option>
+					<option value="threatre_style_numbering">Theatre style numbering</option>
+
+		</select>
+			
+		</div>
+		
+	</div>
+	<div class="text_sec">
+		<div class="text">
+			<h5 class="sec_title">Text</h5>	
+			<a href="#" class="mb_5 dis_inline_block border_solid p_all_5 input_button" id="toolbar_font_btn" data-title="Font size">
+				<svg class="add_text_dg" viewBox="1 1 14 14" width="14" height="14">
+			<path id="add_text_dg" d="M 1 3.5 L 1 2.5 C 1.000904440879822 1.671947479248047 1.671948194503784 1.000904083251953 2.500000476837158 1.000000357627869 L 3.5 1 C 3.776142358779907 1 4 1.223857641220093 4 1.5 C 4 1.776142358779907 3.776142358779907 2 3.5 2 L 2.5 2 C 2.224006175994873 2.00035834312439 2.00035834312439 2.224006175994873 2 2.499999761581421 L 2 3.5 C 2 3.776142358779907 1.776142358779907 4 1.5 4 C 1.223857641220093 4 1 3.776142358779907 1 3.5 Z M 13.5 1 L 12.5 1 C 12.22385787963867 1 12 1.223857641220093 12 1.5 C 12 1.776142358779907 12.22385787963867 2 12.5 2 L 13.5 2 C 13.77599334716797 2.000358104705811 13.99964141845703 2.224005937576294 13.99999904632568 2.5 L 14 3.5 C 14 3.776142358779907 14.22385787963867 4 14.5 4 C 14.77614212036133 4 15 3.776142358779907 15 3.5 L 15 2.5 C 14.99909782409668 1.671947479248047 14.32805347442627 1.000903725624084 13.50000095367432 1.000000357627869 Z M 6.5 2 L 9.5 2 C 9.776142120361328 2 10 1.776142358779907 10 1.5 C 10 1.223857641220093 9.776142120361328 1 9.5 1 L 6.5 1 C 6.223857402801514 1 6 1.223857641220093 6 1.5 C 6 1.776142358779907 6.223857879638672 2 6.5 2 Z M 14.5 12 C 14.36736679077148 11.99992179870605 14.24014568328857 12.05257606506348 14.14636039733887 12.14636039733887 C 14.05257606506348 12.24014568328857 13.99992179870605 12.36736679077148 13.99999904632568 12.49999904632568 L 14 13.5 C 13.99945068359375 13.77591419219971 13.77591419219971 13.99945068359375 13.5 14 L 12.5 14 C 12.22385787963867 14 12 14.22385787963867 12 14.5 C 12 14.77614212036133 12.22385787963867 15 12.5 15 L 13.5 15 C 14.32805442810059 14.99909782409668 14.99909782409668 14.32805347442627 15.00000190734863 13.50000095367432 L 15 12.5 C 15.00007724761963 12.36736679077148 14.94742393493652 12.24014472961426 14.85363864898682 12.14636039733887 C 14.75985336303711 12.05257511138916 14.63263130187988 11.99992179870605 14.49999904632568 11.99999904632568 Z M 3.5 14 L 2.5 14 C 2.224085807800293 13.99945068359375 2.000549793243408 13.77591419219971 2 13.5 L 2 12.5 C 2 12.22385787963867 1.776142358779907 12 1.49999988079071 12 C 1.223857641220093 12 0.9999999403953552 12.22385787963867 1 12.5 L 1 13.5 C 1.000903844833374 14.32805347442627 1.671947717666626 14.99909782409668 2.500000476837158 15.00000190734863 L 3.5 15 C 3.776142358779907 15 4 14.77614212036133 4 14.5 C 4 14.22385787963867 3.776142358779907 14 3.5 14 Z M 9.5 14 L 6.5 14 C 6.223857402801514 14 6 14.22385787963867 6 14.5 C 6 14.77614212036133 6.223857879638672 15 6.5 15 L 9.5 15 C 9.776142120361328 15 10 14.77614212036133 10 14.5 C 10 14.22385787963867 9.776142120361328 14 9.5 14 Z M 1.5 10 C 1.632631659507751 10.00007724761963 1.759853363037109 9.947422981262207 1.853638172149658 9.853638648986816 C 1.947423100471497 9.759853363037109 2.000076770782471 9.632632255554199 2 9.5 L 2 6.5 C 2 6.223857402801514 1.776142358779907 6 1.49999988079071 6 C 1.223857641220093 6 0.9999999403953552 6.223857879638672 1 6.5 L 1 9.5 C 0.9999229907989502 9.632632255554199 1.052576780319214 9.759853363037109 1.146361589431763 9.853638648986816 C 1.240146398544312 9.947422981262207 1.36736798286438 10.00007629394531 1.499999761581421 10 Z M 14.5 6 C 14.36736679077148 5.999922752380371 14.24014568328857 6.052576541900635 14.14636039733887 6.146361351013184 C 14.05257606506348 6.240146160125732 13.99992179870605 6.367367744445801 13.99999904632568 6.499999523162842 L 14 9.5 C 14 9.776142120361328 14.22385787963867 10 14.5 10 C 14.77614212036133 10 15 9.776142120361328 15 9.5 L 15 6.5 C 15.00007724761963 6.367367267608643 14.94742393493652 6.240145683288574 14.85363864898682 6.146360397338867 C 14.75985336303711 6.052575588226318 14.63263130187988 5.999922275543213 14.49999904632568 5.999999523162842 Z M 7.5 12 C 7.776142597198486 12 8 11.77614212036133 8 11.5 C 8 11.22385787963867 7.776142120361328 11 7.5 11 L 7 11 L 7 5 L 9 5 L 9 5.5 C 9 5.776142120361328 9.223857879638672 6 9.5 6 C 9.776142120361328 6 10 5.776142597198486 10 5.5 L 10 5 C 9.999448776245117 4.447943687438965 9.552056312561035 4.000551700592041 9 4.000000476837158 L 4 4 C 3.447943925857544 4.000551700592041 3.000551223754883 4.447943687438965 3 5 L 3 5.5 C 3 5.776142120361328 3.223857641220093 6 3.5 6 C 3.776142358779907 6 4 5.776142597198486 4 5.5 L 4 5 L 6 5 L 6 11 L 5.5 11 C 5.223857402801514 11 5 11.22385787963867 5 11.5 C 5 11.77614212036133 5.223857879638672 12 5.5 12 L 7.5 12 Z M 12.5 10 C 12.77614212036133 10 13 9.776142120361328 13 9.5 C 13 9.223857879638672 12.77614212036133 9 12.5 9 L 11 9 L 11 7.5 C 11 7.223857402801514 10.77614212036133 7 10.5 7 C 10.22385787963867 7 10 7.223857879638672 10 7.5 L 10 9 L 8.5 9 C 8.223857879638672 9 8 9.223857879638672 8 9.5 C 8 9.776142120361328 8.223857879638672 10 8.5 10 L 10 10 L 10 11.5 C 10 11.77614212036133 10.22385787963867 12 10.5 12 C 10.77614212036133 12 11 11.77614212036133 11 11.5 L 11 10 L 12.5 10 Z">
+			</path>
+		</svg>
+			</a>
+			<a href="#" class="mb_5 dis_inline_block border_solid p_all_5 input_button" id="toolbar_color_btn" data-title="Color">
+				 <svg class="color_dc" viewBox="1.001 1.001 13.999 12.606" width="13" height="12">
+			<path id="color_dc" d="M 13.31348037719727 6.242680072784424 L 8.364259719848633 1.292999982833862 C 7.973434448242188 0.9033488035202026 7.341025352478027 0.9033488035202026 6.950199604034424 1.292999982833862 L 1.292999982833862 6.949709892272949 C 0.9033493995666504 7.340535640716553 0.9033492803573608 7.972943782806396 1.292999863624573 8.36376953125 L 6.243189811706543 13.31347942352295 C 6.437932014465332 13.48988819122314 6.687751293182373 13.59342002868652 6.95019006729126 13.60648059844971 C 7.215489387512207 13.60694980621338 7.469995498657227 13.50147533416748 7.65718936920166 13.31347942352295 L 13.31343936920166 7.656739234924316 C 13.70309066772461 7.265920639038086 13.70310878753662 6.633521556854248 13.31348037719727 6.242680072784424 Z M 7.657229900360107 2 L 12.60645008087158 6.949709892272949 L 12.55615043640137 7 L 2.656800031661987 7 L 7.657229900360107 2 Z M 14.56066989898682 12.56066989898682 C 13.97487926483154 13.14646244049072 13.02512264251709 13.14646244049072 12.4393310546875 12.56067085266113 C 11.85353946685791 11.97487926483154 11.85353946685791 11.02512264251709 12.4393310546875 10.4393310546875 L 13.1464204788208 9.732239723205566 C 13.34171009063721 9.536991119384766 13.65829277038574 9.536992073059082 13.85358142852783 9.732239723205566 L 14.56067085266113 10.43933010101318 C 15.1464204788208 11.02513980865479 15.1464204788208 11.97486114501953 14.56067085266113 12.56066989898682 Z">
+			</path>
+		</svg>
+			</a>
+			<br/>
+			<a href="#" class="mb_5 dis_inline_block border_solid p_all_5 input_button" id="toolbar_font_size_increase_btn" data-title="Text Increase">
+				 <svg class="text_increase_c" viewBox="2 2 12 12" width="12" height="12">
+			<path id="text_increase_c" d="M 10 13.5 C 10.00007629394531 13.6326322555542 9.947422981262207 13.75985336303711 9.853638648986816 13.85363864898682 C 9.759853363037109 13.94742298126221 9.632632255554199 14.00007629394531 9.5 14 L 5.5 14 C 5.223857402801514 14 5 13.77614212036133 5 13.5 C 5 13.22385787963867 5.223857879638672 13 5.5 13 L 7 13 L 7 3 L 3 3 L 3 3.5 C 3 3.776142358779907 2.776142358779907 4 2.5 4 C 2.223857641220093 4 2 3.776142358779907 2 3.5 L 2 3 C 2.000551223754883 2.447943449020386 2.447943687438965 2.000550985336304 3.000000238418579 1.99999988079071 L 12 2 C 12.55205726623535 2.000550746917725 12.99944972991943 2.447943449020386 13.00000095367432 3 L 13 3.5 C 13 3.776142358779907 12.77614212036133 4 12.5 4 C 12.22385787963867 4 12 3.776142358779907 12 3.5 L 12 3 L 8 3 L 8 13 L 9.5 13 C 9.632632255554199 12.99992179870605 9.759854316711426 13.05257511138916 9.853638648986816 13.14636039733887 C 9.947423934936523 13.24014568328857 10.00007724761963 13.3673677444458 10 13.5 Z M 13.85351943969727 7.146480083465576 L 11.85412979125977 5.147089958190918 C 11.65839385986328 4.951886653900146 11.34160709381104 4.951886177062988 11.14587020874023 5.14708948135376 L 9.146479606628418 7.146480083465576 C 8.951163291931152 7.34168815612793 8.951163291931152 7.658270835876465 9.146425247192383 7.853533267974854 C 9.341687202453613 8.048795700073242 9.658269882202148 8.048795700073242 9.853532791137695 7.853533267974854 L 11 6.706999778747559 L 11 10.5 C 11 10.77614212036133 11.22385787963867 11 11.5 11 C 11.77614212036133 11 12 10.77614212036133 12 10.5 L 12 6.706999778747559 L 13.14647960662842 7.853489875793457 C 13.34168815612793 8.048805236816406 13.65827083587646 8.048805236816406 13.8535327911377 7.853543281555176 C 14.04879474639893 7.658281326293945 14.04879474639893 7.341699123382568 13.8535327911377 7.14643669128418 Z">
+			</path>
+		</svg>
+			</a>
+			<a href="#" class="mb_5 dis_inline_block border_solid p_all_5 input_button" id="toolbar_font_size_decrease_btn" data-title="Text Decrease">
+				<svg class="text_decrease" viewBox="2 4 12 8" width="12" height="8">
+		<path id="text_decrease" d="M 9 5.5 C 9 5.776142120361328 8.776142120361328 6 8.5 6 C 8.223857879638672 6 8 5.776142597198486 8 5.5 L 8 5 L 6 5 L 6 11 L 6.5 11 C 6.776142597198486 11 7 11.22385787963867 7 11.5 C 7 11.77614212036133 6.776142120361328 12 6.5 12 L 4.5 12 C 4.223857402801514 12 4 11.77614212036133 4 11.5 C 4 11.22385787963867 4.223857879638672 11 4.5 11 L 5 11 L 5 5 L 3 5 L 3 5.5 C 3 5.776142120361328 2.776142358779907 6 2.5 6 C 2.223857641220093 6 2 5.776142597198486 2 5.5 L 2 5 C 2.000551223754883 4.447943687438965 2.447943687438965 4.000551700592041 3 4.000000476837158 L 8 4 C 8.552056312561035 4.000551223754883 8.999448776245117 4.447943687438965 9.000000953674316 5 L 9 5.5 Z M 13.85351943969727 8.146480560302734 C 13.65830898284912 7.951195240020752 13.34173107147217 7.951195240020752 13.14651966094971 8.146480560302734 L 12 9.293000221252441 L 12 5.5 C 12 5.223857402801514 11.77614212036133 5 11.5 5 C 11.22385787963867 5 11 5.223857879638672 11 5.5 L 11 9.293000221252441 L 9.853520393371582 8.146479606628418 C 9.65831184387207 7.951163291931152 9.341730117797852 7.951163291931152 9.146467208862305 8.146425247192383 C 8.951205253601074 8.34168815612793 8.951205253601074 8.658269882202148 9.146467208862305 8.853532791137695 L 11.14591026306152 10.85286903381348 C 11.34164714813232 11.04807281494141 11.65843391418457 11.04807281494141 11.85417079925537 10.85286903381348 L 13.85355949401855 8.853479385375977 C 14.04883289337158 8.658257484436035 14.04881572723389 8.341680526733398 13.8535213470459 8.146479606628418 Z">
+		</path>
+	</svg>
+			</a>		
+		</div>
+		<div class="object">
+			<h5 class="sec_title">object</h5>
+			<select id="toolbar_obj_shap" class="align border_solid mb_5 dropdown_field_button" data-title="Shape">
+					<option value="add_shape" data-icon="shape_1.svg" class="hide_f_list"></i>Add Shape</option>
+					<option value="rectangle" data-icon="ractangle.png">Rectangle</option>
+					<option value="ellipse" data-icon="circle.png">Ellipse</option>
+					<option value="rhombus" data-icon="icons-rhombus.svg">Rhombus</option>
+
+					<option value="line" data-icon="method-draw-imagehorizontal.svg" class="has_child_items" drop_p_id="line">Line</option>
+					<option value="horizontal-line" data-icon="method-draw-imagehorizontal.svg" class="child_item"  p_id="line">Horizontal</option>
+					<option value="vertical_line" data-icon="method-draw-image-lines.svg" class="child_item" p_id="line">Vertical</option>
+					<option value="diagonal_line" data-icon="method-draw-image-diagonal.svg" class="child_item"  p_id="line">Diagonal</option>
+
+
+
+
+					<option value="text" data-icon="icons-text.png">Text</option>
+					<option value="link" data-icon="icons-link.png">Link</option>
+					<option value="image" data-icon="icons-image.png" class="border_top">Image</option>		
+			</select>
+			<a href="#" class="mb_5 dis_inline_block border_solid p_all_5 input_button" id="toolbar_object_clr_btn" data-title="Color">
+				 <svg class="color_cs" viewBox="1.001 1.001 13.999 12.606" width="13" height="12">
+			<path id="color_cs" d="M 13.31348037719727 6.242680072784424 L 8.364259719848633 1.292999982833862 C 7.973434448242188 0.9033488035202026 7.341025352478027 0.9033488035202026 6.950199604034424 1.292999982833862 L 1.292999982833862 6.949709892272949 C 0.9033493995666504 7.340535640716553 0.9033492803573608 7.972943782806396 1.292999863624573 8.36376953125 L 6.243189811706543 13.31347942352295 C 6.437932014465332 13.48988819122314 6.687751293182373 13.59342002868652 6.95019006729126 13.60648059844971 C 7.215489387512207 13.60694980621338 7.469995498657227 13.50147533416748 7.65718936920166 13.31347942352295 L 13.31343936920166 7.656739234924316 C 13.70309066772461 7.265920639038086 13.70310878753662 6.633521556854248 13.31348037719727 6.242680072784424 Z M 7.657229900360107 2 L 12.60645008087158 6.949709892272949 L 12.55615043640137 7 L 2.656800031661987 7 L 7.657229900360107 2 Z M 14.56066989898682 12.56066989898682 C 13.97487926483154 13.14646244049072 13.02512264251709 13.14646244049072 12.4393310546875 12.56067085266113 C 11.85353946685791 11.97487926483154 11.85353946685791 11.02512264251709 12.4393310546875 10.4393310546875 L 13.1464204788208 9.732239723205566 C 13.34171009063721 9.536991119384766 13.65829277038574 9.536992073059082 13.85358142852783 9.732239723205566 L 14.56067085266113 10.43933010101318 C 15.1464204788208 11.02513980865479 15.1464204788208 11.97486114501953 14.56067085266113 12.56066989898682 Z">
+			</path>
+		</svg>
+			</a>
+			<a href="#" class="mb_5 dis_inline_block border_solid p_all_5 input_button" id="toolbar_object_edit_btn" data-title="Edit">
+				<svg class="_5" viewBox="3 1.208 11.792 11.792" width="11" height="11">
+			<path id="_5" d="M 14.5 3.792999982833862 L 12.20699977874756 1.5 C 11.8161735534668 1.110349416732788 11.18376541137695 1.110349416732788 10.79294013977051 1.5 L 3.146480083465576 9.146479606628418 C 3.052675247192383 9.240212440490723 2.999979257583618 9.367390632629395 3 9.5 L 3 12.5 C 2.999922752380371 12.63263130187988 3.052576541900635 12.75985240936279 3.146361351013184 12.8536376953125 C 3.240146160125732 12.94742202758789 3.36736798286438 13.00007629394531 3.499999761581421 12.99999904632568 L 6.5 13 C 6.632687568664551 12.99999904632568 6.759857654571533 12.94728374481201 6.853575706481934 12.85346412658691 L 14.5 5.206999778747559 C 14.88961124420166 4.816181182861328 14.88961124420166 4.183818817138672 14.50000095367432 3.793000221252441 Z M 6.293000221252441 12 L 4 12 L 4 9.706999778747559 L 9.5 4.206999778747559 L 11.79300022125244 6.5 L 6.293000221252441 12 Z M 12.5 5.793000221252441 L 10.20699977874756 3.5 L 11.5 2.207000017166138 L 13.79300022125244 4.5 L 12.5 5.793000221252441 Z">
+			</path>
+		<path id="_6" d="M 13.5 14 L 1.5 14 C 1.223857641220093 14 1 14.22385787963867 1 14.5 C 1 14.77614212036133 1.223857641220093 15 1.5 15 L 13.5 15 C 13.77614212036133 15 14 14.77614212036133 14 14.5 C 14 14.22385787963867 13.77614212036133 14 13.5 14 Z">
+			</path></svg>
+
+			</a>
+			<a href="#" class="mb_5 dis_inline_block border_solid p_all_5 input_button" id="toolbar_object_del_btn" data-title="Delete">
+				 <svg class="_4" viewBox="2 1 12 14" width="12" height="14">
+			<path id="_2" d="M 9.5 6 C 9.367367744445801 5.999922275543213 9.240145683288574 6.052575588226318 9.146360397338867 6.146360874176025 C 9.05257511138916 6.240145683288574 8.999921798706055 6.367367267608643 8.999998092651367 6.499999523162842 L 9 11.5 C 9 11.77614212036133 9.223857879638672 12 9.5 12 C 9.776142120361328 12 10 11.77614212036133 10 11.5 L 10 6.5 C 10.00007629394531 6.367367744445801 9.947422981262207 6.240146160125732 9.853638648986816 6.146361351013184 C 9.759853363037109 6.052576541900635 9.632632255554199 5.999922752380371 9.5 5.999999523162842 Z">
+			</path><path id="_3" d="M 6.5 6 C 6.367367744445801 5.999922752380371 6.240146160125732 6.052576541900635 6.146361351013184 6.146361351013184 C 6.052576541900635 6.240146160125732 5.999922752380371 6.367367744445801 5.999999523162842 6.499999523162842 L 6 11.5 C 6 11.77614212036133 6.223857402801514 12 6.5 12 C 6.776142120361328 12 7 11.77614212036133 7 11.5 L 7 6.5 C 7.000076770782471 6.367367744445801 6.947422981262207 6.240146160125732 6.853638172149658 6.146361351013184 C 6.759853363037109 6.052576065063477 6.632631301879883 5.999922752380371 6.499999523162842 5.999999523162842 Z">
+			</path><path id="_4" d="M 13.5 3 L 11 3 L 11 2.5 C 10.99909687042236 1.671947717666626 10.32805252075195 1.000904083251953 9.500000953674316 1.000000357627869 L 6.5 1 C 5.671947479248047 1.000904083251953 5.000903606414795 1.671947836875916 5 2.500000238418579 L 5 3 L 2.5 3 C 2.223857641220093 3 2 3.223857641220093 2 3.5 C 2 3.776142358779907 2.223857641220093 4 2.5 4 L 3 4 L 3 14 C 3.000370025634766 14.55213260650635 3.447868824005127 14.99963092803955 4.000000476837158 15 L 12 15 C 12.55213165283203 14.99963092803955 12.99963092803955 14.55213165283203 13 14 L 13 4 L 13.5 4 C 13.77614212036133 4 14 3.776142358779907 14 3.5 C 14 3.223857641220093 13.77614212036133 3 13.5 3 Z M 6 2.5 C 6.000358104705811 2.224006175994873 6.224006175994873 2.00035834312439 6.499999523162842 2 L 9.5 2 C 9.775993347167969 2.000358581542969 9.999641418457031 2.224006414413452 9.999999046325684 2.5 L 10 3 L 6 3 L 6 2.5 Z M 12.00100040435791 14 L 12 14.5 L 12 14 L 4 14 L 4 4 L 12 4 L 12 14 Z">
+			</path>
+		</svg>
+			</a>
+			<br/>
+			<a href="#" class="mb_5 dis_inline_block border_solid p_all_5 input_button" id="toolbar_object_style_btn" data-title="Style">
+				<svg class="_7" viewBox="1 1.001 14 13.999" width="14" height="13">
+			<path id="_7" d="M 8 15 C 7.357914924621582 15.00042819976807 6.718810081481934 14.91269493103027 6.10059118270874 14.7392578125 C 5.834697723388672 14.66429138183594 5.679920196533203 14.38796901702881 5.754887104034424 14.12207508087158 C 5.829853534698486 13.85618114471436 6.106175899505615 13.70140361785889 6.372069835662842 13.77637004852295 C 6.901884078979492 13.92524337768555 7.449666500091553 14.00049304962158 7.999999523162842 13.99999904632568 L 8.201169967651367 13.9970703125 L 8.214839935302734 13.9970703125 C 8.491005897521973 13.99324893951416 8.71794605255127 14.21406364440918 8.721723556518555 14.49022960662842 C 8.725502014160156 14.76639556884766 8.504687309265137 14.99333572387695 8.228521347045898 14.99711322784424 L 8 15 Z M 11.08500003814697 14.22266006469727 C 10.85582828521729 14.22279357910156 10.6558952331543 14.06713676452637 10.59982585906982 13.84493064880371 C 10.54375648498535 13.62272548675537 10.64590167999268 13.39084434509277 10.84769916534424 13.28223133087158 C 11.39022445678711 12.98972511291504 11.88432693481445 12.61519432067871 12.31254100799561 12.17188167572021 C 12.50454521179199 11.97340488433838 12.82109260559082 11.9681568145752 13.01957035064697 12.16016101837158 C 13.21804714202881 12.35216522216797 13.22329521179199 12.66871356964111 13.03129005432129 12.86719036102295 C 12.53162384033203 13.38443756103516 11.95518398284912 13.82154083251953 11.32229137420654 14.16309261322021 C 11.24929904937744 14.20216655731201 11.16779232025146 14.22262763977051 11.08499908447266 14.22266006469727 Z M 3.636760234832764 13.31836032867432 C 3.512495517730713 13.31850814819336 3.392667531967163 13.27218151092529 3.300819873809814 13.18848133087158 C 2.768115520477295 12.7058277130127 2.312623023986816 12.14429473876953 1.950242042541504 11.52348136901855 C 1.811090707778931 11.28509330749512 1.89153778553009 10.97903728485107 2.129925489425659 10.83988571166992 C 2.368312835693359 10.70073509216309 2.674368619918823 10.78118228912354 2.813519954681396 11.01956939697266 C 3.124564647674561 11.5522928237915 3.515507221221924 12.03413581848145 3.972701549530029 12.44828033447266 C 4.125611305236816 12.58716487884521 4.17737340927124 12.80578327178955 4.102972984313965 12.99848747253418 C 4.028573036193848 13.19119262695313 3.843328475952148 13.31830596923828 3.636760711669922 13.31840133666992 Z M 14.19633102416992 10.46875 C 14.14498710632324 10.46854019165039 14.09396362304688 10.46063899993896 14.04496097564697 10.44530868530273 C 13.78178691864014 10.3616828918457 13.63620758056641 10.08057308197021 13.71977233886719 9.817379951477051 C 13.90585708618164 9.229547500610352 14.0003719329834 8.616580963134766 14 7.999999523162842 C 14.00055885314941 7.736275672912598 13.9832649230957 7.472817420959473 13.94823932647705 7.211430072784424 C 13.91182708740234 6.937442779541016 14.10442543029785 6.685817718505859 14.37841320037842 6.649410724639893 C 14.65240097045898 6.613003730773926 14.90402603149414 6.805601119995117 14.94043350219727 7.079589366912842 C 14.98006439208984 7.384792327880859 14.99996185302734 7.692234039306641 15.00000190734863 7.999999523162842 C 15.00045776367188 8.71931266784668 14.89011383056641 9.434403419494629 14.67285060882568 10.12012100219727 C 14.6068754196167 10.32771778106689 14.41411685943604 10.46873092651367 14.19629001617432 10.46875190734863 Z M 1.513669967651367 8.928219795227051 C 1.24953019618988 8.928096771240234 1.0310138463974 8.722612380981445 1.01466977596283 8.458978652954102 C 1.004889965057373 8.307132720947266 1 8.154139518737793 1 8 C 0.999539852142334 7.435680866241455 1.067083358764648 6.873360157012939 1.201170444488525 6.325200080871582 C 1.266969680786133 6.057145595550537 1.537611246109009 5.893185615539551 1.805665254592896 5.958984851837158 C 2.073719263076782 6.024784088134766 2.237679004669189 6.295425891876221 2.171879768371582 6.563479900360107 C 2.057259559631348 7.033705711364746 1.999552249908447 7.516002178192139 2 7.999998092651367 C 2 8.133790016174316 2.004879951477051 8.266110420227051 2.012700080871582 8.397459983825684 C 2.02994704246521 8.6729736328125 1.820448875427246 8.910243988037109 1.544920086860657 8.927249908447266 Z M 13.39159965515137 4.866219997406006 C 13.2257194519043 4.86650562286377 13.07054138183594 4.784339427947998 12.97754192352295 4.646979808807373 C 12.63174819946289 4.135852813720703 12.20987796783447 3.680567741394043 11.72653961181641 3.296889305114746 C 11.51025772094727 3.125379800796509 11.47396755218506 2.81101131439209 11.64548110961914 2.59473180770874 C 11.81699466705322 2.37845253944397 12.13136291503906 2.342162847518921 12.34764194488525 2.513676643371582 C 12.91094779968262 2.960192203521729 13.40263366699219 3.490250110626221 13.80564117431641 4.08545970916748 C 13.90947437286377 4.238729953765869 13.92016220092773 4.436815738677979 13.83342552185059 4.600368976593018 C 13.74668788909912 4.763922214508057 13.57671070098877 4.866195201873779 13.39158058166504 4.866219520568848 Z M 3.040999889373779 4.297359943389893 C 2.846273183822632 4.297359943389893 2.669264793395996 4.184222221374512 2.587486028671265 4.007475852966309 C 2.505706071853638 3.830705881118774 2.534065246582031 3.622552633285522 2.660139560699463 3.474119663238525 C 3.124750137329102 2.925350189208984 3.671217441558838 2.451520919799805 4.280272483825684 2.069339275360107 C 4.514077186584473 1.922639608383179 4.822536468505859 1.993251800537109 4.969236373901367 2.22705602645874 C 5.115936279296875 2.460860252380371 5.045324325561523 2.769320011138916 4.811520099639893 2.916019916534424 C 4.289468288421631 3.244173049926758 3.820810317993164 3.650422096252441 3.42188024520874 4.120611190795898 C 3.327240467071533 4.232869148254395 3.187827825546265 4.297564029693604 3.040999889373779 4.297359943389893 Z M 9.3466796875 2.139650106430054 C 9.311538696289063 2.139650344848633 9.276525497436523 2.136049032211304 9.242155075073242 2.128903150558472 C 8.638991355895996 2.0036301612854 8.020401954650879 1.969887256622314 7.407190322875977 2.028809547424316 C 7.132372856140137 2.055830240249634 6.887721538543701 1.854907155036926 6.860750198364258 1.580085039138794 C 6.833779335021973 1.305263042449951 7.034702301025391 1.060611367225647 7.309524536132813 1.033640384674072 C 8.024557113647461 0.9647436141967773 8.745890617370605 1.004103660583496 9.449180603027344 1.150390625 C 9.699457168579102 1.203367352485657 9.869388580322266 1.436697959899902 9.843012809753418 1.691156983375549 C 9.81663703918457 1.945615887641907 9.602461814880371 2.139132261276245 9.346639633178711 2.139649868011475 Z M 8 3 C 5.238576889038086 3 3.000000953674316 5.238576412200928 3.000000953674316 8 C 3.000000953674316 10.76142406463623 5.238577365875244 13 8.000000953674316 13 C 10.76142501831055 13 13.00000095367432 10.76142311096191 13.00000095367432 8 C 13.00000095367432 5.238575458526611 10.76142406463623 2.999999523162842 7.999999523162842 3 Z">
+			</path>
+		</svg>
+
+			 Style</a>
+
+
+		</div>
+		
+	</div>
+	<div class="undo_sec">
+		<h5 class="sec_title">undo</h5>
+		<button class="mb_5 dis_inline_block border_solid p_all_5 disable field_button_only" id="toolbar_undo_btn" data-title="Undo">
+			<svg class="undo_ca" viewBox="2.001 3 11.999 9" width="12" height="9">
+			<path id="undo_ca" d="M 10.5 5 L 3.707000017166138 5 L 4.853519916534424 3.853519916534424 C 5.048835754394531 3.658311367034912 5.048835754394531 3.341728687286377 4.853573322296143 3.146466493606567 C 4.658311367034912 2.951204299926758 4.341728687286377 2.951204538345337 4.146466732025146 3.146466732025146 L 2.147089958190918 5.145870208740234 C 1.951886653900146 5.341607093811035 1.951886653900146 5.658393859863281 2.147089958190918 5.854130268096924 L 4.146480083465576 7.853519916534424 C 4.341688632965088 8.048835754394531 4.658271312713623 8.048835754394531 4.853533267974854 7.853573322296143 C 5.048795700073242 7.658311367034912 5.048795700073242 7.341728687286377 4.853533267974854 7.146466732025146 L 3.707000017166138 6 L 10.5 6 C 11.88071250915527 6 13.00000095367432 7.119288444519043 13.00000095367432 8.5 C 13.00000095367432 9.880711555480957 11.88071250915527 11 10.50000095367432 11 L 5.5 11 C 5.223857402801514 11 5 11.22385787963867 5 11.5 C 5 11.77614212036133 5.223857879638672 12 5.5 12 L 10.5 12 C 12.43299770355225 12.00000095367432 14.00000095367432 10.43299770355225 14.00000095367432 8.500000953674316 C 14.00000095367432 6.567004203796387 12.43299770355225 5.000000953674316 10.50000095367432 5.000000953674316 Z">
+			</path>
+		</svg>
+		</button>
+		<button class="mb_5 dis_inline_block border_solid p_all_5 field_button_only" id="toolbar_redo_btn" data-title="Redo">
+			<svg class="redo_b" viewBox="2 3 11.999 9" width="12" height="9">
+			<path id="redo_b" d="M 5.5 5 L 12.29300022125244 5 L 11.14647960662842 3.853519916534424 C 10.95116329193115 3.658311605453491 10.95116329193115 3.341728925704956 11.14642524719238 3.146466732025146 C 11.34168815612793 2.951204299926758 11.65826988220215 2.951204299926758 11.8535327911377 3.146466732025146 L 13.85286903381348 5.145909786224365 C 14.04807281494141 5.341646671295166 14.04807281494141 5.658433437347412 13.85286998748779 5.854169845581055 L 11.85352039337158 7.853519916534424 C 11.65831184387207 8.048835754394531 11.34172916412354 8.048835754394531 11.1464672088623 7.853573322296143 C 10.95120525360107 7.658311367034912 10.95120525360107 7.341728687286377 11.1464672088623 7.146466732025146 L 12.29300022125244 6 L 5.5 6 C 4.119287967681885 6 3 7.119288444519043 3 8.5 C 3 9.880711555480957 4.119288444519043 11 5.5 11 L 10.5 11 C 10.77614212036133 11 11 11.22385787963867 11 11.5 C 11 11.77614212036133 10.77614212036133 12 10.5 12 L 5.5 12 C 3.567003726959229 12.00000095367432 2.000000476837158 10.43299770355225 2.000000476837158 8.500000953674316 C 2.000000476837158 6.567004203796387 3.567003965377808 5.000000953674316 5.500000476837158 5.000000953674316 Z">
+			</path>
+		</svg>
+		</button>		
+	</div>
+	<div class="zoom_sec">
+		<h5 class="sec_title">zoom</h5>
+		<a href="#" class="mb_5 dis_inline_block border_solid p_all_5 input_button" id="toolbar_zoom_in_btn" data-title="Zoom in">
+			<svg class="zoom_in_bw" viewBox="0.981 0.981 14.019 14.019" width="14" height="14">
+			<path id="zoom_in_bw" d="M 14.85352039337158 14.14647960662842 L 10.72375106811523 10.01671981811523 C 12.60897064208984 7.753519535064697 12.380615234375 4.40779972076416 10.20536994934082 2.42173957824707 C 8.030124664306641 0.4356803894042969 4.677485942840576 0.5118508338928223 2.59468412399292 2.594652891159058 C 0.5118823051452637 4.677454948425293 0.4357118606567383 8.030093193054199 2.421772003173828 10.20533847808838 C 4.407831192016602 12.38058376312256 7.753551959991455 12.60894012451172 10.01675128936768 10.72371959686279 L 14.14651107788086 14.85348892211914 C 14.34172058105469 15.04880428314209 14.65830230712891 15.04880428314209 14.85356521606445 14.85354232788086 C 15.04882717132568 14.65827941894531 15.04882717132568 14.34169769287109 14.85356521606445 14.14643478393555 Z M 6.5 11 C 4.014718532562256 11 2 8.985280990600586 2 6.5 C 2 4.014718532562256 4.014719009399414 2 6.5 2 C 8.985280990600586 2 11 4.014719009399414 11 6.5 C 10.99729537963867 8.984160423278809 8.984159469604492 10.99729537963867 6.5 11 Z M 9 6.5 C 9.000076293945313 6.632631301879883 8.947422027587891 6.759853363037109 8.8536376953125 6.853638172149658 C 8.759852409362793 6.947422981262207 8.632631301879883 7.000076770782471 8.499999046325684 7 L 7 7 L 7 8.5 C 7 8.776142120361328 6.776142597198486 9 6.5 9 C 6.223857879638672 9 6 8.776142120361328 6 8.5 L 6 7 L 4.5 7 C 4.223857402801514 7 4 6.776142120361328 4 6.5 C 4 6.223857402801514 4.223857879638672 6 4.5 6 L 6 6 L 6 4.5 C 6 4.223857402801514 6.223857879638672 4 6.5 4 C 6.776142597198486 4 7 4.223857879638672 7 4.5 L 7 6 L 8.5 6 C 8.632631301879883 5.999922752380371 8.759852409362793 6.052576541900635 8.8536376953125 6.146361351013184 C 8.947422027587891 6.240146160125732 9.000075340270996 6.367367744445801 8.999999046325684 6.499999523162842 Z">
+			</path>
+		</svg>
+		</a>
+		<a href="#" class="mb_5 dis_inline_block border_solid p_all_5 input_button" id="toolbar_zoom_out_btn"  data-title="Zoom out">
+			<svg class="zoom_out_bs" viewBox="0.981 0.981 14.019 14.019" width="14" height="14">
+			<path id="zoom_out_bs" d="M 14.85352039337158 14.14647960662842 L 10.72375106811523 10.01671981811523 C 12.60897064208984 7.753519535064697 12.380615234375 4.40779972076416 10.20536994934082 2.42173957824707 C 8.030124664306641 0.4356803894042969 4.677485942840576 0.5118508338928223 2.59468412399292 2.594652891159058 C 0.5118823051452637 4.677454948425293 0.4357118606567383 8.030093193054199 2.421772003173828 10.20533847808838 C 4.407831192016602 12.38058376312256 7.753551959991455 12.60894012451172 10.01675128936768 10.72371959686279 L 14.14651107788086 14.85348892211914 C 14.34172058105469 15.04880428314209 14.65830230712891 15.04880428314209 14.85356521606445 14.85354232788086 C 15.04882717132568 14.65827941894531 15.04882717132568 14.34169769287109 14.85356521606445 14.14643478393555 Z M 6.5 11 C 4.014718532562256 11 2 8.985280990600586 2 6.5 C 2 4.014718532562256 4.014719009399414 2 6.5 2 C 8.985280990600586 2 11 4.014719009399414 11 6.5 C 10.99729537963867 8.984160423278809 8.984159469604492 10.99729537963867 6.5 11 Z M 9 6.5 C 9.000076293945313 6.632631301879883 8.947422027587891 6.759853363037109 8.8536376953125 6.853638172149658 C 8.759852409362793 6.947422981262207 8.632631301879883 7.000076770782471 8.499999046325684 7 L 4.5 7 C 4.223857402801514 7 4 6.776142120361328 4 6.5 C 4 6.223857402801514 4.223857879638672 6 4.5 6 L 8.5 6 C 8.632631301879883 5.999922752380371 8.759852409362793 6.052576541900635 8.8536376953125 6.146361351013184 C 8.947422027587891 6.240146160125732 9.000075340270996 6.367367744445801 8.999999046325684 6.499999523162842 Z">
+			</path>
+		</svg>
+		</a>
+		
+
+		<span class="" style="max-width: 116px;display: inline-block;">
+				<select id="toolbar_zoom_size" class="custom_dropdown_field" data-title="Reset View">
+					<option value="reset_view" data-lable="no" data-right-text="Ctrl+h">Reset View</option>
+					<option value="25%" class="border_top">25%</option>
+					<option value="50%" >50%</option>
+					<option value="75%" >75%</option>
+					<option value="100%" selected="selected" class="selected_li">100%</option>
+					<option value="125%">125%</option>
+					<option value="150%">150%</option>					
+					<option value="200%">200%</option>					
+					<option value="300%">300%</option>					
+					<option value="400%">400%</option>	
+					<option value="fit_window" data-right-text="Ctrl+Shift+H"  class="border_top">Fit Window</option>
+					<option value="fit_page_width">Fit Page Width</option>	
+					<option value="fit_page" data-right-text="Ctrl+Shift+H">Fit Page</option>	
+					<option value="two_pages" data-right-text="Ctrl+Shift+H">Two Pages</option>	
+					<option value="custom" data-right-text="Ctrl+Shift+H" class="border_top">Custom..</option>	
+					</select>										
+				</span>	
+
+
+
+		<br/>
+		<a href="#" class="mb_5 dis_inline_block border_solid p_all_5 input_button" id="toolbar_fit_page_btn" data-title="Fit page">
+<svg class="fit_page_bi" viewBox="1 1 14 14" width="14" height="14">
+			<path id="fit_page_bi" d="M 13 3.5 L 13 6.5 C 13 6.776142120361328 12.77614212036133 7 12.5 7 C 12.22385787963867 7 12 6.776142597198486 12 6.5 L 12 4.706999778747559 L 8.706999778747559 8 L 12 11.29300022125244 L 12 9.5 C 12 9.223857879638672 12.22385787963867 9 12.5 9 C 12.77614212036133 9 13 9.223857879638672 13 9.5 L 13 12.5 C 13.000075340271 12.63263130187988 12.94742202758789 12.75985240936279 12.8536376953125 12.8536376953125 C 12.75985240936279 12.94742202758789 12.63263130187988 13.000075340271 12.49999904632568 12.99999904632568 L 9.5 13 C 9.223857879638672 13 9 12.77614212036133 9 12.5 C 9 12.22385787963867 9.223857879638672 12 9.5 12 L 11.29300022125244 12 L 8 8.706999778747559 L 4.706999778747559 12 L 6.5 12 C 6.776142597198486 12 7 12.22385787963867 7 12.5 C 7 12.77614212036133 6.776142120361328 13 6.5 13 L 3.5 13 C 3.36736798286438 13.00007629394531 3.240146398544312 12.94742202758789 3.146361351013184 12.8536376953125 C 3.052576541900635 12.75985240936279 2.999922752380371 12.63263130187988 2.999999761581421 12.49999904632568 L 3 9.5 C 3 9.223857879638672 3.223857641220093 9 3.5 9 C 3.776142358779907 9 4 9.223857879638672 4 9.5 L 4 11.29300022125244 L 7.293000221252441 8 L 4 4.706999778747559 L 4 6.5 C 4 6.776142120361328 3.776142358779907 7 3.5 7 C 3.223857641220093 7 3 6.776142597198486 3 6.5 L 3 3.5 C 2.999922752380371 3.36736798286438 3.052576303482056 3.240146160125732 3.146361351013184 3.146361351013184 C 3.240146160125732 3.052576303482056 3.36736798286438 2.999922752380371 3.499999761581421 2.999999761581421 L 6.5 3 C 6.776142597198486 3 7 3.223857641220093 7 3.5 C 7 3.776142358779907 6.776142120361328 4 6.5 4 L 4.706999778747559 4 L 8 7.293000221252441 L 11.29300022125244 4 L 9.5 4 C 9.223857879638672 4 9 3.776142358779907 9 3.5 C 9 3.223857641220093 9.223857879638672 3 9.5 3 L 12.5 3 C 12.63263130187988 2.999922752380371 12.75985240936279 3.052576541900635 12.8536376953125 3.146361351013184 C 12.94742202758789 3.240146398544312 13.00007629394531 3.36736798286438 12.99999904632568 3.499999761581421 Z M 15 2 L 15 14 C 14.99963092803955 14.55213165283203 14.55213165283203 14.99963092803955 14 15 L 2 15 C 1.447868347167969 14.99963092803955 1.000369548797607 14.55213165283203 1 14 L 1 2 C 1.000551581382751 1.447943568229675 1.447944045066833 1.000551342964172 2.000000238418579 1.00000011920929 L 14 1 C 14.55205631256104 1.000551223754883 14.99944877624512 1.447943687438965 15 2 Z M 14.00100040435791 14 L 14 14 L 14 2 L 2 2 L 2 14 L 14 14 L 14 14.5 L 14.00100040435791 14 Z">
+			</path>
+		</svg>
+
+		Fit Page</a>
+		<a href="#" class="mb_5 dis_inline_block border_solid p_all_5 input_button" id="toolbar_pan_btn" data-title="Pan">
+			<svg class="pan_bd" viewBox="1.398 1 12.602 14" width="12" height="14">
+			<path id="pan_bd" d="M 9.197270393371582 15 L 6.956049919128418 15 C 5.878901481628418 15.00091457366943 4.872870445251465 14.46233463287354 4.276370048522949 13.56543064117432 L 1.714840054512024 9.723629951477051 C 1.136661529541016 8.856640815734863 1.370794415473938 7.68510103225708 2.237786769866943 7.106925964355469 C 3.104779481887817 6.528751373291016 4.27631950378418 6.762884616851807 4.854494094848633 7.629877090454102 L 5 7.848139762878418 L 5 3.5 C 5 3.003281831741333 5.246035575866699 2.538631916046143 5.657017230987549 2.259361982345581 C 6.068171501159668 1.980043172836304 6.590776920318604 1.922450423240662 7.052730560302734 2.105470418930054 C 7.230700016021729 1.452797532081604 7.823498725891113 0.999998927116394 8.5 0.9999992847442627 C 9.176501274108887 0.9999991655349731 9.76930046081543 1.452797770500183 9.947269439697266 2.105470180511475 C 10.34407711029053 1.948268055915833 10.78905773162842 1.967514276504517 11.17080974578857 2.158390522003174 C 11.55256175994873 2.349266529083252 11.83494758605957 2.693702936172485 11.94726943969727 3.105469942092896 C 12.40922260284424 2.922450065612793 12.93182849884033 2.980042695999146 13.34284210205078 3.259266376495361 C 13.75385475158691 3.538489818572998 13.99994277954102 4.003111839294434 13.99999904632568 4.5 L 14 10.19726943969727 C 14.00092697143555 11.14558410644531 13.72017574310303 12.07280826568604 13.19336032867432 12.86133003234863 L 13.19336032867432 12.86133003234863 C 12.30375385284424 14.19868469238281 10.80348014831543 15.00161552429199 9.197270393371582 15 Z M 3.284179925918579 7.789549827575684 C 2.957109928131104 7.789835453033447 2.656725883483887 7.970057010650635 2.502546787261963 8.25850772857666 C 2.348367691040039 8.546957969665527 2.365404844284058 8.896843910217285 2.546879768371582 9.168950080871582 L 5.108399868011475 13.01074028015137 C 5.519700527191162 13.62916374206543 6.213343620300293 14.00055027008057 6.956050395965576 14 L 9.197270393371582 14 C 10.46908760070801 14.00144290924072 11.657057762146 13.36565780639648 12.36132907867432 12.30663776397705 L 12.36133003234863 12.30663967132568 C 12.77868461608887 11.68240737915039 13.00099563598633 10.94817066192627 13.00000095367432 10.19727039337158 L 13 4.5 C 13 4.223857402801514 12.77614212036133 4 12.5 4 C 12.22385787963867 4 12 4.223857879638672 12 4.5 L 12 7.5 C 12 7.776142120361328 11.77614212036133 8 11.5 8 C 11.22385787963867 8 11 7.776142597198486 11 7.5 L 11 3.5 C 11 3.223857641220093 10.77614212036133 3 10.5 3 C 10.22385787963867 3 10 3.223857641220093 10 3.5 L 10 7.5 C 10 7.776142120361328 9.776142120361328 8 9.5 8 C 9.223857879638672 8 9 7.776142597198486 9 7.5 L 9 2.5 C 9 2.223857641220093 8.776142120361328 2 8.5 2 C 8.223857879638672 2 8 2.223857641220093 8 2.5 L 8 7.5 C 8 7.776142120361328 7.776142597198486 8 7.5 8 C 7.223857879638672 8 7 7.776142597198486 7 7.5 L 7 3.5 C 7 3.223857641220093 6.776142120361328 3 6.5 3 C 6.223857402801514 3 6 3.223857641220093 6 3.5 L 6 9.5 C 5.999999523162842 9.720268249511719 5.855793476104736 9.914621353149414 5.644936084747314 9.978485107421875 C 5.434027671813965 10.04234218597412 5.206225872039795 9.960643768310547 5.083999633789063 9.777339935302734 L 4.022459983825684 8.1845703125 C 3.875462293624878 7.96316385269165 3.636584997177124 7.819713592529297 3.372070074081421 7.794000625610352 C 3.342770099639893 7.791039943695068 3.313473224639893 7.789556503295898 3.284179925918579 7.789549827575684 Z">
+			</path>
+		</svg>
+		 Pan</a>
+		<br/>
+		<a href="#" class="mb_5 dis_inline_block border_solid p_all_5 input_button" id="toolbar_region_zoom_btn" data-title="Region zoom">
+			<svg class="region_zoom_" viewBox="1 1 14 14" width="14" height="14">
+			<path id="region_zoom_" d="M 4 1.5 C 4.000077247619629 1.632631778717041 3.947423458099365 1.759853482246399 3.853638410568237 1.853638410568237 C 3.759853601455688 1.947423219680786 3.632631778717041 2.00007700920105 3.5 1.99999988079071 L 2.5 2 C 2.224006175994873 2.00035834312439 2.00035834312439 2.224006175994873 2 2.499999761581421 L 2 3.5 C 2 3.776142358779907 1.776142358779907 4 1.5 4 C 1.223857641220093 4 1 3.776142358779907 1 3.5 L 1 2.5 C 1.000904440879822 1.671947479248047 1.671948194503784 1.000904083251953 2.500000476837158 1.000000357627869 L 3.5 1 C 3.632631778717041 0.9999229311943054 3.759853601455688 1.052576541900635 3.853638410568237 1.146361589431763 C 3.947423458099365 1.240146398544312 4.000077247619629 1.367368102073669 4 1.5 Z M 13.5 1 L 12.5 1 C 12.22385787963867 1 12 1.223857641220093 12 1.5 C 12 1.776142358779907 12.22385787963867 2 12.5 2 L 13.5 2 C 13.77599334716797 2.000358104705811 13.99964141845703 2.224005937576294 13.99999904632568 2.5 L 14 3.5 C 14 3.776142358779907 14.22385787963867 4 14.5 4 C 14.77614212036133 4 15 3.776142358779907 15 3.5 L 15 2.5 C 14.99909782409668 1.671947479248047 14.32805347442627 1.000903725624084 13.50000095367432 1.000000357627869 Z M 6.5 2 L 9.5 2 C 9.776142120361328 2 10 1.776142358779907 10 1.5 C 10 1.223857641220093 9.776142120361328 1 9.5 1 L 6.5 1 C 6.223857402801514 1 6 1.223857641220093 6 1.5 C 6 1.776142358779907 6.223857879638672 2 6.5 2 Z M 3.5 14 L 2.5 14 C 2.224085807800293 13.99945068359375 2.000549793243408 13.77591419219971 2 13.5 L 2 12.5 C 2 12.22385787963867 1.776142358779907 12 1.49999988079071 12 C 1.223857641220093 12 0.9999999403953552 12.22385787963867 1 12.5 L 1 13.5 C 1.000903844833374 14.32805347442627 1.671947717666626 14.99909782409668 2.500000476837158 15.00000190734863 L 3.5 15 C 3.776142358779907 15 4 14.77614212036133 4 14.5 C 4 14.22385787963867 3.776142358779907 14 3.5 14 Z M 9.5 14 L 6.5 14 C 6.223857402801514 14 6 14.22385787963867 6 14.5 C 6 14.77614212036133 6.223857879638672 15 6.5 15 L 9.5 15 C 9.776142120361328 15 10 14.77614212036133 10 14.5 C 10 14.22385787963867 9.776142120361328 14 9.5 14 Z M 1.5 10 C 1.632631659507751 10.00007724761963 1.759853363037109 9.947422981262207 1.853638172149658 9.853638648986816 C 1.947423100471497 9.759853363037109 2.000076770782471 9.632632255554199 2 9.5 L 2 6.5 C 2 6.223857402801514 1.776142358779907 6 1.49999988079071 6 C 1.223857641220093 6 0.9999999403953552 6.223857879638672 1 6.5 L 1 9.5 C 0.9999229907989502 9.632632255554199 1.052576780319214 9.759853363037109 1.146361589431763 9.853638648986816 C 1.240146398544312 9.947422981262207 1.36736798286438 10.00007629394531 1.499999761581421 10 Z M 14.5 6 C 14.36736679077148 5.999922752380371 14.24014568328857 6.052576541900635 14.14636039733887 6.146361351013184 C 14.05257606506348 6.240146160125732 13.99992179870605 6.367367744445801 13.99999904632568 6.499999523162842 L 14 9.5 C 14 9.776142120361328 14.22385787963867 10 14.5 10 C 14.77614212036133 10 15 9.776142120361328 15 9.5 L 15 6.5 C 15.00007724761963 6.367367267608643 14.94742393493652 6.240145683288574 14.85363864898682 6.146360397338867 C 14.75985336303711 6.052575588226318 14.63263130187988 5.999922275543213 14.49999904632568 5.999999523162842 Z M 14.85352039337158 14.14647960662842 C 15.04883670806885 14.34168815612793 15.04883670806885 14.65826988220215 14.85357475280762 14.8535327911377 C 14.65831184387207 15.04879474639893 14.34173011779785 15.04879474639893 14.1464672088623 14.8535327911377 L 11.73299980163574 12.44005966186523 C 10.45454597473145 13.35082721710205 8.691394805908203 13.12963676452637 7.677534103393555 11.93129348754883 C 6.66367244720459 10.73295211791992 6.73757266998291 8.957517623901367 7.847514152526855 7.847576141357422 C 8.957454681396484 6.737634181976318 10.73288917541504 6.66373348236084 11.93123245239258 7.677594184875488 C 13.1295747756958 8.691454887390137 13.3507661819458 10.45460510253906 12.44000053405762 11.73305892944336 L 14.85352039337158 14.14647960662842 Z M 12 10 C 12 8.895430564880371 11.10456943511963 8 10 8 C 8.895430564880371 8 8 8.895430564880371 8 10 C 8 11.10456943511963 8.895430564880371 12 10 12 C 11.10404682159424 11.99873733520508 11.99873733520508 11.10404586791992 12 10 Z">
+			</path>
+		</svg>
+			 Region Zoom</a>
+		
+	</div>
+	<div class="report_sec">
+		<h5 class="sec_title">report</h5>
+		<a href="#" class="mb_5 dis_inline_block border_solid p_all_5 input_button" id="toolbar_inv_report_btn" data-title="Inv report">
+			<svg class="inventory" viewBox="2 1 12 14" width="12" height="14">
+				<path id="inventory" d="M 13.5 2 L 11.90789985656738 2 C 11.69738864898682 1.402403473854065 11.13358688354492 1.001947641372681 10.49999904632568 0.9999998807907104 L 5.5 1 C 4.866413116455078 1.001947641372681 4.302611351013184 1.402403354644775 4.092100143432617 1.999999761581421 L 2.5 2 C 2.36736798286438 1.999922633171082 2.240146160125732 2.052576303482056 2.146361351013184 2.146361351013184 C 2.052576303482056 2.240146160125732 1.999922633171082 2.36736798286438 1.999999761581421 2.499999761581421 L 2 14.5 C 1.999922275543213 14.63263130187988 2.052575826644897 14.75985336303711 2.146360874176025 14.85363864898682 C 2.240145683288574 14.94742393493652 2.367367506027222 15.00007820129395 2.499999761581421 15.00000095367432 L 13.5 15 C 13.6326322555542 15.00007724761963 13.75985431671143 14.94742393493652 13.85363864898682 14.85363864898682 C 13.94742393493652 14.75985336303711 14.00007724761963 14.63263130187988 14 14.49999904632568 L 14 2.5 C 14.00007724761963 2.36736798286438 13.94742298126221 2.240146398544312 13.85363864898682 2.146361351013184 C 13.75985336303711 2.052576541900635 13.6326322555542 1.999922752380371 13.5 1.999999642372131 Z M 5.5 2 L 10.5 2 C 10.77614212036133 2 11 2.223857641220093 11 2.5 C 11 2.776142358779907 10.77614212036133 3 10.5 3 L 5.5 3 C 5.223857402801514 3 5 2.776142358779907 5 2.5 C 5 2.223857641220093 5.223857879638672 2 5.5 2 Z M 13 14 L 3 14 L 3 3 L 4.092100143432617 3 C 4.302611351013184 3.597596645355225 4.866413116455078 3.998052358627319 5.500000476837158 4 L 10.5 4 C 11.13358688354492 3.99805212020874 11.69738864898682 3.597596168518066 11.90789985656738 2.999999761581421 L 13 3 L 13 14 Z M 12 5.5 C 12.00007629394531 5.632631778717041 11.94742298126221 5.759853363037109 11.85363864898682 5.853638172149658 C 11.75985336303711 5.947422981262207 11.6326322555542 6.000076770782471 11.5 6 L 10.5 6 C 10.22385787963867 6 10 5.776142120361328 10 5.5 C 10 5.223857402801514 10.22385787963867 5 10.5 5 L 11.5 5 C 11.6326322555542 4.999922752380371 11.75985336303711 5.052576541900635 11.85363864898682 5.146361351013184 C 11.94742298126221 5.240146636962891 12.00007724761963 5.367368221282959 12 5.5 Z M 12 7.5 C 12.00007629394531 7.632631778717041 11.94742298126221 7.759853363037109 11.85363864898682 7.853638172149658 C 11.75985336303711 7.947422981262207 11.6326322555542 8.000076293945313 11.5 8 L 10.5 8 C 10.22385787963867 8 10 7.776142120361328 10 7.5 C 10 7.223857402801514 10.22385787963867 7 10.5 7 L 11.5 7 C 11.6326322555542 6.999922752380371 11.75985336303711 7.052576541900635 11.85363864898682 7.146361351013184 C 11.94742298126221 7.240146636962891 12.00007724761963 7.367368221282959 12 7.5 Z M 12 9.5 C 12.00007629394531 9.632632255554199 11.94742298126221 9.759853363037109 11.85363864898682 9.853638648986816 C 11.75985336303711 9.947422981262207 11.6326322555542 10.00007629394531 11.5 10 L 10.5 10 C 10.22385787963867 10 10 9.776142120361328 10 9.5 C 10 9.223857879638672 10.22385787963867 9 10.5 9 L 11.5 9 C 11.6326322555542 8.999921798706055 11.75985431671143 9.05257511138916 11.85363864898682 9.146360397338867 C 11.94742393493652 9.240145683288574 12.00007724761963 9.367367744445801 12 9.5 Z M 12 11.5 C 12.00007629394531 11.6326322555542 11.94742298126221 11.75985336303711 11.85363864898682 11.85363864898682 C 11.75985336303711 11.94742298126221 11.6326322555542 12.00007629394531 11.5 12 L 10.5 12 C 10.22385787963867 12 10 11.77614212036133 10 11.5 C 10 11.22385787963867 10.22385787963867 11 10.5 11 L 11.5 11 C 11.6326322555542 10.99992370605469 11.75985336303711 11.05257701873779 11.85363864898682 11.14636135101318 C 11.94742298126221 11.24014663696289 12.00007629394531 11.3673677444458 12 11.5 Z M 9 5.5 C 9.000075340270996 5.632631778717041 8.947422027587891 5.759853363037109 8.8536376953125 5.853638172149658 C 8.759852409362793 5.947422981262207 8.632631301879883 6.000076770782471 8.499999046325684 6 L 4.5 6 C 4.223857402801514 6 4 5.776142120361328 4 5.5 C 4 5.223857402801514 4.223857879638672 5 4.5 5 L 8.5 5 C 8.632631301879883 4.999922752380371 8.759852409362793 5.052576541900635 8.8536376953125 5.146361351013184 C 8.947422027587891 5.240146636962891 9.000076293945313 5.367368221282959 8.999999046325684 5.5 Z M 4 7.5 C 3.999922752380371 7.367368221282959 4.052576065063477 7.240146636962891 4.146360874176025 7.146361351013184 C 4.240145683288574 7.052576541900635 4.367367744445801 6.999922752380371 4.499999523162842 6.999999523162842 L 7.5 7 C 7.776142597198486 7 8 7.223857879638672 8 7.5 C 8 7.776142597198486 7.776142120361328 8 7.5 8 L 4.5 8 C 4.367367744445801 8.000076293945313 4.240146160125732 7.947422981262207 4.146361351013184 7.853638172149658 C 4.052576541900635 7.759853363037109 3.999922752380371 7.632631778717041 3.999999761581421 7.5 Z M 9 9.5 C 9.000075340270996 9.632632255554199 8.947422027587891 9.759853363037109 8.8536376953125 9.853638648986816 C 8.759852409362793 9.947422981262207 8.632631301879883 10.00007629394531 8.499999046325684 10 L 4.5 10 C 4.223857402801514 10 4 9.776142120361328 4 9.5 C 4 9.223857879638672 4.223857879638672 9 4.5 9 L 8.5 9 C 8.632631301879883 8.999921798706055 8.759853363037109 9.05257511138916 8.8536376953125 9.146360397338867 C 8.947422981262207 9.240145683288574 9.000076293945313 9.367367744445801 8.999999046325684 9.5 Z M 7 11.5 C 7.000076770782471 11.6326322555542 6.947422981262207 11.75985336303711 6.853638172149658 11.85363864898682 C 6.759853363037109 11.94742298126221 6.632631301879883 12.00007724761963 6.499999523162842 12 L 4.5 12 C 4.223857402801514 12 4 11.77614212036133 4 11.5 C 4 11.22385787963867 4.223857879638672 11 4.5 11 L 6.5 11 C 6.632631301879883 10.99992275238037 6.759853363037109 11.05257701873779 6.853638172149658 11.14636135101318 C 6.947422981262207 11.24014663696289 7.000076770782471 11.3673677444458 7 11.5 Z">
+				</path>
+			</svg>
+		  Inv. report</a>
+		<br/>
+		<!-- <a href="#" class="mb_5 dis_inline_block border_solid p_all_5 input_button" id="toolbar_export_pdf_btn" data-title="Export pdf">
+			<svg class="export_w" viewBox="3 1 10 14" width="10" height="14">
+			<path id="export_w" d="M 12 1 L 6.5 1 C 6.36717414855957 1.000387787818909 6.239884376525879 1.053258299827576 6.145870685577393 1.147089958190918 L 3.147089958190918 4.145870208740234 C 3.053232431411743 4.239866733551025 3.000357151031494 4.367167472839355 3 4.499999523162842 L 3 14 C 3.000370025634766 14.55213260650635 3.447868824005127 14.99963092803955 4.000000476837158 15 L 12 15 C 12.55213165283203 14.99963092803955 12.99963092803955 14.55213165283203 13 14 L 13 2 C 12.99944972991943 1.447943210601807 12.55205631256104 1.000550508499146 12 0.9999998807907104 Z M 6 2.707000017166138 L 6 4 L 4.706999778747559 4 L 6 2.707000017166138 Z M 12 2 L 12 14 L 4 14 L 4 5 L 6.5 5 C 6.632631778717041 5.000076770782471 6.759853363037109 4.947422981262207 6.853638172149658 4.853638172149658 C 6.947422981262207 4.759853363037109 7.000076770782471 4.632631301879883 7 4.499999523162842 L 7 2 L 12 2 L 12 1.998999953269958 L 12.5 2 L 12 2 Z M 8.690919876098633 6.038449764251709 C 8.751958847045898 6.063539028167725 8.807428359985352 6.100461959838867 8.854129791259766 6.147089958190918 L 10.85351943969727 8.146479606628418 C 11.04883480072021 8.34168815612793 11.04883480072021 8.658270835876465 10.85357284545898 8.853532791137695 C 10.65831089019775 9.048794746398926 10.34172821044922 9.048794746398926 10.14646625518799 8.853532791137695 L 9 7.706999778747559 L 9 11.5 C 9 11.77614212036133 8.776142120361328 12 8.5 12 C 8.223857879638672 12 8 11.77614212036133 8 11.5 L 8 7.706999778747559 L 6.853519916534424 8.853520393371582 C 6.658311367034912 9.048836708068848 6.341729164123535 9.048836708068848 6.146466732025146 8.853574752807617 C 5.951204299926758 8.658312797546387 5.951204299926758 8.341730117797852 6.146466732025146 8.146467208862305 L 8.145870208740234 6.147089958190918 C 8.289031028747559 6.004331111907959 8.503912925720215 5.961496829986572 8.690871238708496 6.038450241088867 Z">
+			</path>
+		</svg>
+
+		 Export to PDF</a> -->
+
+		 <select id="toolbar_export_pdf_btn" class="align border_solid mb_5 custom_dropdown_field" data-title="Export Plan">
+			<option value="export" selected="selected" class="hide_f_list"></i>Export Plan</option>
+			<option value="pdf">PDF</option>
+			<option value="png">PNG</option>
+			<option value="jpeg" >JPEG</option>
+			<option value="svg">SVG</option>	
+	</select>
+
+	</div>
+	<div class="open_sec">
+		<h5 class="sec_title">open</h5>
+		<button id="toolbar_open_select" class="align border_solid mb_5 field_button_only" data-title="Templates"><span style="background:url(design/icons/temp_1.svg)"></span>Templates</button>
+		<!-- <select id="toolbar_open_select" class="align border_solid mb_5 dropdown_field_button">
+					<option value="tem_1" data-icon="temp_1.svg">Templates</option>
+					<option value="temz_2" data-icon="temp_1.svg">Templates 2</option>
+		</select> -->
+		
+	</div>
+	<div class="save_button">
+		<div class="save_changes"><a href="#" id="toolbar_save_btn">Save</a></div>
+		<!-- new pro -->
+		<div class="profile_img">
+				<svg class="profile_gl" viewBox="0 0 32 32">
+					<path id="profile_gl" d="M 16 0 C 7.163443565368652 0 0 7.163444519042969 0 16 C 0 24.83655548095703 7.163444519042969 32 16 32 C 24.83655548095703 32 32 24.83655548095703 32 15.99999904632568 C 31.98989486694336 7.167632102966309 24.83236694335938 0.01010513305664063 16 0 Z M 16 2 C 21.21604156494141 1.99317741394043 26.00219535827637 4.890393257141113 28.4146728515625 9.515009880065918 C 30.82715225219727 14.13962554931641 30.46478271484375 19.72262001037598 27.47473907470703 23.99658203125 C 26.72214317321777 23.38588333129883 25.85560035705566 22.93096923828125 24.92553901672363 22.6583194732666 C 23.11839866638184 22.09362030029297 21.20421981811523 21.9389591217041 20.4964599609375 21.67053985595703 L 20.4952392578125 21.67053985595703 C 20.39989852905273 21.63454055786133 20.34301948547363 21.5869197845459 20.26281929016113 21.43347930908203 C 20.18064117431641 21.25381851196289 20.12504386901855 21.06315422058105 20.09778213500977 20.86747932434082 C 20.57724189758301 20.361572265625 20.99503135681152 19.80060386657715 21.34239959716797 19.19631958007813 C 22.41386795043945 17.31329345703125 22.99270248413086 15.19027900695801 23.02525901794434 13.02399826049805 C 23.0252685546875 9.143745422363281 19.87970352172852 5.99817943572998 15.99944972991943 5.99817943572998 C 12.11919593811035 5.99817943572998 8.973629951477051 9.143746376037598 8.973629951477051 13.02399921417236 C 9.006034851074219 15.19026374816895 9.584837913513184 17.31328201293945 10.65638160705566 19.19624137878418 C 10.9894847869873 19.77442169189453 11.3867712020874 20.31316184997559 11.84070205688477 20.80223846435547 C 11.81794357299805 21.02365112304688 11.7655553817749 21.24100685119629 11.6849422454834 21.44847679138184 C 11.60938262939453 21.61925888061523 11.55712223052979 21.65295791625977 11.50598239898682 21.67163848876953 C 10.79598236083984 21.93883895874023 8.881722450256348 22.0945987701416 7.075682163238525 22.6594181060791 C 6.145394802093506 22.93173599243164 5.278646469116211 23.38658142089844 4.526003360748291 23.9974193572998 C 1.535436630249023 19.72357368469238 1.172669410705566 14.14034748077393 3.585046768188477 9.515447616577148 C 5.997421264648438 4.890547752380371 10.7837495803833 1.993121147155762 15.99999618530273 1.999998092651367 Z">
+					</path>
+				</svg>
+
+				<div class="user_login_menu">
+					<ul>
+					<li><a href="#" id="user_login_menu_setting">Settings</a>
+					</li>
+					<li><a href="#" id="user_login_menu_logout">Logout</a>
+					</li>	
+					</ul>				
+				</div>
+			</div>
+		</div>
+		<!-- new pro end -->
+	</div>	
+
+
+</div>
+
+
+<!-- Tool Bar -->
+
+<!-- Table Main Screen -->
+
+
+<div class="modify_section" style="display: none;">
+	<h1>Curzon Hall Lady Mary's Pavilion</h1>
+   <div class="shape_icons">
+	<img src="./images/modify_table.png">
+</div>
+	<!-- Shape hover content -->
+
+<div class="shape_hover" style="display: none;">
+<div>	
+	<h4>SHAPE TYPE</h4>
+	<h3>Round table 1.52m/60in</h3>
+</div>
+<div>
+	<h4>LAYER</h4>
+	<h5>Event Layout</h5>
+</div>
+<div>
+	<h4>SIZE</h4>
+	<p>Length: <span>1.52m</span></p>
+	<p>Width: <span>1.52m</span></p>
+</div>
+</div>
+</div>
+<!-- End Table Main Screen -->
+
+<!-- Modify Table content -->
+<div class="table_content inner_table">
+<h1 class="heading">Modify table</h1>
+
+<div>
+<h4 class="sub-heading">Table</h4>
+<div><span>Table Number:</span>
+	<span><input type="number" class="border_solid p_all_5 input_field" value="1" style="width: 45px;">
+	</span>
+</div>
+<div><span>Show Table Number:</span>
+	<span><input type="checkbox" class="border_solid p_all_5 input_field" id="c1" >
+		<label for="c1"></label>
+	</span>
+</div>
+
+<div><span>Table Text:</span>
+	<span><input type="text"  class="border_solid p_all_5 input_field" style="width: 120px;">
+	</span>
+</div>
+
+<div><span>Cabaret Style:</span>
+	<span><input type="checkbox"  class="border_solid p_all_5 input_field default_checked" id="c2" >
+		<label for="c2"></label>
+	</span>
+</div>
+
+<div><span>Cabaret Chair spacing: </span>
+	<span><input type="number" name="dist" class="border_solid p_all_5 input_field" style="width: 45px;">
+	</span>
+</div>
+
+<h4 class="sub-heading">Chairs</h4>
+<div><span>Number of Chair:  </span>
+	<span><input type="number"  class="border_solid p_all_5 input_field" style="width: 45px;">
+	</span>
+</div>
+<div><span>Show chair number: </span>
+	<span><input type="checkbox" class="border_solid p_all_5 input_field" id="c3" >
+		<label for="c3"></label>
+	</span>
+</div>
+<div><span>Show number of Chair:  </span>
+	<span><input type="checkbox"  class="border_solid p_all_5 input_field" id="c4" >
+		<label for="c4"></label>
+	</span>
+</div>
+<div><span>Include with reports:  </span>
+	<span><input type="checkbox" class="border_solid p_all_5 input_field default_checked" id="c7">
+		<label for="c7"></label>
+	</span>
+</div>
+
+<h4 class="sub-heading">Misc</h4>
+<div><span>Lock table position: </span>
+	<span><input type="checkbox"  class="border_solid p_all_5 input_field" id="c5" >
+		<label for="c5"></label>
+	</span>
+</div>
+<div><span>Show boundary </span>
+	<span><input type="checkbox"  class="border_solid p_all_5 input_field" id="c6" >
+		<label for="c6"></label>
+	</span>
+</div>
+</div>
+</div>
+<!-- End Modify Table content -->
+
+<!-- Table ZigZag -->
+
+<div class="table_zigzag inner_table">
+<h1 class="heading">Table numbering</h1>
+<div style="margin-top: 15px;"><span>Start from: </span>
+	<span><input type="number" class="border_solid p_all_5 input_field" value="1" style="width: 45px;">
+	</span>
+</div>
+<div><span>Skip number(s):</span>
+	<span><input type="text"  class="border_solid p_all_5 input_field" style="width: 120px;">
+	</span>
+</div>
+<p class="note">Add number to exclude in table numbering. separate multiple numbers with commas e.g 3, 6, 12</p>
+
+<h4 class="sub-heading">Layout</h4>
+<img src="./images/table-numbering.png" width="252px">
+
+<p class="note">Left to right, top to bottom</p>
+<button>Apply</button>
+</div>
+<!-- End Table ZigZag -->
+
+
+<!-- Theatre  style numbering -->
+
+<div class="table_theatre inner_table ">
+<h1 class="heading">Theatre style numbering</h1>
+
+<div style="margin-top: 15px;"><span>Start from: </span>
+<span><input type="number" class="border_solid p_all_5 input_field" value="1" style="width: 45px;">
+	</span>
+</div>
+<div><span>Skip number(s):</span>
+	<span><input type="text"  class="border_solid p_all_5 input_field" style="width: 120px;">
+	</span>
+</div>
+<p class="note">Add number to exclude in table numbering. separate multiple numbers with commas e.g 3, 6, 12</p>
+
+<div style="margin-top: 25px"><span>Include row letters:</span>
+	<span><input type="checkbox" class="border_solid p_all_5 input_field" id="th1" >
+		<label for="th1"></label>
+	</span></div>
+<div><span>Skip letter(s):</span>
+	<span><input type="text"  class="border_solid p_all_5 input_field" style="width: 120px;">
+	</span>
+</div>
+<p class="note">Add letters to emclude in row numbering. Separate multiple letters with commas e.g C,F</p>
+
+
+<div style="margin-top: 25px"><span>Show Chair number:</span>
+	<span><input type="checkbox" class="border_solid p_all_5 input_field" id="th2" >
+		<label for="th2"></label>
+	</span>
+</div>
+
+<div><span>Chair face opposite direction:</span>
+	<span><input type="checkbox" class="border_solid p_all_5 input_field" id="th3" >
+		<label for="th3" style="margin-top: -20px;"></label>
+	</span>
+</div>
+<h4 class="sub-heading" style="    margin-top: -10px;">Layout</h4>
+
+<a href="#" class="input_button">
+					<svg class="arrow_fk" viewBox="2 3 11.999 9" width="11" height="9">
+						<path id="arrow_fk" d="M 13.96154975891113 7.690919876098633 C 14.03850364685059 7.503962516784668 13.9956693649292 7.289080142974854 13.8529109954834 7.145919799804688 L 9.853520393371582 3.146480083465576 C 9.65831184387207 2.951164245605469 9.341729164123535 2.951164484024048 9.146467208862305 3.146426677703857 C 8.951205253601074 3.341688871383667 8.951205253601074 3.658271312713623 9.146467208862305 3.853533267974854 L 12.29300022125244 7 L 2.5 7 C 2.223857641220093 7 2 7.223857879638672 2 7.5 C 2 7.776142597198486 2.223857641220093 8 2.5 8 L 12.29300022125244 8 L 9.146479606628418 11.14647960662842 C 8.951163291931152 11.34168815612793 8.951163291931152 11.65826988220215 9.146425247192383 11.8535327911377 C 9.34168815612793 12.04879474639893 9.658269882202148 12.04879474639893 9.853532791137695 11.8535327911377 L 13.85286903381348 7.854089736938477 C 13.89950656890869 7.807403087615967 13.93644332885742 7.751947402954102 13.96154880523682 7.690919876098633 Z">
+						</path>
+					</svg>
+				</a>
+
+
+				<a href="#" class="input_button">
+					<svg class="arrow_ff" viewBox="2 3 11.999 9" width="11" height="9">
+						<path id="arrow_ff" d="M 2.037899971008301 7.309080123901367 C 1.960941076278687 7.496038913726807 2.003780364990234 7.710926055908203 2.146549940109253 7.854080200195313 L 6.145939826965332 11.85346984863281 C 6.341164588928223 12.04872989654541 6.657715320587158 12.04872989654541 6.852957725524902 11.85348701477051 C 7.048200130462646 11.65824508666992 7.048200607299805 11.34169387817383 6.852957725524902 11.14645195007324 L 3.706480026245117 8 L 13.49948024749756 8 C 13.77562236785889 8 13.99948024749756 7.776142120361328 13.99948024749756 7.5 C 13.99948024749756 7.223857402801514 13.77562236785889 7 13.49948024749756 7 L 3.706480026245117 7 L 6.853000164031982 3.853519916534424 C 7.048260688781738 3.658295154571533 7.04826021194458 3.341744422912598 6.853017807006836 3.146502017974854 C 6.657775402069092 2.95125937461853 6.341224670410156 2.95125937461853 6.145981788635254 3.146502017974854 L 2.146549940109253 7.145870208740234 C 2.099916934967041 7.192569732666016 2.062990665435791 7.248039245605469 2.037899971008301 7.309080123901367 Z">
+						</path>
+					</svg>
+				</a>
+
+				<a href="#" class="input_button">
+					<svg class="arrow_down" viewBox="4 2 9 11.999" width="9" height="11">
+						<path id="arrow_down" d="M 8.309080123901367 13.9616003036499 C 8.496039390563965 14.03855991363525 8.71092700958252 13.99572086334229 8.854080200195313 13.85295009613037 L 12.85346984863281 9.853549957275391 C 13.04878520965576 9.658340454101563 13.04878520965576 9.341758728027344 12.85352325439453 9.146495819091797 C 12.65826034545898 8.951233863830566 12.34167861938477 8.951233863830566 12.14641571044922 9.146495819091797 L 9 12.29300022125244 L 9 2.5 C 9 2.223857641220093 8.776142120361328 2 8.5 2 C 8.223857879638672 2 8 2.223857641220093 8 2.5 L 8 12.29300022125244 L 4.853519916534424 9.146510124206543 C 4.658311367034912 8.951193809509277 4.341729164123535 8.951193809509277 4.146466732025146 9.146455764770508 C 3.951204538345337 9.341717720031738 3.951204299926758 9.658300399780273 4.146466732025146 9.85356330871582 L 8.145870208740234 13.85299968719482 C 8.192574501037598 13.89961528778076 8.248043060302734 13.93652534484863 8.309080123901367 13.96160125732422 Z">
+						</path>
+					</svg>
+				</a>
+
+				<a href="#" class="input_button">
+					<svg class="arrow" viewBox="4 2 9 11.999" width="9" height="11">
+						<path id="arrow" d="M 8.690919876098633 2.037899971008301 C 8.503961563110352 1.960941076278687 8.289073944091797 2.003780364990234 8.145920753479004 2.146550178527832 L 4.146480083465576 6.145999908447266 C 3.951164245605469 6.341208457946777 3.951164484024048 6.657791137695313 4.146426677703857 6.853053092956543 C 4.341689109802246 7.048315525054932 4.658271312713623 7.048315048217773 4.853533744812012 6.853053092956543 L 8 3.706490039825439 L 8 13.49949073791504 C 8 13.77563285827637 8.223857879638672 13.99949073791504 8.5 13.99949073791504 C 8.776142120361328 13.99949073791504 9 13.77563285827637 9 13.49949073791504 L 9 3.706490516662598 L 12.14647960662842 6.853000164031982 C 12.34168815612793 7.04831600189209 12.65827083587646 7.048315525054932 12.8535327911377 6.853053569793701 C 13.04879474639893 6.657791137695313 13.04879474639893 6.341208934783936 12.8535327911377 6.145946979522705 L 8.854129791259766 2.146549940109253 C 8.807430267333984 2.099916696548462 8.751960754394531 2.062990188598633 8.690919876098633 2.037899971008301 Z">
+						</path>
+					</svg>
+				</a>
+<p class="note">Left to right</p>
+<button>Apply</button>
+</div>
+
+<!-- End Theatre  style numbering -->
+
+<!-- Size and Position table -->
+
+<div class="size_pos inner_table">
+<h1 class="heading">Size & Position</h1>
+<div>
+<h4 class="sub-heading">Size</h4>
+<div><span>Length</span>
+	<span><input type="text" class="border_solid p_all_5 input_field" value="1.52m" style="width: 45px;">
+	</span>
+</div>
+<div><span>Width</span>
+	<span><input type="text" class="border_solid p_all_5 input_field" value="1.52m" style="width: 45px;">
+	</span>
+</div>
+<h4 class="sub-heading">Position</h4>
+<div><span>X</span>
+	<span><input type="number" class="border_solid p_all_5 input_field" value="488" style="width: 45px;">
+	</span>
+</div>
+<div><span>Y</span>
+	<span><input type="number" class="border_solid p_all_5 input_field" value="328" style="width: 45px;">
+	</span>
+</div>
+<div><span>Angle</span>
+	<span><input type="number" class="border_solid p_all_5 input_field" value="0"style="width: 45px;">
+	</span>
+</div>
+</div>
+</div>
+<!-- End Size and Position table -->
+
+
+</body>
+</html>

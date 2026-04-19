@@ -1,0 +1,3334 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guest Allocation</title>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+function includeHTML() {
+  var z, i, elmnt, file, xhttp;
+  /*loop through a collection of all HTML elements:*/
+  z = document.getElementsByTagName("*");
+  for (i = 0; i < z.length; i++) {
+    elmnt = z[i];
+    /*search for elements with a certain atrribute:*/
+    file = elmnt.getAttribute("w3-include-html");
+    if (file) {
+      /*make an HTTP request using the attribute value as the file name:*/
+      xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4) {
+          if (this.status == 200) {elmnt.innerHTML = this.responseText;}
+          if (this.status == 404) {elmnt.innerHTML = "Page not found.";}
+          /*remove the attribute, and call this function once more:*/
+          elmnt.removeAttribute("w3-include-html");
+          includeHTML();
+        }
+      }      
+      xhttp.open("GET", file, true);
+      xhttp.send();
+      /*exit the function:*/
+      return;
+    }
+  }
+};
+</script>
+</head>
+<body>
+
+<div w3-include-html="Toolbar_client.html"></div> 
+
+	<!-- content section -->
+
+	<div id="content_section">
+		<div id="hall_section">
+			<img src="images/guest_hall.jpg">
+		</div>
+
+		<div id="guest_list_section" class="closed_sidebar">
+			<span id="toggle_sidebar"><<</span>
+      <span id="toggle_sidebar">>></span>
+			<div id="guest_list_section_content">
+				
+<div w3-include-html="guest_allocation_client_view.html"></div> 
+               
+			</div>
+
+			
+		</div>
+
+
+	</div>
+
+
+
+
+	<!-- content section -->
+
+
+<!-- scripts/css -->
+<script type="text/javascript">
+var App = window;
+  window.tableNumArray = [];  
+  window.guestIdLast = 0;
+   window.table_design_array = [];
+var GuestDietTypes = [{id: "gluten_free", name: "Gluten free", color: "#A8518A"},{id: "halal", name: "Halal", color: "#E04E3A"},{id: "kosher", name: "Kosher", color: "#F58442"},{id: "lactose_free", name: "Lactose free", color: "#FAC64D"},{id: "peanut_allergy", name: "Peanut allergy", color: "#7AC4A4"},{id: "vegan", name: "Vegan", color: "#59BAFD"},{id: "vegetarian", name: "Vegetarian", color: "#737BEB"}];
+var GuestAllocUsers = [{dietary: "",firstName: "Deniele",id: 1,lastName: "Bloggs",seatNumber: 1,seatType: "adult",tableNumber: 1},{dietary: "lactose_free",firstName: "Carton",id: 3,lastName: "Rogers",seatNumber: 3,seatType: "hc_ch_meal",tableNumber: 1},{dietary: "vegan",firstName: "Xena",id: 2,lastName: "Mccall",seatNumber: 3,seatType: "ch_no_meal",tableNumber: 2}];
+var GuestSeatTypes = [{id: "adult", name: "Adult"},{id: "ch_ch_meal", name: "Child (children's meal)"},{id: "ch_full_meal", name: "Child (full meal)"},{id: "ch_no_meal", name: "Child (no meal)"},{id: "hc_ch_meal", name: "High chair(children's meal)"},{id: "hc_no_meal", name: "High chair(no meal)"}];
+
+
+function getTableChairsCount(table_number){
+  // var ch_12 = [10,8,12,3,4];
+  var ch_8 = [1,2,5,7,6,9,11];
+
+   var chairs = 12;
+if(jQuery.inArray(table_number, ch_8) > 0){
+                         chairs = 8;
+    }
+// console.log(chairs)
+return chairs;
+
+
+}
+
+	$(document).ready(function(){
+		console.log('Guest Allocation Loaded');
+
+		$(document).on('click', '#toggle_sidebar',function(){
+
+		$('#guest_list_section').toggleClass('closed_sidebar');
+        pushNewData();
+
+		}) //  toggle 
+
+    });
+
+</script>
+
+
+<style type="text/css">
+    span.custom_width_1.table_number {
+    background: #f7f7f7;
+    padding: 3px 0;
+}
+
+input#guest_allocation_table_search_guests {
+    width: 68%;
+}
+
+	body {margin:0; padding:0;box-sizing: border-box;}
+
+img {max-width:100%;}
+
+div#header_sec {
+    border:1px solid #2680eb;
+   
+}
+
+div#header_sec .top_header {padding: 10px; border-bottom: 1px solid #ccc;}
+
+div#header_sec .top_header >  div {display:inline-block;vertical-align: middle;}
+
+div#header_sec .logo{max-width: 60px;margin-right: 30px;}
+
+div#header_sec .tag_line h1 {
+    font-size: 15px;
+    color: #575f5e;
+    font-weight: normal;
+}
+
+div#header_sec .complete_button_sec {
+    float: right;
+}
+
+div#header_sec span#complete_button {
+    background: #a8518a;
+    color: #fff;
+    display: inline-block;
+    cursor: pointer;
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+div#header_sec .event_date > span {
+    display: inline-block;
+    background: #d7dede;
+    font-size: 12px;
+    padding: 5px;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+/* action buttons */
+.action_buttons {
+    padding: 10px;
+}
+
+span#action_buttons_zoom_in {
+    border: 1px solid #d7dede;
+    border-radius: 3px;
+    padding: 3px 5px;
+    display: inline-block;
+    line-height: 1;
+    margin: 0;
+}
+
+span#action_buttons_zoom_out {
+    border: 1px solid #d7dede;
+    border-radius: 3px;
+    padding: 3px 5px;
+    display: inline-block;
+    line-height: 1;
+    margin: 0;
+    }
+
+
+span#action_buttons_fit_page {
+    border: 1px solid #d7dede;
+    border-radius: 3px;
+    padding: 3px 5px;
+    display: inline-block;
+    line-height: 1;
+    margin: 0;
+    font-size: 12px;
+    }
+
+span#action_buttons_fit_page svg {
+    vertical-align: bottom;
+}    
+
+
+span#action_buttons_pan {
+    border: 1px solid #d7dede;
+    border-radius: 3px;
+    padding: 3px 5px;
+    display: inline-block;
+    line-height: 1;
+    margin: 0;
+    font-size: 12px;
+    }
+
+span#action_buttons_pan svg {
+    vertical-align: bottom;
+}  
+
+/* action buttons */
+div#content_section {
+    background: #f7f2eb;
+    overflow-x: hidden;
+    display: flex;
+}
+
+div#hall_section {
+        max-width: 68%;
+    /*display: inline-block;*/
+    text-align: center;
+    padding: 60px 30px;
+    max-height: 78vh;
+    /*float: left;*/
+    width: 68%;
+}
+
+ div#guest_list_section.closed_sidebar {
+ 	transform: translate3d(107%, 0px, 0px);
+ 	    -webkit-transition: all .7s cubic-bezier(0.25,1,.2,1);
+    -ms-transition: all .7s cubic-bezier(0.25,1,.2,1);
+    transition: all .7s cubic-bezier(0.25,1,.2,1);  
+ }
+
+div#guest_list_section {
+      max-width: 27%;
+    /*display: inline-block;*/
+    max-height: 78vh;
+    width: 26%;
+    vertical-align: text-bottom;
+    position: relative;
+    float: right;
+    background: #fff; 
+        -webkit-transition: all .7s cubic-bezier(0.25,1,.2,1);
+    -ms-transition: all .7s cubic-bezier(0.25,1,.2,1);
+    transition: all .7s cubic-bezier(0.25,1,.2,1);  
+    transform: translate3d(7%, 0px, 0px); 
+}
+
+div#hall_section img {
+    max-width: 63%;
+}
+
+span#toggle_sidebar {
+        position: absolute;
+    left: -25px;
+    display: inline-block;
+    background: #fff;
+    padding: 0 5px;
+    cursor: pointer;
+    top: 15px;
+    font-size: 15px;
+    border-radius: 5px 0 0 5px;
+        font-family: fangsong;
+    font-weight: 700;
+}
+
+span#toggle_sidebar:hover {
+	background: #a8518a;
+	color: #fff;
+}
+
+
+
+</style>
+
+
+<style type="text/css">
+
+/* print_tab_confirm_popup */
+div#print_tab_confirm_popup {
+    display: block;
+    position: absolute;
+    width: 250px;
+    background-color: #fff;
+    z-index: 9;
+    margin: 0 auto;
+    left: 8px;
+    right: 0;
+    top: 110px;
+    border: 1px solid #ccc;
+    padding: 15px 10px 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0px #0000004a;
+    display: none; text-align: center;
+}
+div#print_tab_confirm_popup span { cursor: pointer; display: inline-block; margin-top: 10px; }
+div#print_tab_confirm_popup button {
+    font-size: 14px;
+    padding: 7px 17px;
+    font-weight: bold;
+    border-radius: 4px;
+    border:none;
+    margin: 0 10px;
+    cursor: pointer;
+    color: #fff!important; 
+   background: rgba(168,81,138,1);
+   width: 77%;
+   display: block;
+
+    }
+div#print_tab_confirm_popup button:hover {opacity:0.8;}
+
+/* print_tab_confirm_popup */
+
+
+
+div#allcation_user_delete_confirmation {
+    position: absolute;
+    top: 120px;
+    z-index: 9;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+    font-size: 14px; display: none;
+}
+
+div#allcation_user_delete_confirmation button {
+    font-size: 14px;
+    padding: 7px 17px;
+    font-weight: bold;
+    border-radius: 4px;
+    border:none;
+    margin: 0 10px;
+    cursor: pointer;
+    }
+div#allcation_user_delete_confirmation button:hover {opacity:0.8;}
+ div#allcation_user_delete_confirmation button#allcation_user_delete_confirmation_yes   { color: #fff!important; 
+   background: rgba(168,81,138,1); }
+
+.button
+{
+    position: relative;
+    top: 50%;
+    width: 74px;
+}
+
+.button.r, .button.r .layer
+{
+    border-radius: 100px;
+}
+
+.button.b2 {
+    border-radius: 2px;
+    height: 25px;
+    float: right;
+    margin-top: -25px;
+    font-family: 'Open Sans', sans-serif;
+        background-color: #F7F8F8;
+    border: 1px solid #ccc;
+}
+div#guest_allocation_table .toggle-button-cover input[type="checkbox"] {
+    visibility: visible;
+}
+.checkbox
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+}
+
+.knobs
+{
+    z-index: 2;
+}
+
+.layer
+{
+    width: 100%;
+    background-color: #ebf7fc;
+    transition: 0.3s ease all;
+    z-index: 1;
+}
+
+/* Button 10 */
+#button-10 .knobs:before, #button-10 .knobs:after, #button-10 .knobs span
+{
+    position: absolute;
+    top: 0px;
+    width: 20px;
+    height: 5px;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1;
+    padding: 9px 4px;
+    border-radius: 2px;
+    transition: 0.3s ease all;
+    line-height: 0.8;
+}
+
+#button-10 .knobs:before
+{
+    content: '';
+    left: 0px;
+    background-color: #FFFFFF;
+    border: 1px solid #ccc;}
+
+#button-10 .knobs:after
+{
+    content: 'OFF';
+    right: 4px;
+    color: #4e4e4e;
+}
+
+#button-10 .knobs span
+{
+    display: inline-block;
+    left: 4px;
+    color: transparent;
+    z-index: 1;
+    line-height: 0.8;
+}
+
+#button-10 .checkbox:checked + .knobs span
+{
+    color: #fff;
+}
+
+#button-10 .checkbox:checked + .knobs:before
+{
+    left: 44px;
+    /*background-color: #4D8F8F;*/
+}
+
+#button-10 .checkbox:checked + .knobs:after
+{
+    color: transparent;
+        border: 1px solid #4d8f8f;
+        right:0;
+}
+.button.b2.active {
+    background-color: #4d8f8f;
+    color: #fff !important;
+}
+#button-10 .checkbox:checked ~ .layer
+{
+    background-color: #fcebeb;
+}
+
+  body {color: #25302e;}
+/*div#guest_allocation_table {
+    max-width: 270px;
+}*/
+#list_tab ul button {
+    font-size: 13px;
+    font-family: 'Open Sans', sans-serif;
+    color: grey;
+    text-decoration: none;
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+div#guest_allocation_table_guest_allocation, div#guest_allocation_table_print, div#guest_allocation_table_summary 
+{
+    display: none
+}
+div#guest_allocation_table_guest_allocation.selected,  div#guest_allocation_table_print.selected, div#guest_allocation_table_summary.selected 
+{
+    display: block;
+}
+button.selected {
+    border-bottom: 2px solid #000 !important;
+        color: #000 !important;
+}
+
+
+
+
+
+div#guest_allocation_table > div h4 {
+    text-align: left;
+    margin-bottom: 5px;
+    font-size: 15px;
+    color: #25302e;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.arrows span {
+    font-size: 11px;
+    font-family: 'open sans', sans-serif;
+    cursor: pointer;
+    color: grey;
+}
+div.sidebar_right input {
+    border: 1px solid #d7dede;
+    border-radius: 3px;
+    background-color: #f7f8f8;
+        font-size: 14px;
+    padding: 7px 5px;
+    /*width: 100%;*/
+}
+svg.arrow_down {
+    fill: grey;
+    vertical-align: text-top;
+}
+.active svg.arrow_down {
+    transform: rotate(180deg);
+    fill:#000;
+}
+span.active  {
+    transform: rotate(180deg);
+    color:#000;
+}
+div#guest_allocation_table_view div#list_tab > div > div {
+    padding-bottom: 15px;
+}
+div#guest_allocation_table #list_tab ul {padding-left: 0;    
+  border-bottom: 1px solid #ccc;
+    }
+
+
+div#guest_allocation_table #list_tab ul li{
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 13px;
+        font-family: 'Open Sans', sans-serif;
+        cursor: pointer;
+}
+
+div#guest_allocation_table .button_guest button {
+    margin-right: 10px;
+    margin-top: -5px !important;
+    background-color: transparent;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+        padding: 4px;
+        cursor: pointer;
+}
+div#guest_allocation_table .arrows {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    margin-top: 15px;
+  }
+div#guest_allocation_table p.note {
+    font-size: 11px;
+    color: #88989a;
+    font-weight: 400;
+    font-style: italic;
+    font-family: 'Open Sans', sans-serif;
+    line-height: 15px;
+    clear: both;
+}
+
+div#guest_allocation_table button img
+{
+   width: 13px;;
+    vertical-align: middle;
+}
+button#guest_allocation_new_guest_table_add_dietary img {
+    width: 16px !important;
+    vertical-align: bottom !important;
+}
+
+button#guest_allocation_new_guest_table_add_dietary {
+    padding-bottom: 2px !important;
+}
+
+button#guest_allocation_new_guest_table_create_new img {
+    width: 16px !important;
+}
+div#guest_allocation_table .filter_button_sec button {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    padding: 6px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+div#guest_allocation_table .filter_button_sec button img {
+    vertical-align: top;
+    margin-right: 5px;
+    width: 18px;
+}
+div#guest_allocation_table .filter_button_sec .search_icon {
+    position: absolute;
+    width: 16px;
+    margin-left: -23px;
+    margin-top: 8px;
+}
+div#guest_allocation_table label {
+  cursor: pointer;
+  position: absolute;
+  left: 5px;
+      color: #25302e;
+}
+div#guest_allocation_table input[type="checkbox"] {
+  visibility: hidden;
+}
+div#guest_allocation_table input[type="checkbox"] + label:before {
+  border: 1px solid #ccc;
+  content: "\00a0";
+  display: inline-block;
+  font: 16px/1em sans-serif;
+  height: 20px;
+  padding: 0;
+  vertical-align: top;
+  width: 20px;
+  border-radius: 3px;
+  background-color: #f7f8f8;
+      margin-right: 5px;
+}
+div#guest_allocation_table input[type="checkbox"]:checked + label:before {
+  background-color:#88979a;
+  color: #fff;
+  text-align: center;
+    background-image: url(./design/icons/check-24px.svg);
+    content: '';
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 10px;
+}
+div#guest_allocation_table input[type="checkbox"]:checked + label:after {
+  font-weight: bold;
+}
+
+div#guest_allocation_table input[type="checkbox"]:focus + label::before {
+    outline: rgb(59, 153, 252) auto 5px;
+}
+div#guest_allocation_table .button_guest button:first-child {
+    background-color: rgba(168,81,138,1);
+    color: #fff;
+}
+
+
+
+div#new_guest_table > div >  div > span:nth-child(1) {
+max-width: 250px;
+    width: 100%;
+    display: block;
+    font-size: 13px;
+    line-height: 19px;
+    color: grey;
+    font-weight: 500;
+    font-family: 'Open Sans', sans-serif;
+    
+}
+div#new_guest_table > div >  div > span:nth-child(2) {
+    max-width: 100%;
+    width: 100%;
+    display: inline-block;
+}
+div#new_guest_table > div >  div > span:nth-child(2) input, div#new_guest_table > div >  div > span:nth-child(2) select, div#new_guest_table input {
+    max-width: 100%;
+    width: 95%;
+    display: inline-block;
+        padding: 8px 5px;
+}
+
+div#new_guest_table > div h4 {
+    text-align: left;
+    margin-bottom: 10px;
+    font-size: 15px;
+    font-family: 'Open Sans', sans-serif;
+    margin-top: 0;
+}
+
+
+div#new_guest_table > div >  div button { 
+  width: auto;
+    border: 1px solid #ccc;
+    background-color: transparent;
+    border-radius: 3px;
+    color: #3a3939;
+    padding: 3px 7px 0px;
+    cursor: pointer;
+
+}
+button#new_guest_table_add_dietary img {
+    position: relative;
+    top: -2px;
+    vertical-align: middle;
+}
+
+div#new_guest_table_view input {
+    border: 1px solid #d7dede;
+    border-radius: 3px;
+    background-color: #f7f8f8
+}
+
+div#new_guest_table_view > div {
+    margin-bottom: 7px;
+}
+div#new_guest_table_view select {
+    border: 1px solid #ccc;
+    opacity: 0.6;
+    background-color: #f7f8f8
+}
+.two_col_field {
+    width: 50%;
+   
+}
+.two_col > div > div {
+    margin-bottom: 10px;
+}
+.two_col span 
+{
+    color: grey;
+    font-size: 14px;
+    font-family: 'Open Sans', sans-serif;
+    display: block;
+}
+.two_col {
+    border: 1px solid #d7dede;
+    height: 132px;
+    border-radius: 3px;
+    padding: 10px 10px 0;
+}
+.two_col input {
+    margin-top: 5px;
+}
+.guest_table_image_svg {
+    position: relative;
+    top: -128px;
+    left: 55px;
+}
+.last-section_btn button {
+    font-size: 14px;
+    color: #fff!important;
+    background: rgba(168,81,138,1) !important;
+    padding: 7px 17px !important;
+    text-decoration: none;
+    border-radius: 4px;
+    margin: 10px 0 0;
+    border: 0;
+    cursor: pointer;
+}
+.last-section_btn {
+    text-align: right;
+}
+#guest_allocation_new_guest_table_cancel_btn, #guest_allocation_table_guest_allocation_filter_cancel, #guest_allocation_create_new_dietary_cancel_btn, button#guest_allocation_import_list_cancel_btn, button#guest_allocation_table_add_to_table_cancel_btn
+{
+  background-color: transparent !important;
+    color: grey !important;
+    border: 1px solid #ccc;
+}
+img#new_guest_table_image {
+    margin-top: 5px;
+    margin-left: 5px;
+}
+div#new_guest_table_view > .two_col input {
+    width: 90%;
+    position: relative;
+    z-index: 1;
+}
+div#new_guest_table {
+    display: none;
+    position: absolute;
+    width: 270px;
+    background-color: #fff;
+    z-index: 9;
+}
+div#new_guest_table.active {
+    display: block;
+}
+
+
+
+
+svg#Capa_1 {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab a {
+    font-size: 13px;
+    font-family: 'Open Sans', sans-serif;
+    color: grey;
+    text-decoration: none;
+}
+
+
+
+.box-content {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 10px;
+        margin-bottom: 10px;
+}
+
+.box-content button {
+    float: right;
+    font-size: 11px;
+    margin-top: -22px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    background-color: transparent;
+    padding: 4px;
+    cursor: pointer;
+}
+.box-content button img
+{
+  margin-right: 3px;
+}
+div#button-on-off {
+    /* float: right; */
+    /*margin-top: -32px;*/
+}
+
+.title {
+    color: #000;
+    cursor: pointer;
+    padding: 10px 0;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 12px;
+    transition: 0.4s;
+    margin: 0;
+    border-top: 1px solid #ccc;
+    font-family: 'open sans', sans-serif;
+}
+
+.table_details {
+  padding: 0 18px;
+  display: none;
+  background-color: white;
+  overflow: hidden;
+}
+
+.active .table_details
+{
+    display: block;
+}
+h3.title:before {
+    background-image: url(./design/icons/down_arrow_select.svg);
+    width: 15px;
+    height: 15px;
+    content: '';
+    display: inline-block;
+    background-repeat: no-repeat;
+    position: absolute;
+    right: 7px;
+    margin-top: 3px;
+    background-size: 8px;
+}
+button#guest_allocation_table_guest_allocation_clr_btn {
+    float: right;
+    margin-top: -39px;
+    border: 0 !important;
+    text-decoration: underline;
+    font-size: 13px !important;
+}
+
+.filter_btn_table h2 {
+    font-size: 18px;
+    font-family: 'open sans', sans-serif;
+    text-align: left;
+    color: #25302e;
+}
+.filter_btn_table {
+    display: none;
+}
+
+
+.filter_btn_table.show {
+    display: block;
+    position: absolute;
+    width: 250px;
+    background-color: #fff;
+    z-index: 9;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 100px;
+    border: 1px solid #ccc;
+    padding: 10px 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0px #0000004a;
+}
+div#guest_allocation_table .filter_guest_row label
+{
+    position: inherit;
+    color: #000;
+}
+
+div#guest_allocation_table .filter_guest_row .first_row div, div#guest_allocation_table .filter_guest_row .second_row div {
+    display: inline;
+    margin-right: 10px;
+    margin-top: 4px;
+}
+
+div#guest_allocation_table .filter_guest_row .first_row, div#guest_allocation_table .filter_guest_row .second_row {
+    margin-bottom: 10px;
+    margin-left: -30px;
+}
+.table_details.seat_type_con > div {
+    margin-left: -30px;
+    margin-bottom: 10px;
+}
+.table_details span label {
+    font-family: 'open sans', sans-serif;
+    font-size: 12px;
+}
+.table_details.seat_type_con img {
+    width: 18px;
+    margin-right: 5px;
+}
+.filter_btn_table .last-section_btn {
+    /*margin-top: 100px;*/
+}
+
+div#guest_allocation_table_print span {
+    font-size: 13px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+div#guest_allocation_table_print > div {
+    padding-bottom: 10px !important;
+}
+div#guest_allocation_table_print .last-section_btn {
+    text-align: left;
+}
+div#guest_allocation_table_print p {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+    margin-top: 0;
+    margin-bottom: 0;
+    }
+
+div#guest_allocation_table_print h4 {
+    margin-top: 0;
+    font-size: 14px !important;
+}
+div#guest_allocation_table_print  .box-content {
+    margin-top: 15px;
+}
+#guest_allocation_table_summary_export_report {
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    padding: 2px 5px;
+    font-family: 'open sans', sans-serif;
+    font-size: 12px;
+    margin-top: -5px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+#guest_allocation_table_summary_export_report svg {
+    vertical-align: text-top;
+    margin-right: 5px;
+}
+div#guest_allocation_table_summary {
+    position: relative;
+}
+
+div#guest_allocation_table_summary h3.title:before {
+    right: 0;
+    margin-top: 5px;
+}
+div#guest_allocation_table_summary h3.title {
+    font-size: 13px;
+}
+.guest_allocation_table_summary_row table {
+    width: 100%;
+    font-size: 12px;
+    font-family: 'open sans', sans-serif;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    border-collapse: collapse;
+}
+
+.guest_allocation_table_summary_row .table_details {
+    padding: 0;
+}
+
+.guest_allocation_table_summary_row th:last-child {
+    text-align: right;
+    padding-bottom: 10px;
+}
+
+.guest_allocation_table_summary_row th {
+    text-align: left;
+    padding-bottom: 10px;
+    color: #444;
+} 
+.guest_allocation_table_summary_row td:last-child {
+    text-align: right !important;
+}
+
+.guest_allocation_table_summary_row tr, .guest_allocation_table_summary_row td {
+    border-bottom: 1px solid #ccc !important;
+    padding: 5px 0 !important;
+}
+
+.guest_allocation_table_summary_row tr:last-child td, .guest_allocation_table_summary_row tr:last-child {
+    border: 0 !important;
+}
+
+.guest_allocation_table_summary_row td span {
+    color: grey;
+}
+.guest_allocation_table_summary_row  .title img {
+    width: 18px;
+    margin-right: 5px;
+}
+
+.guest_allocation_table_summary_row_die div {
+    padding: 7px 0;
+    border-bottom: 1px solid #ccc;
+    margin: 0 !important;
+    border-top: 0;
+}
+
+.guest_allocation_table_summary_row_die p.numbers_die {
+    float: right;
+    display: block;
+    margin-top: -18px;
+    font-size: 13px !important;
+    font-family: 'open sans', sans-serif;
+    margin-right: 25px;
+}
+.guest_allocation_table_summary_row_die  span.svg_icon_radio svg {
+    vertical-align: text-top;
+}
+.table_details_inner {
+    display: none;
+}
+
+.select .table_details_inner {
+    display: block;
+}
+.table_details_inner tr td {
+    color: #25302e;
+}
+p.req_number {
+    font-family: 'open sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 0;
+    color: #444;
+}
+
+p.req_number span {
+    margin-left: 147px;
+}
+ div.title:before {
+    background-image: url(./design/icons/down_arrow_select.svg);
+    width: 15px;
+    height: 15px;
+    content: '';
+    display: inline-block;
+    background-repeat: no-repeat;
+    position: absolute;
+    right: 0;
+    margin-top: 5px;
+    background-size: 8px;
+}
+span.chair_qty {
+    float: right;
+    margin-right: 20px;
+}
+.table_details_inner td {
+    font-size: 11px;
+}
+.table_details_inner td:first-child {
+    width: 165px;
+}
+
+.table_details_inner table {
+    width: 91% !important;
+    margin-left: 14px;
+}
+.die_req_list input {
+    width: auto !important;
+}
+.die_req_list img {
+    width: 18px;
+    margin-right: 5px;
+}
+.die_req_list > div {
+    margin: 18px 0;
+}
+
+.die_req_list  label.title_label {
+    position: relative!important;
+    margin-left: 22px;
+    font-size: 13px;
+    font-family: 'Open Sans', sans-serif;
+    display: block;
+}
+
+.die_req_list.active .checkmark {
+    top: -7px;
+    left: -28px;
+    border-radius: 3px !important;
+    border: 1px solid #ccc;
+    width: 20px;
+    height: 20px;
+}
+
+.die_req_list.active .title_label .checkmark:after {
+    content: '';
+    position: relative;
+    background-color: #88979a;
+    color: #fff;
+    text-align: center;
+    background-image: url(./design/icons/check-24px.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 11px;
+    width: 10px;
+    height: 10px;
+    top: 5px;
+    left: 5px;
+}
+.die_req_list {
+    display: none;
+}
+
+.die_req_list.active {
+    background-color: #fff;
+    display: block;
+    position: absolute;
+    border: 1px solid #ccc;
+    padding: 10px 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0px #0000004a;
+    width: 180px;
+    bottom: 100px;
+    z-index: 2;
+}
+img.edit_pencil {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    background-repeat: no-repeat;
+    position: absolute;
+    right: 0px;
+    background-size: 13px;
+    opacity: 0.7;
+    margin-top: -15px;
+    cursor: pointer;
+}
+
+button#guest_allocation_new_guest_table_add_dietary_done {
+    font-size: 11px;
+    color: #fff !important;
+    background: rgba(168,81,138,1) !important;
+    padding: 5px 10px !important;
+    margin: 0px 0 0;
+    float: right;
+    cursor: pointer;
+}
+button#guest_allocation_new_guest_table_add_dietary_cancel {
+    font-size: 11px;
+    color: grey !important;
+    background: #fff !important;
+    padding: 5px 10px !important;
+    margin: 0px 5px 0;
+}
+.die_req_list .last-section_btn {
+    margin: 0 0 5px!important;
+}
+button#guest_allocation_new_guest_table_create_new {
+    font-size: 11px;
+    cursor: pointer;
+}
+#guest_allocation_new_guest_table_add_dietary_option p {
+    display: inline-block;
+    margin-right: 5px !important;
+}
+button#guest_allocation_new_guest_table_create_new img {
+    margin-right: 0;
+    padding: 0 0px 2px;
+}
+li.ui-tabs-active.ui-state-active a {
+    color: #000 !important;
+}
+.create_new_dietary h4 {
+    font-size: 14px !important;
+    margin-bottom: 20px !important;
+}
+
+.create_new_dietary span {
+    font-size: 12px;
+    color: grey;
+    font-family: 'Open Sans', sans-serif;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.create_new_dietary {
+    position: absolute;
+    z-index: 1;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0px #0000004a;
+    width: 205px;
+    top: 85px;
+    display: none;
+}
+.color_select > span {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+}
+.color_select {
+    max-width: 100%;
+    white-space: normal;
+    display: none;
+    background: #fff;
+    margin-top: 5px;
+}
+
+.colour_sele_box p {
+    font-family: 'Open Sans', sans-serif;
+    margin-bottom: 0;
+    font-size: 12px;
+    color: grey;
+    margin-top: 25px;
+}
+.active.create_new_dietary 
+{
+  display: block;
+}
+
+.create_new_dietary input {width: 94% !important;}
+
+.import_list_table select {
+    width: 115px;
+    margin-bottom: 40px;
+    height: 30px;
+    background-color: #f7f8f8;
+    border-color: #ccc;
+    border-radius: 2px;
+    margin-right: 13px;
+}
+.import_list_table {
+  display: none;
+     position: absolute;
+    width: 250px;
+    background-color: #fff;
+    z-index: 9;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 100px;
+    border: 1px solid #ccc;
+    padding: 10px 10px 10px 10px !important;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0px #0000004a;
+}
+
+.import_list_table h4 {
+    font-size: 20px !important;
+    margin-top: 10px;
+}
+
+.import_list_table p {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+    margin-top: 24px;
+    white-space: normal;
+
+}
+.import_list_table.active {
+    display: block;
+}
+.title_label input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkmark {
+  position: absolute;
+  top: -3px;
+  left: -30px;
+  height: 23px;
+  width: 23px;
+  background-color: #eee;
+  border-radius: 50%;
+}
+.title_label:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+.title_label input:checked ~ .checkmark {
+  background-color: #88989A;
+}
+
+.title_label:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.title_label input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.title_label .checkmark:after {
+  top: 8px;
+  left: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  content:'';
+  position: relative;
+}
+
+div#guest_allocation_table_print > div {
+    margin: 25px 0;
+}
+
+div#guest_allocation_table_print > div label {left: 38px;font-family: 'Open Sans', sans-serif;font-size: 14px;}
+.sharable_url_table input[type="text"] {
+    width: 146px !important;
+    margin-left: 0 !important;
+    color: #25302e;
+
+}
+.sharable_url_table button {
+    float: inherit;
+    margin-right: 2px;
+    margin-top: 5px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.sharable_url_table button svg.copy {
+    vertical-align: bottom;
+    margin-right: 4px;
+}
+
+
+.note_box {
+    padding: 10px;
+    line-height: 1.5;
+    background-color: #F7F8F8;
+    border: 1px solid #ccc;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 12px;
+    margin-top: 7px;
+    border-radius: 3px;
+    font-style: italic;
+    color: grey;
+    white-space: normal;
+}
+.sharable_url_table {
+    display: none;
+}
+
+.active.sharable_url_table
+{
+    display: block;
+}
+.staus_select_box {
+    float: right;
+    margin-top: 5px;
+}
+
+.staus_select_box select {
+    margin-left: 0 !important;
+    width: auto !important;
+}
+.color_select > span.active_plate:after {
+    content: url(./images/checked_icons_white.png);
+    position: absolute;
+    left: 5px;
+    top: 5px;
+}
+#guest_allocation_new_guest_table_add_dietary_option span {border: 1px solid #ccc;font-family: 'Open Sans', sans-serif;font-size: 13px;padding: 3px;border-radius: 3px;}
+
+#guest_allocation_new_guest_table_add_dietary_option p {
+    margin: 0px 0 8px;
+}
+
+#guest_allocation_new_guest_table_add_dietary_option
+{
+  white-space: normal;
+}
+#guest_allocation_new_guest_table_add_dietary_option p  span:last-child {border-left: 0 !important;margin-left: -1px;border-radius: 0 3px 3px 0px;font-size: 15px;padding: 1px 3px 3px; color: grey; cursor: pointer;}
+
+#guest_allocation_new_guest_table_add_dietary_option p span:first-child {
+    border-right: 0 !important;
+    border-radius: 3px 0 0px 3px;
+        color: #25302e;
+}
+svg#Capa_1.active {
+    background-color: grey;
+    fill: #fff;
+}
+p.select_dietary svg {
+    vertical-align: middle;
+    margin-right: 0px;
+    width: 10px;
+}
+.new_guest_entry span {
+    font-family: 'open sans', sans-serif;
+    font-size: 13px;
+    color: #25302e;
+}
+.new_guest_entry {
+    margin-top: 5px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+}
+.select_options button {
+    font-size: 13px !important;
+    padding: 3px 5px !important;
+}
+.select_options button svg
+{
+    vertical-align: text-top;
+    margin-right: 6px;
+}
+
+.select_options {
+    /*margin-top: 15px;*/
+    display: none;
+}
+.select_options.select {
+    display: block;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 2px;
+}
+
+.arrows.select {
+    display: none;
+}
+.arrows
+{
+  display: block;
+}
+svg#table_icon_btn {
+    width: 15px;
+    height: 15px;
+}
+.add_to_table_popupform span {
+    font-family: 'open sans', sans-serif;
+    font-size: 13px;
+    color: grey;
+    display: block;
+    margin-top: 2px;    
+}
+
+.add_to_table_popupform.popup {
+    display: block;
+}
+.add_to_table_popupform {
+    width: 204px;
+    padding: 0 10px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0px #0000004a;
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    z-index: 9;
+    margin-top: 7px;
+}
+
+.add_to_table_popupform .last-section_btn button {font-size: 11px !important; border-radius: 5px !important}
+
+.add_to_table_popupform > div {
+    margin-top: 15px;
+}
+
+.add_to_table_popupform input {
+    max-width: 110px;
+}
+.add_to_table_popupform .last-section_btn {
+    border-top: 1px solid #ccc;
+}
+input#guest_allocation_table_delete_checkbox {
+    margin-right: 12PX;
+}
+
+div#guest_allocation_table_guest_allocation {
+    padding-left: 10px;
+}
+
+.new_geust_all_list {
+    position: relative;
+}
+
+div#guest_list_table_head {
+    position: relative;
+}
+
+button#guest_allocation_table_guest_allocation_tab {
+    margin-left: 10px;
+}div#guest_allocation_table_guest_allocation {
+    padding-left: 10px;
+}
+
+.new_geust_all_list {
+    position: relative;
+}
+
+div#guest_list_table_head {
+    position: relative;
+}
+
+button#guest_allocation_table_guest_allocation_tab {
+    margin-left: 10px;
+}
+
+span.custom_width {
+    width: 185px;
+    display: inline-block;
+    margin-left: 10px;
+        white-space: normal;
+}
+.custom_width svg {
+    margin-left: -3px;
+}
+span.custom_width_1 {
+    width: 46px;
+    display: inline-block;
+    padding-left: 6px; }
+
+.disabled
+{
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+#guest_list_status p {display: none;    white-space: normal;}
+div#guest_filter_table_number_html > div {
+    display: inline-block!important;
+    margin-right: 19px!important;
+}
+div#guest_filter_table_number_html > div  input {
+    display: none!important;
+}
+
+div#guest_filter_table_number_html {
+    white-space: normal;
+    margin-left: 0!important;
+}
+div#content_section .closed_sidebar span#toggle_sidebar:nth-child(2) {
+    display: none;
+}
+div#guest_allocation_table_print h4 {
+    margin-left: 9px;
+}
+div#guest_allocation_table_summary {
+    margin-left: 10px;
+}
+
+div#guest_allocation_table_print .last-section_btn {
+    margin-left: 10px !important;
+}
+
+
+div#guest_allocation_table_print .box-content h4 {
+    margin-left: 0 !important;
+}
+
+/* custom dropdown */
+
+.cust_select:after {
+    content: ' ';
+    /*background: url('icons/down_arrow_select.svg');
+    width: 14px;
+    height: 14px;*/
+}
+
+.cust_select ul {display:none;position: absolute;background: #fff;list-style: none;/* width: 100%; */left: 0;/* bottom: -58px; */right: 0;border: 1px solid #ccc; z-index: 5; top: 22px}
+
+.cust_select.open_drop ul {display:block;}
+
+.cust_select {
+    border: 1px solid #ccc;
+    padding: 3px 5px;
+    position: relative;
+    border-radius: 3px;
+    margin-bottom: 5px;
+    max-width: 150px;
+    display: inline-block;
+}
+.cust_select.open_drop ul li {
+    white-space: normal;
+}
+
+.cust_select.open_drop ul li { cursor:pointer;     position: relative;padding: 3px;    font-family: 'Montserrat', sans-serif;}
+.cust_select.open_drop ul li:hover, .cust_select.open_drop ul li.selected_li {
+    background: #cccccc40;
+}
+
+.cust_select span {width: 14px; height: 14px;}
+
+/*.cust_select span.align_1:before {background: url('icons/align_1.svg');width: 14px;height: 14px;content: ' ';background-size: 14px 14px;display: inline-block;margin-right: 4px;background-repeat: no-repeat;vertical-align: top;}*/
+
+.cust_select ul li > span, .select_val > span {
+    width: 14px;
+    height: 14px;
+    content: ' ';
+    background-size: 14px 14px!important;
+    display: inline-block;
+    margin-right: 4px;
+    background-repeat: no-repeat!important;
+       vertical-align: middle;
+}
+
+.cust_select > svg {
+    width: 9px;
+    position: absolute;
+    right: 6px;
+    top: 10px;
+    z-index: 1;
+}
+
+.select_val {
+    position: relative;
+    z-index: 2;padding-right: 15px;
+        font-family: 'Montserrat', sans-serif;
+}
+
+.cust_select:hover {color:#ab508b;}
+.cust_select:hover > svg {fill:#ab508b;}
+.cust_select.open_drop:hover > svg {fill:#000;}
+
+
+.cust_select:hover .select_val>span {filter: invert(41%) sepia(11%) saturate(2589%) hue-rotate(268deg) brightness(95%) contrast(91%);}
+
+.cust_select.open_drop {
+    background: #88979a;
+    color: #fff;
+}
+
+.cust_select.open_drop li {
+    color: #000;
+}
+.cust_select.open_drop > svg, .cust_select.open_drop .select_val>span {filter: invert(98%) sepia(91%) saturate(4%) hue-rotate(198deg) brightness(106%) contrast(100%);}
+
+.cust_select[data_id="toolbar_numbering"] {
+    max-width: 200px!important;
+}
+
+.cust_select[data_id="toolbar_numbering"] .select_val > span { display:none;}
+
+.cust_select[data_id="toolbar_numbering"] ul li[data_icon="undefined"] > span {display:none;}
+
+.cust_select[data_id="toolbar_zoom_size"] ul {
+    width: 200px;
+    padding-left: 0;
+    font-size: 13px;
+}
+
+.cust_select[data_id="toolbar_zoom_size"] ul li span.text_lable { width:auto; }
+.cust_select[data_id="toolbar_zoom_size"] ul li.border_top {
+    border-top: 1px solid #ccc;
+}
+.cust_select[data_id="toolbar_zoom_size"] ul li {padding-top:5px;padding-bottom:5px;position: relative;}
+
+.cust_select[data_id="toolbar_zoom_size"] ul li span.right_text {float:right;width: auto;height: auto;color: #ccc;}
+
+.custom_dropdown_field_wrap .select_val {
+    padding-right: 20px;
+}
+
+.custom_dropdown_field_wrap.cust_select .select_val:after  {
+    background-image:url('icons/down_arrow_select.svg');
+    width: 17px;
+    /* height: 10px; */
+    content:'';
+    background-size: 8px;
+    display: inline-block;
+    background-repeat: no-repeat;
+    position: absolute;
+    right: -5px;
+    top: -3px;
+    bottom: -3px;
+    background-position: 4px 9px;
+    border-left: 1px solid #ccc;
+}
+
+.custom_dropdown_field_wrap.cust_select.open_drop {
+    background: transparent;
+    color: #000;
+}
+
+.custom_dropdown_field_wrap.cust_select.open_drop .select_val:after {
+    
+    background-image:url('icons/down_arrow_select_white.svg');
+    background-color:#88979a;
+   
+}
+
+.cust_select[data_id="toolbar_units"] ul {
+    width: 70px;
+}
+
+.cust_select[data_id="toolbar_units"] ul li.selected_li > span:nth-child(1){
+   background-image: url('icons/arrow_tick.svg');
+   background-size: 8px!important;
+   background-position: 5px 6px;
+}
+
+/*.cust_select[data_id="units"] ul li.selected_li {background:transparent;}*/
+
+
+.cust_select[data_id="toolbar_qty"] ul {
+    width: 70px;
+}
+
+.cust_select[data_id="toolbar_qty"] ul li.selected_li > span:nth-child(1){
+   background-image: url('icons/arrow_tick.svg');
+   background-size: 8px!important;
+   background-position: 5px 6px;
+}
+.cust_select[data_id="toolbar_qty"] ul li span.text_lable { width:auto; }
+/*.cust_select[data_id="qty"] ul li.selected_li {background:transparent;}*/
+
+.cust_select.open_drop ul li.has_child_items {}
+
+.cust_select.open_drop ul li.has_child_items ul.drop_down {
+    left: 95%;
+    background: #fff;
+    width: 100px;
+    top: 0;
+    display: none;
+}
+
+.cust_select.open_drop ul li.has_child_items:hover ul.drop_down {
+    display:block;
+}
+
+.cust_select.open_drop ul li.has_child_items:after {
+    content: url(icons/arrow-right-dropdown.svg);
+    position: absolute;
+    right: 5px;
+    top: 3px;
+}
+
+.center_icon {
+    pointer-events: none;
+}
+/* custom dropdown end */
+</style>
+
+
+<script type="text/javascript">
+    
+function modifyTableCust(){
+        console.log('modifyTableCust');
+
+    jQuery(document).on("click", "#guest_allocation_table_share_tab" ,function(){    
+    jQuery(".remove_class_selected").removeClass('selected');
+    jQuery("#guest_allocation_table_share").toggleClass('selected');
+    jQuery("div#list_tab ul button").removeClass('selected');
+    jQuery(this).toggleClass('selected');
+    });
+
+    jQuery(document).on("click", "#guest_allocation_table_guest_allocation_tab" ,function(){    
+    jQuery(".remove_class_selected").removeClass('selected');
+    jQuery("#guest_allocation_table_guest_allocation").toggleClass('selected');
+    jQuery("div#list_tab ul button").removeClass('selected');
+    jQuery(this).toggleClass('selected');
+    });
+
+    
+    jQuery(document).on("click", "#guest_allocation_table_summary_tab" ,function(){ 
+   GenerateSummary(); 
+    jQuery(".remove_class_selected").removeClass('selected');
+    jQuery("#guest_allocation_table_summary").toggleClass('selected');
+    jQuery("div#list_tab ul button").removeClass('selected');
+    jQuery(this).toggleClass('selected');
+    });
+
+ 
+    jQuery(document).on("click", "#guest_allocation_table_add_guest" ,function(){  
+      jQuery('div#new_guest_table').toggleClass('active');
+      jQuery('button#guest_allocation_table_import_list').toggleClass('disabled')
+
+    });
+
+    jQuery(document).on("click", ".filter_guest_row" ,function(){      
+      jQuery('.filter_guest_row').removeClass('active')
+      jQuery(this).toggleClass('active')
+    });
+
+    jQuery(document).on("click", "button#guest_allocation_table_filter" ,function(){ 
+      jQuery('.filter_btn_table').toggleClass('show')
+    });
+
+
+    jQuery(document).on("click", "#guest_allocation_new_guest_table_cancel_btn" ,function(){      
+        jQuery('#new_guest_table').removeClass('active');
+        jQuery('#new_guest_table #guest_allocation_new_guest_table_firstname').val('');
+        jQuery('#new_guest_table #guest_allocation_new_guest_table_lastname').val('');
+        // jQuery('#new_guest_table #guest_allocation_new_guest_table_number').val('');
+        jQuery('#new_guest_table #guest_allocation_new_guest_table_seat_type').val('adult');
+        // jQuery('#new_guest_table #guest_allocation_new_guest_table_seat_number').val('');
+
+        jQuery('#new_guest_table #guest_allocation_new_guest_table_item_id').val('');
+        jQuery('#new_guest_table  #guest_allocation_new_guest_table_add_dietary_option').html('');
+        jQuery('input[name="dietary_requirements"]').prop("checked",false)
+        jQuery('#new_guest_table_view h4').html('New Guest');
+
+        jQuery('#guest_allocation_table_import_list').removeClass('disabled')
+      });
+
+    jQuery(document).on("click", "button#guest_allocation_table_guest_allocation_filter_cancel" ,function(){     
+      jQuery('.filter_btn_table').removeClass('show');
+      if(jQuery('.new_geust_all_list .new_guest_entry:visible').length == 0){
+                        jQuery('.filter_note').show();
+                    }else{
+                       jQuery('.filter_note').hide(); 
+                    }
+    });
+
+    jQuery(document).on('change', 'select#guest_allocation_table_share_password_protect' , function(){
+        var drop_valu = jQuery(this).val();
+          if (drop_valu == 'no') {
+            jQuery('.password_user').css('display', 'none');
+            }
+          else {
+                jQuery('.password_user').css('display', 'block');
+             } 
+    });
+
+    jQuery(document).on("click", ".guest_allocation_table_summary_row" ,function(){     
+        jQuery('.guest_allocation_table_summary_row').removeClass('active')
+        jQuery(this).toggleClass('active')
+    });
+
+
+    jQuery(document).on("click", ".guest_allocation_table_summary_row_die" ,function(){            
+      jQuery('.guest_allocation_table_summary_row_die').removeClass('select')
+      jQuery(this).toggleClass('select')
+    }); 
+
+    jQuery(document).on("click", "#guest_allocation_new_guest_table_add_dietary" ,function(){         
+      jQuery('.die_req_list').toggleClass('active')
+     });
+
+    jQuery(document).on("click", "button#guest_allocation_new_guest_table_add_dietary_done" ,function(){          
+      jQuery('.die_req_list ').removeClass('active')
+     });
+
+    jQuery(document).on("click", "#guest_allocation_new_guest_table_create_new" ,function(){          
+        jQuery('.create_new_dietary').toggleClass('active');
+        jQuery('.die_req_list ').removeClass('active')
+    });
+
+    jQuery(document).on("click", "#guest_allocation_create_new_dietary_cancel_btn" ,function(){           
+        jQuery('.create_new_dietary ').removeClass('active')
+    });
+
+    jQuery(document).on("click", "button#guest_allocation_table_import_list" ,function(){              
+        jQuery('.import_list_table').toggleClass('active');
+        jQuery('button#guest_allocation_table_add_guest').toggleClass('disabled');    
+    });
+
+    jQuery(document).on("click", "button#guest_allocation_import_list_cancel_btn" ,function(){      
+        jQuery('.import_list_table').removeClass('active');
+        jQuery('#guest_allocation_table_add_guest').removeClass('disabled');
+    });
+
+    jQuery(document).on("click", "div#button-10" ,function(){      
+        jQuery('.sharable_url_table').toggleClass('active');
+        jQuery(this).toggleClass('active');
+    });
+
+    jQuery(document).on("click", ".colour_sele_box span" ,function(){          
+        jQuery(".colour_sele_box span").removeClass('active_plate');
+        jQuery(this).toggleClass('active_plate');
+    });
+
+
+    jQuery(document).on("click", "svg#Capa_1" ,function(){          
+      jQuery(this).toggleClass('active');
+    });
+
+    jQuery(document).on("click", "button#guest_allocation_new_guest_table_add_dietary_done" ,function(){              
+
+        var dietary_requirements_html = '';
+        jQuery("input[type='checkbox'][name='dietary_requirements']:checked").each(function() {
+            var radioValue = jQuery(this).val();
+            var svg_icon_radio = jQuery( this).parent('label').find('.svg_icon_radio').html();
+            var svg_icon_radio_color = jQuery( this).attr('data_color');
+            var attr_title_text = jQuery( this).attr('data_title_text');          
+            dietary_requirements_html +=  "<p class='select_dietary' data_color='"+svg_icon_radio_color+"' data_title-text='"+radioValue+"'><span> <span>" + svg_icon_radio + "</span> "+ attr_title_text + " </span> <span class='select_dietary_close'> x  </span> </p>";
+               
+        });
+        jQuery( "#guest_allocation_new_guest_table_add_dietary_option" ).html(dietary_requirements_html);
+    });
+    jQuery(document).on("click", "button#guest_allocation_create_new_dietary_save_btn" ,function(){   
+          var New_die_req = jQuery("input#guest_allocation_create_new_dietary_dietary_req").val();
+          var arrow_Color = jQuery('.color_select > span.active_plate').data('color');
+          var new_diet_value = New_die_req.replace(/ /g,"_");
+
+           var dietary_id_hidden = jQuery('#dietary_id_hidden').val();
+
+          var new_dietary_html = ("<div><label class='title_label'><span class='svg_icon_radio'><svg xmlns='http://www.w3.org/2000/svg' width='20' height='12' fill='#" + arrow_Color + "' class='' viewBox='0 0 16 16' stroke='#" + arrow_Color + "' stroke-width='2px'><path fill-rule='evenodd' d='M0 3a2 2 0 0 1 2-2h7.08a2 2 0 0 1 1.519.698l4.843 5.651a1 1 0 0 1 0 1.302L10.6 14.3a2 2 0 0 1-1.52.7H2a2 2 0 0 1-2-2V3zm9.854 2.854a.5.5 0 0 0-.708-.708L7 7.293 4.854 5.146a.5.5 0 1 0-.708.708L6.293 8l-2.147 2.146a.5.5 0 0 0 .708.708L7 8.707l2.146 2.147a.5.5 0 0 0 .708-.708L7.707 8l2.147-2.146z'></path></svg></span>" + New_die_req + "<input type='checkbox' id='"+new_diet_value+"' name='dietary_requirements' value='" + new_diet_value + "' data_title_text='"+ New_die_req +"' data_color='#"+arrow_Color+"'><span class='checkmark'></span></label> <img src='./images/icons8-edit.png' class='edit_pencil'></div>");
+            
+
+             if(dietary_id_hidden == ''){
+               if(New_die_req){
+                jQuery(".die_req_list").prepend(new_dietary_html);
+                resetDietaryForm();
+                console.log(dietary_id_hidden);
+                }
+            }else{
+                updateDietary(New_die_req,arrow_Color,new_diet_value);
+            }
+            updateDietaryDataAll(New_die_req,arrow_Color,new_diet_value,dietary_id_hidden);
+       });
+
+    //update Dietary Data All user and filter
+   function updateDietaryDataAll(new_die_req_title,new_die_req_color,new_die_req_value,old_dietary_id_hidden){
+        new_dietary_html = '<div><span><input type="checkbox" name="guest_allocation_table_guest_allocation_filter_die_requi" id="diet_'+new_die_req_value+'" value="'+new_die_req_value+'"><label for="diet_'+new_die_req_value+'"> <span class="svg_icon_radio"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="12" fill="#'+new_die_req_color+'" class="" viewBox="0 0 16 16" stroke="#'+new_die_req_color+'" stroke-width="2px"><path fill-rule="evenodd" d="M0 3a2 2 0 0 1 2-2h7.08a2 2 0 0 1 1.519.698l4.843 5.651a1 1 0 0 1 0 1.302L10.6 14.3a2 2 0 0 1-1.52.7H2a2 2 0 0 1-2-2V3zm9.854 2.854a.5.5 0 0 0-.708-.708L7 7.293 4.854 5.146a.5.5 0 1 0-.708.708L6.293 8l-2.147 2.146a.5.5 0 0 0 .708.708L7 8.707l2.146 2.147a.5.5 0 0 0 .708-.708L7.707 8l2.147-2.146z"></path></svg></span>'+new_die_req_title+'</label></span></div>';
+        if(old_dietary_id_hidden == '' || old_dietary_id_hidden == null){
+            // console.log(new_die_req_title);
+            jQuery("#guest_allocation_filter_dietary").prepend(new_dietary_html);
+        }else{
+            // console.log(old_dietary_id_hidden);
+             jQuery("#guest_allocation_filter_dietary input[id='diet_"+ old_dietary_id_hidden +"'").parent('span').parent('div').replaceWith(new_dietary_html);  
+             updateUserData(new_die_req_title,new_die_req_color,new_die_req_value,old_dietary_id_hidden);
+        }
+   }
+
+   function  updateUserData(new_die_req_title,new_die_req_color,new_die_req_value,old_dietary_id_hidden){
+
+    console.log(new_die_req_color+new_die_req_value+old_dietary_id_hidden);
+
+        jQuery('.new_geust_all_list .new_guest_entry').each(function(){
+            var ex_diet = jQuery(this).attr('data_dietary');
+            var ex_diet_all = jQuery(this).attr('data_dietary_all');
+            var ex_diet_allArray = ex_diet_all.replace("[","").replace("]","").split(',');
+            if(ex_diet == old_dietary_id_hidden){
+                jQuery(this).attr('data_dietary',new_die_req_value);
+                jQuery(this).find('svg').attr('fill','#'+new_die_req_color).attr('stroke','#'+new_die_req_color);
+            }
+            ex_diet_all = ex_diet_all.replace(old_dietary_id_hidden,new_die_req_value);            
+            jQuery(this).attr('data_dietary_all',ex_diet_all);
+        });
+
+        regenerateDataArray();
+
+   }
+
+    //update Dietary Data All user and filter
+
+
+    //reset dietary form
+     function resetDietaryForm(){
+
+        jQuery('.die_req_list').toggleClass('active');
+        jQuery('.create_new_dietary ').removeClass('active');
+        jQuery('input#guest_allocation_create_new_dietary_dietary_req').val('');
+        jQuery('#dietary_id_hidden').val('');
+
+     }
+
+     //reset dietary form
+
+     //edit dietary
+
+    jQuery(document).on("click", ".edit_pencil" ,function(){ 
+        jQuery('.die_req_list').toggleClass('active');
+    var diet_details, diet_title, diet_color,diet_id;     
+        diet_details = jQuery(this).parent('div').find('input[name="dietary_requirements"]');
+        diet_title = diet_details.attr('data_title_text');
+        diet_color = diet_details.attr('data_color').replace("#","");
+        diet_id = diet_details.attr('id');
+
+        jQuery('#guest_allocation_create_new_dietary_dietary_req').val(diet_title);
+        jQuery('#dietary_id_hidden').val(diet_id);
+        jQuery('#color_select span').removeClass('active_plate');
+        jQuery('#color_select span[data-color="'+ diet_color +'"]').val(diet_color).addClass('active_plate');
+
+        jQuery(".create_new_dietary" ).addClass('active');
+        jQuery('.die_req_list').toggleClass('active');
+        //editDietary(diet_title,diet_color,diet_id);
+    });
+
+    function updateDietary(diet_title,diet_color,diet_id){
+
+        var dietary_html = ("<div><label class='title_label'><span class='svg_icon_radio'><svg xmlns='http://www.w3.org/2000/svg' width='20' height='12' fill='#" + diet_color + "' class='' viewBox='0 0 16 16' stroke='#" + diet_color + "' stroke-width='2px'><path fill-rule='evenodd' d='M0 3a2 2 0 0 1 2-2h7.08a2 2 0 0 1 1.519.698l4.843 5.651a1 1 0 0 1 0 1.302L10.6 14.3a2 2 0 0 1-1.52.7H2a2 2 0 0 1-2-2V3zm9.854 2.854a.5.5 0 0 0-.708-.708L7 7.293 4.854 5.146a.5.5 0 1 0-.708.708L6.293 8l-2.147 2.146a.5.5 0 0 0 .708.708L7 8.707l2.146 2.147a.5.5 0 0 0 .708-.708L7.707 8l2.147-2.146z'></path></svg></span>" + diet_title + "<input type='checkbox' id='"+diet_id+"' name='dietary_requirements' value='" + diet_id + "' data_title_text='"+ diet_title +"' data_color='#"+diet_color+"'><span class='checkmark'></span></label> <img src='./images/icons8-edit.png' class='edit_pencil'></div>");
+        console.log(diet_id);
+        var dietary_id_hidden = jQuery('#dietary_id_hidden').val();
+        if( dietary_id_hidden == ''){
+        jQuery("#guest_allocation_new_guest_add_user_dietary input[id='"+ diet_id +"'").parent('label').parent('div').replaceWith(dietary_html);
+        }else{
+          jQuery("#guest_allocation_new_guest_add_user_dietary input[id='"+ dietary_id_hidden +"'").parent('label').parent('div').replaceWith(dietary_html);  
+        }
+        resetDietaryForm()
+
+    }
+    //update
+
+    //close dietary
+    jQuery(document).on("click", "button#guest_allocation_new_guest_table_add_dietary_cancel" , function(){
+                // jQuery(".die_req_list").removeClass('active');
+                resetDietaryForm();
+   
+        });
+    //close dietary
+
+        jQuery(document).on("click", ".select_dietary_close" ,function(){
+        jQuery(this).parent('.select_dietary').remove();
+        });
+
+        jQuery(document).on("click", ".new_guest_entry input[type='checkbox']" ,function(){            
+          // jQuery('.arrows').toggleClass('select');
+          // jQuery('.select_options').toggleClass('select');
+          // jQuery('.new_guest_entry').toggleClass('select');
+        });
+
+        jQuery(document).on("click", "button#guest_allocation_table_add_to_table_btn" ,function(){                   
+           jQuery('.add_to_table_popupform').toggleClass('popup');
+         });
+
+        jQuery(document).on("click", "#guest_allocation_table_add_to_table_cancel_btn" ,function(){               
+           jQuery('.add_to_table_popupform').removeClass('popup');
+         });
+
+        jQuery(document).on("click", "button#guest_allocation_table_guest_allocation_clr_btn" ,function(){         
+            jQuery('.filter_btn_table input[type="checkbox"]').prop("checked", false);
+            jQuery('.new_geust_all_list .new_guest_entry').show();
+        });
+
+        
+        jQuery(document).on("click" , "button#guest_allocation_new_guest_table_save_btn" , function(){
+            var submit = false;
+                var first_Name = jQuery('input#guest_allocation_new_guest_table_firstname').val();
+                var last_Name = jQuery('input#guest_allocation_new_guest_table_lastname').val();
+                var table_number = jQuery('input#guest_allocation_new_guest_table_number').val();
+                var seat_number = jQuery('input#guest_allocation_new_guest_table_seat_number').val();
+
+                var seat_type = jQuery( "#guest_allocation_new_guest_table_seat_type" ).val();
+                var item_id = jQuery("#guest_allocation_new_guest_table_item_id").val()
+
+                var dietary_text = jQuery('#guest_allocation_new_guest_table_add_dietary_option p.select_dietary:nth-child(1)').attr('data_title-text');
+                var dietary_color = jQuery('#guest_allocation_new_guest_table_add_dietary_option p.select_dietary:nth-child(1)').attr('data_color');
+                 // console.log(first_Name+last_Name+table_number+seat_number+seat_type+dietary);
+
+                 var dietary_all = [];
+                  jQuery('#guest_allocation_new_guest_table_add_dietary_option p.select_dietary').each(function(){
+                    var data_dietary_name = jQuery(this).attr('data_title-text').toLowerCase().replace(/ /g, '_');;
+
+                    if(jQuery.inArray(data_dietary_name, dietary_all) === -1){
+                        dietary_all.push(data_dietary_name);
+                        } 
+                    });
+
+                  console.log(dietary_all);
+
+                 if(first_Name == '' || last_Name == '' || table_number == '' || seat_number == ''){
+
+                    jQuery('#new_guest_table_view :input[required]').each(function(){
+                                var valu = jQuery(this).val();
+                                if(valu == ""){
+                                jQuery(this).css('border-color','red');
+                                }else{
+                                console.log(valu);
+                                 jQuery(this).css('border-color','#f7f8f8');
+                                }
+                            });
+
+                 }else{
+                    if(item_id === '' || item_id === null){
+                      window.guestIdLast =  window.guestIdLast + 1;
+                        item_id = window.guestIdLast;
+                        add_guest_allocation_new_guest_table(first_Name,last_Name,table_number,seat_number,seat_type,dietary_text,dietary_color,item_id,dietary_all);  
+                    }else{
+
+                        guest_allocation_update_guest(first_Name,last_Name,table_number,seat_number,seat_type,dietary_text,dietary_color,item_id,dietary_all);  
+                    }
+
+                    submit = true;
+                 }
+
+                if(submit == true){
+                    jQuery("#new_guest_table").removeClass('active');
+                    jQuery('#guest_allocation_table_import_list').removeClass('disabled');
+                    resetAddNewGuest();
+                    updateTableNumFilter(table_number);
+                    regenerateDataArray();
+                } 
+        });
+
+        function resetAddNewGuest(){
+             jQuery('#new_guest_table_view :input[required]').css('border-color','#f7f8f8');
+             jQuery('div#new_guest_table input[type="text"]').val('');
+             jQuery('div#new_guest_table input[type="hidden"]').val('');
+             jQuery('#guest_allocation_new_guest_table_add_dietary_option').html('');
+             jQuery('div#guest_allocation_table input[type="checkbox"][name="dietary_requirements"] ').prop('checked',false);
+        jQuery('#new_guest_table_view h4').html('New Guest');
+
+        }
+
+      window.updateTableNumFilter =    function updateTableNumFilter(table_number){
+            // guest_filter_table_number_html
+
+            console.log(window.tableNumArray);
+            console.log(table_number);
+            table_number = parseInt(table_number);
+
+            if(jQuery.inArray(table_number, window.tableNumArray) === -1){
+                var html_filt = '<div class="table_num_'+table_number+'"><span><input type="checkbox" name="guest_filter_table_number" id="table_'+table_number+'" value="'+table_number+'"><label for="table_'+table_number+'">'+table_number+'</label></span></div>';
+                jQuery('#guest_filter_table_number_html').append(html_filt);
+                 window.tableNumArray.push(table_number);
+            }else{
+            }
+        }//updateTableNumFilter
+
+        function add_guest_allocation_new_guest_table(first_Name,last_Name,table_number,seat_number, seat_type,dietary_text,dietary_color, item_id, dietary_all){
+
+           var seat_type = seat_type.replace("'", "_");
+           if(dietary_color == null){
+            dietary_color = '#fff';
+           }
+           if(dietary_text == null){
+            dietary_text = 'none';
+           }
+           if(item_id == null || item_id === ''){
+            item_id = first_Name;
+           }
+            var new_guest = jQuery("<div class='new_guest_entry' data_tableno='"+ table_number +"' data_seattype='"+ seat_type +"'  data_dietary='"+ dietary_text +"' data_first='"+ first_Name +"' data_lastname='"+last_Name+"' data_seatnumber='"+ seat_number +"' data_search='"+first_Name +' '+ last_Name +"' data_item_id='"+ item_id +"' data_dietary_all='"+ dietary_all +"'><input type='checkbox' name='guest' id='"+first_Name+"' ><label for='"+first_Name+"'></label> <span  class='custom_width'> <span class='svg_icon_radio'><svg xmlns='http://www.w3.org/2000/svg' width='20' height='12' fill='"+dietary_color+"' class='' viewBox='0 0 16 16' stroke='"+dietary_color+"' stroke-width='2px'><path fill-rule='evenodd' d='M0 3a2 2 0 0 1 2-2h7.08a2 2 0 0 1 1.519.698l4.843 5.651a1 1 0 0 1 0 1.302L10.6 14.3a2 2 0 0 1-1.52.7H2a2 2 0 0 1-2-2V3zm9.854 2.854a.5.5 0 0 0-.708-.708L7 7.293 4.854 5.146a.5.5 0 1 0-.708.708L6.293 8l-2.147 2.146a.5.5 0 0 0 .708.708L7 8.707l2.146 2.147a.5.5 0 0 0 .708-.708L7.707 8l2.147-2.146z'></path></svg></span>"+first_Name+" " +last_Name +"</span><span style='margin-left: 4px;'  class='custom_width_1 table_number'>"+table_number+"</span><span style='margin-left: 3px;'  class='custom_width_1 seat_number' >"+seat_number+"</span></div>");
+
+                jQuery(".new_geust_all_list").prepend(new_guest);
+
+        }
+        
+
+        function guest_allocation_update_guest(first_Name,last_Name,table_number,seat_number, seat_type,dietary_text,dietary_color, item_id,dietary_all){
+
+            var seat_type = seat_type.replace("'", "_");
+           if(dietary_color == null){
+            dietary_color = '#fff';
+           }
+           if(dietary_text == null){
+            dietary_text = 'none';
+           }
+           // if(item_id == null || item_id === ''){
+           //  item_id = first_Name;
+           // }
+            var update_guest = jQuery("<div class='new_guest_entry' data_tableno='"+ table_number +"' data_seattype='"+ seat_type +"'  data_dietary='"+ dietary_text +"' data_first='"+ first_Name +"' data_lastname='"+last_Name+"' data_seatnumber='"+ seat_number +"' data_search='"+first_Name +' '+ last_Name +"' data_item_id='"+ item_id +"' data_dietary_all='"+ dietary_all +"'><input type='checkbox' name='guest' id='"+first_Name+"'><label for='"+first_Name+"'></label> <span  class='custom_width'> <span class='svg_icon_radio'><svg xmlns='http://www.w3.org/2000/svg' width='20' height='12' fill='"+dietary_color+"' class='' viewBox='0 0 16 16' stroke='"+dietary_color+"' stroke-width='2px'><path fill-rule='evenodd' d='M0 3a2 2 0 0 1 2-2h7.08a2 2 0 0 1 1.519.698l4.843 5.651a1 1 0 0 1 0 1.302L10.6 14.3a2 2 0 0 1-1.52.7H2a2 2 0 0 1-2-2V3zm9.854 2.854a.5.5 0 0 0-.708-.708L7 7.293 4.854 5.146a.5.5 0 1 0-.708.708L6.293 8l-2.147 2.146a.5.5 0 0 0 .708.708L7 8.707l2.146 2.147a.5.5 0 0 0 .708-.708L7.707 8l2.147-2.146z'></path></svg></span>"+first_Name+" " +last_Name +"</span><span style='margin-left: 4px;'  class='custom_width_1 table_number'>"+table_number+"</span><span style='margin-left: 3px;'  class='custom_width_1 seat_number' >"+seat_number+"</span></div>");
+
+            console.log(update_guest);
+            jQuery('.new_guest_entry[data_item_id="'+item_id+'"').replaceWith(update_guest);
+            resetAddNewGuest();
+            updateTableNumFilter(table_number);
+
+        }
+
+        function guest_allocation_table_guest_allocation_filter(table_number,seat_type,dietary_type){
+
+            // console.log(table_number);
+            // console.log(seat_type);
+            // console.log(dietary_type);                
+
+                    if(table_number.length !== 0 &&  seat_type.length !== 0 && dietary_type.length !== 0){
+                    jQuery('.new_geust_all_list .new_guest_entry').each(function(){
+                     
+                     //data 
+                        var show_this = false;
+                        var data_tableno = jQuery(this).attr('data_tableno');
+                        var data_seattype = jQuery(this).attr('data_seattype');
+                        var data_dietary = jQuery(this).attr('data_dietary_all');
+                        var dietary_allArray = data_dietary.replace("[","").replace("]","").split(',');
+                    //data
+
+                    if(jQuery.inArray(data_tableno, table_number) !== -1 && jQuery.inArray(data_seattype, seat_type) !== -1){
+                        //dietary
+                            jQuery.each(dietary_type, function(i, item) {
+                                if(jQuery.inArray(item, dietary_allArray) !== -1){
+                                 show_this = true;
+                                 }                              
+                            });
+                        //dietary
+                            if(show_this == true){
+                                jQuery(this).show();
+                                show_this = false;
+                            }else{
+                               jQuery(this).hide(); 
+                            }
+                    }else{
+                        jQuery(this).hide();
+                    }  
+                    });              
+
+                 }else if(table_number.length === 0 &&  seat_type.length !== 0 && dietary_type.length !== 0){
+                    jQuery('.new_geust_all_list .new_guest_entry').each(function(){
+                     
+                    //data 
+                        var show_this = false;
+                        var data_tableno = jQuery(this).attr('data_tableno');
+                        var data_seattype = jQuery(this).attr('data_seattype');
+                        var data_dietary = jQuery(this).attr('data_dietary_all');
+                        var dietary_allArray = data_dietary.replace("[","").replace("]","").split(',');
+                    //data
+
+                    if(jQuery.inArray(data_seattype, seat_type) !== -1){
+
+                        //dietary
+                            jQuery.each(dietary_type, function(i, item) {
+                                if(jQuery.inArray(item, dietary_allArray) !== -1){
+                                 show_this = true;
+                                 }                              
+                            });
+                            if(show_this == true){
+                                jQuery(this).show();
+                                show_this = false;
+                            }else{
+                               jQuery(this).hide(); 
+                            }
+                        //dietary
+
+                         
+
+                    }else{
+                        jQuery(this).hide();
+                    }  
+                    });              
+
+                 }else if(table_number.length === 0 &&  seat_type.length === 0 && dietary_type.length !== 0){
+                    jQuery('.new_geust_all_list .new_guest_entry').each(function(){
+
+                    //data 
+                        var show_this = false;
+                        var data_tableno = jQuery(this).attr('data_tableno');
+                        var data_seattype = jQuery(this).attr('data_seattype');
+                        var data_dietary = jQuery(this).attr('data_dietary_all');
+                        var dietary_allArray = data_dietary.replace("[","").replace("]","").split(',');
+                    //data
+
+                    //dietary
+                            jQuery.each(dietary_type, function(i, item) {
+                                if(jQuery.inArray(item, dietary_allArray) !== -1){
+                                 show_this = true;
+                                 }                              
+                            });
+                            if(show_this == true){
+                                jQuery(this).show();
+                                show_this = false;
+                            }else{
+                               jQuery(this).hide(); 
+                            }
+                    //dietary
+
+                    
+
+                    });              
+
+                 }else if(table_number.length === 0 &&  seat_type.length !== 0 && dietary_type.length === 0){
+                    jQuery('.new_geust_all_list .new_guest_entry').each(function(){
+                    
+                    //data 
+                        var show_this = false;
+                        var data_tableno = jQuery(this).attr('data_tableno');
+                        var data_seattype = jQuery(this).attr('data_seattype');
+                        var data_dietary = jQuery(this).attr('data_dietary_all');
+                        var dietary_allArray = data_dietary.replace("[","").replace("]","").split(',');
+                    //data
+
+                    if(jQuery.inArray(data_seattype, seat_type) !== -1){
+                         jQuery(this).show();
+                    }else{
+                        jQuery(this).hide();
+                    }  
+                    });              
+
+                 }else if(table_number.length === 0 &&  seat_type.length !== 0 && dietary_type.length !== 0){
+                    jQuery('.new_geust_all_list .new_guest_entry').each(function(){
+                    
+                    //data 
+                        var show_this = false;
+                        var data_tableno = jQuery(this).attr('data_tableno');
+                        var data_seattype = jQuery(this).attr('data_seattype');
+                        var data_dietary = jQuery(this).attr('data_dietary_all');
+                        var dietary_allArray = data_dietary.replace("[","").replace("]","").split(',');
+                    //data
+
+                    if( jQuery.inArray(data_seattype, seat_type) !== -1){
+                         
+                         //dietary
+                            jQuery.each(dietary_type, function(i, item) {
+                                if(jQuery.inArray(item, dietary_allArray) !== -1){
+                                 show_this = true;
+                                 }                              
+                            });
+                            if(show_this == true){
+                                jQuery(this).show();
+                                show_this = false;
+                            }else{
+                               jQuery(this).hide(); 
+                            }
+                        //dietary
+
+
+
+                    }else{
+                        jQuery(this).hide();
+                    }  
+                    });              
+
+                 }else if(table_number.length !== 0 &&  seat_type.length !== 0 && dietary_type.length === 0){
+                    jQuery('.new_geust_all_list .new_guest_entry').each(function(){
+
+                    //data 
+                        var show_this = false;
+                        var data_tableno = jQuery(this).attr('data_tableno');
+                        var data_seattype = jQuery(this).attr('data_seattype');
+                        var data_dietary = jQuery(this).attr('data_dietary_all');
+                        var dietary_allArray = data_dietary.replace("[","").replace("]","").split(',');
+                    //data
+                    
+
+                    if(jQuery.inArray(data_tableno, table_number) !== -1 && jQuery.inArray(data_seattype, seat_type) !== -1){
+                         jQuery(this).show();
+                    }else{
+                        jQuery(this).hide();
+                    }  
+                    });              
+
+                 }else if(table_number.length !== 0 &&  seat_type.length === 0 && dietary_type.length !== 0){
+                    jQuery('.new_geust_all_list .new_guest_entry').each(function(){
+                   
+                   //data 
+                        var show_this = false;
+                        var data_tableno = jQuery(this).attr('data_tableno');
+                        var data_seattype = jQuery(this).attr('data_seattype');
+                        var data_dietary = jQuery(this).attr('data_dietary_all');
+                        var dietary_allArray = data_dietary.replace("[","").replace("]","").split(',');
+                    //data
+
+                    if(jQuery.inArray(data_tableno, table_number) !== -1 ){
+                         
+
+                         //dietary
+                            jQuery.each(dietary_type, function(i, item) {
+                                if(jQuery.inArray(item, dietary_allArray) !== -1){
+                                 show_this = true;
+                                 }                              
+                            });
+                            if(show_this == true){
+                                jQuery(this).show();
+                                show_this = false;
+                            }else{
+                               jQuery(this).hide(); 
+                            }
+                        //dietary
+
+
+
+                    }else{
+                        jQuery(this).hide();
+                    }  
+                    });              
+
+                 }else if(table_number.length !== 0 &&  seat_type.length === 0 && dietary_type.length === 0){
+                    jQuery('.new_geust_all_list .new_guest_entry').each(function(){
+                    
+                    //data 
+                        var show_this = false;
+                        var data_tableno = jQuery(this).attr('data_tableno');
+                        var data_seattype = jQuery(this).attr('data_seattype');
+                        var data_dietary = jQuery(this).attr('data_dietary_all');
+                        var dietary_allArray = data_dietary.replace("[","").replace("]","").split(',');
+                    //data
+
+                    if(jQuery.inArray(data_tableno, table_number) !== -1){
+                         jQuery(this).show();
+                    }else{
+                        jQuery(this).hide();
+                    }  
+                    });              
+
+                 }else{
+
+                  jQuery('.new_geust_all_list .new_guest_entry').show();
+
+                 }           
+
+                               
+
+        }// filter guest_allocation_table_guest_allocation_filter
+
+        // All checkbox
+        jQuery(document).on('change', '#guest_allocation_table_search_checkbox', function(){
+            var status = $(this).prop("checked");
+           // jQuery('.new_geust_all_list input[name="guest"]').prop('checked', $(this).prop("checked"));
+           jQuery('.new_geust_all_list .new_guest_entry').each(function(){
+            var data_search = jQuery(this).attr('data_search');
+            if($(this).css('display') == 'none' || $(this).css("visibility") == "hidden"){
+            // console.log(data_search);
+            }else{
+                jQuery(this).find('input[name="guest"]').prop('checked', status);
+            }
+            });
+            showGuestListAction();
+
+        });
+
+        jQuery(document).on('click', '.new_geust_all_list input[name="guest"]', function(){
+             var in_val =  jQuery('#guest_allocation_table_search_checkbox').prop('checked');
+            var out_val = jQuery(this).val();
+            if(in_val == true && out_val !== 'all'){
+            jQuery('#guest_allocation_table_search_checkbox').prop('checked', false)
+            }
+
+            showGuestListAction();
+        });
+        // All checkbox
+
+         function  showGuestListAction() {
+
+            if(jQuery('.new_geust_all_list input[name="guest"]:checked').length > 0){
+                jQuery('.select_options').css('display','inline-block');
+                jQuery('#guest_list_table_head #guest_allocation_table_search_name,#guest_list_table_head #guest_allocation_table_search_table,#guest_list_table_head #guest_allocation_table_search_seat').hide();
+
+            }else{
+                jQuery('.select_options').css('display','none');
+                jQuery('#guest_list_table_head #guest_allocation_table_search_name,#guest_list_table_head #guest_allocation_table_search_table,#guest_list_table_head #guest_allocation_table_search_seat').show();
+            }
+
+
+         }
+
+
+
+
+       
+
+        function resetFilter(){
+            jQuery('.new_geust_all_list .new_guest_entry').show();
+
+        }
+
+        jQuery(document).on('click', '#guest_allocation_table_guest_allocation_filter_apply', function(){
+
+                var guest_filter_table_number = [];
+                jQuery("input[type='checkbox'][name='guest_filter_table_number']:checked").each(function() {
+                guest_filter_table_number.push(jQuery(this).val());
+                });
+
+                var guest_filter_seat_type = [];
+                jQuery("input[type='checkbox'][name='guest_allocation_table_guest_allocation_filter_seat_type']:checked").each(function() {
+                guest_filter_seat_type.push(jQuery(this).val());
+                });
+
+                var guest_filter_diet = [];
+                jQuery("input[type='checkbox'][name='guest_allocation_table_guest_allocation_filter_die_requi']:checked").each(function() {
+                guest_filter_diet.push(jQuery(this).val());
+                });
+
+                guest_allocation_table_guest_allocation_filter(guest_filter_table_number,guest_filter_seat_type,guest_filter_diet);
+                jQuery('.filter_btn_table').removeClass('show');
+
+                 if(jQuery('.new_geust_all_list .new_guest_entry:visible').length == 0){
+                        jQuery('.filter_note').show();
+                    }else{
+                       jQuery('.filter_note').hide(); 
+                    }
+
+
+        });
+
+} // modifyTableCust
+
+
+// Regenerate DATA Array start
+function regenerateDataArray(){
+    console.log('regenerateDataArray')
+    window.NewGuestArray = [];  
+    window.NewDietaryArray = []; 
+    //diet array
+    var DietType = App.GuestDietTypes;
+    var DietTypeNew = [];
+    jQuery('#guest_allocation_new_guest_add_user_dietary input[name="dietary_requirements"]').each(function(){
+        var diet_arr = JSON.parse('{"id": "'+jQuery(this).attr("id")+'", "name": "'+jQuery(this).attr("data_title_text")+'", "color": "'+jQuery(this).attr("data_color")+'"}');
+        // var diet_arr = [];
+        // diet_arr['id'] = jQuery(this).attr('id');
+        // diet_arr['name'] = jQuery(this).attr('data_title_text');
+        // diet_arr['color'] = jQuery(this).attr('data_color');
+        DietTypeNew.push(diet_arr);
+    });
+    window.NewDietaryArray = DietTypeNew;
+    //diet array
+
+    //guest array
+    var GuestListNew = [];
+    jQuery('.new_geust_all_list .new_guest_entry').each(function(){
+        // var guest_arr = [];
+        var guest_arr = JSON.parse('{"dietary": "'+jQuery(this).attr("data_dietary_all")+'", "firstName": "'+jQuery(this).attr("data_first")+'", "id": "'+jQuery(this).attr("data_item_id")+'", "lastName": "'+jQuery(this).attr("data_lastname")+'", "seatNumber": "'+jQuery(this).attr("data_seatnumber")+'", "seatType": "'+jQuery(this).attr("data_seattype")+'", "tableNumber": "'+jQuery(this).attr("data_tableno")+'"}');
+
+        // guest_arr['dietary'] = jQuery(this).attr('data_dietary_all');
+        // guest_arr['firstName'] = jQuery(this).attr('data_first');
+        // guest_arr['id'] = jQuery(this).attr('data_item_id');
+        // guest_arr['lastName'] = jQuery(this).attr('data_lastname');
+        // guest_arr['seatNumber'] = jQuery(this).attr('data_seatnumber');
+        // guest_arr['seatType'] = jQuery(this).attr('data_seattype');
+        // guest_arr['tableNumber'] = jQuery(this).attr('data_tableno');
+        GuestListNew.push(guest_arr);
+    });
+    window.NewGuestArray = GuestListNew;
+    //guest array
+
+    // console.log(window.NewDietaryArray);
+    // console.log(window.NewGuestArray);
+    validateData();
+    if(jQuery('.new_geust_all_list .new_guest_entry:visible').length == 0){
+                        jQuery('.list_note').show();
+                    }else{
+                       jQuery('.list_note').hide();
+                       jQuery('.filter_note').hide(); 
+                    }
+
+
+
+}
+// Regenerate DATA Array end
+function pushNewData(){
+    console.log('Data Refeed');
+
+        if(window.NewDietaryArray && window.NewDietaryArray.length > 0){
+            addSeatType(App.GuestSeatTypes);
+            addDietary(window.NewDietaryArray);       
+            addGuestsList(window.NewGuestArray);          
+        }else{
+            addSeatType(App.GuestSeatTypes);
+            addDietary(App.GuestDietTypes);
+            addGuestsList(App.GuestAllocUsers);
+        }
+        GenerateSummary();
+         validateData();
+}
+
+//validate duplicate entries
+window.validateData = function validateData(){
+console.log('Validating Data');
+jQuery('.new_guest_entry').css('border-color','#ccc');
+    jQuery('.new_guest_entry').each(function(){
+var table = jQuery(this).attr('data_tableno');
+var seat = jQuery(this).attr('data_seatnumber');
+var data = jQuery('.new_guest_entry[data_seatnumber="'+seat+'"][data_tableno="'+table+'"]').length;
+if(data > 1){
+jQuery('.new_guest_entry[data_seatnumber="'+seat+'"][data_tableno="'+table+'"]').css('border-color','red');
+}else{
+    //jQuery('.new_guest_entry[data_seatnumber="'+seat+'"][data_tableno="'+table+'"]').css('border','#ccc');
+}
+
+})
+
+}
+//validate duplicate entries
+
+
+function initGuestAllocationData(){
+    var DietType = App.GuestDietTypes;
+    var seatType = App.GuestSeatTypes;
+    var GuestList = App.newGuest;
+    
+ window.addSeatType =  function addSeatType(GuestSeatData){
+
+           var seatType = GuestSeatData;
+
+    if(seatType !== null){
+        var html_add_guest = '';
+        var html_filter_guest = '';
+        jQuery.each(seatType, function(i, item) {
+         html_add_guest += '<option value="'+ item.id +'">'+item.name+'</option>';
+         html_filter_guest += '<div><span><input type="checkbox" name="guest_allocation_table_guest_allocation_filter_seat_type" id="'+ item.id +'" value="'+ item.id +'"><label for="'+ item.id +'">'+item.name+'</label></span></div>';
+          //console.log(item.name);
+        });
+    jQuery(document).find('#guest_allocation_new_guest_table_seat_type').html(html_add_guest); 
+    jQuery(document).find('#guest_filter_seat_type').html(html_filter_guest); 
+
+    }else{
+        console.log('No data for Seat Type')
+    }
+   }//addSeatType
+
+
+ window.addDietary =    function addDietary(DietaryData){
+
+    var DietType = DietaryData; 
+
+    if( DietType !== null){
+        var html_add_guest_diet = '';
+        var html_filter_diet = '';
+
+        jQuery.each(DietType, function(i, item) {
+            var color = item.color;
+            if(color === null){
+                color = '#fff';
+            }
+         html_add_guest_diet += '<div><label class="title_label"><span class="svg_icon_radio"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="12" fill="'+color+'" class="" viewBox="0 0 16 16" stroke="'+color+'" stroke-width="2px"><path fill-rule="evenodd" d="M0 3a2 2 0 0 1 2-2h7.08a2 2 0 0 1 1.519.698l4.843 5.651a1 1 0 0 1 0 1.302L10.6 14.3a2 2 0 0 1-1.52.7H2a2 2 0 0 1-2-2V3zm9.854 2.854a.5.5 0 0 0-.708-.708L7 7.293 4.854 5.146a.5.5 0 1 0-.708.708L6.293 8l-2.147 2.146a.5.5 0 0 0 .708.708L7 8.707l2.146 2.147a.5.5 0 0 0 .708-.708L7.707 8l2.147-2.146z"></path></svg></span>'+item.name+'<input type="checkbox" id="'+ item.id +'" name="dietary_requirements" value="'+ item.id +'" data_title_text="'+item.name+'" data_color="'+color+'"><span class="checkmark"></span></label><img src="./images/icons8-edit.png" class="edit_pencil"></div>';
+         html_filter_diet += '<div><span><input type="checkbox" name="guest_allocation_table_guest_allocation_filter_die_requi" id="diet_'+item.id+'" value="'+item.id+'"><label for="diet_'+item.id+'"> <span class="svg_icon_radio"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="12" fill="'+color+'" class="" viewBox="0 0 16 16" stroke="'+color+'" stroke-width="2px"><path fill-rule="evenodd" d="M0 3a2 2 0 0 1 2-2h7.08a2 2 0 0 1 1.519.698l4.843 5.651a1 1 0 0 1 0 1.302L10.6 14.3a2 2 0 0 1-1.52.7H2a2 2 0 0 1-2-2V3zm9.854 2.854a.5.5 0 0 0-.708-.708L7 7.293 4.854 5.146a.5.5 0 1 0-.708.708L6.293 8l-2.147 2.146a.5.5 0 0 0 .708.708L7 8.707l2.146 2.147a.5.5 0 0 0 .708-.708L7.707 8l2.147-2.146z"></path></svg></span>'+item.name+'</label></span></div>';
+        });
+        jQuery(document).find('#guest_allocation_new_guest_add_user_dietary #guest_allocation_new_guest_table_create_new').before(html_add_guest_diet); 
+        jQuery(document).find('#guest_allocation_filter_dietary ').html(html_filter_diet);
+
+
+    }else{
+        console.log('No data for dietary Requirements')
+    }
+
+   }//addDietary
+
+    window.addGuestsList = function addGuestsList(GuestsListData){
+  
+           var GuestsListD = GuestsListData;           
+
+            if( GuestsListD !== null){
+                var html_guest_list = '';
+                var html_filter_diet = '';
+                var tableNum = [];
+
+
+                jQuery.each(GuestsListD, function(i, item) {
+                    // console.log(item);
+                 var Dietary = item.dietary;
+                 var firstName = item.firstName;   
+                 var id = item.id;   
+                 var lastName = item.lastName;   
+                 var seatNumber = item.seatNumber;   
+                 var seatType = item.seatType; 
+                 var tableNumber = item.tableNumber;   
+                 var dietary_color = '#fff';
+                 var dietary_text = 'none';
+                 var dietary_id = 'none';
+                 window.guestIdLast = item.id;
+
+                 var dietary_allArray = Dietary.replace("[","").replace("]","").split(',');
+
+                var diet_arr = [];
+                if(window.NewDietaryArray && window.NewDietaryArray.length > 0){
+                     diet_arr = window.NewDietaryArray;
+                    }else{
+                     diet_arr = App.GuestDietTypes;
+                    }
+
+                    // console.log(dietary_allArray[0]);
+                jQuery.each(diet_arr, function(i,item){
+                    if(item.id == dietary_allArray[0]){
+                        dietary_text = item.name;
+                        dietary_color = item.color;
+                        dietary_id = item.id;
+                    }
+                }); 
+
+                if(dietary_allArray[0] == null || dietary_allArray[0] ==''){
+                    dietary_allArray = 'none';
+                }         
+
+            html_guest_list += "<div class='new_guest_entry' data_tableno='"+ item.tableNumber +"' data_seattype='"+ seatType +"'  data_dietary='"+ dietary_id +"' data_first='"+ firstName +"' data_lastname='"+lastName+"' data_seatnumber='"+ seatNumber +"' data_search='"+firstName +' '+ lastName +"' data_item_id='"+ item.id +"' data_dietary_all='"+ dietary_allArray +"'><input type='checkbox' name='guest' id='"+item.id+"'><label for='"+item.id+"'></label> <span class='custom_width'> <span class='svg_icon_radio'><svg xmlns='http://www.w3.org/2000/svg' width='20' height='12' fill='"+dietary_color+"' class='' viewBox='0 0 16 16' stroke='"+dietary_color+"' stroke-width='2px'><path fill-rule='evenodd' d='M0 3a2 2 0 0 1 2-2h7.08a2 2 0 0 1 1.519.698l4.843 5.651a1 1 0 0 1 0 1.302L10.6 14.3a2 2 0 0 1-1.52.7H2a2 2 0 0 1-2-2V3zm9.854 2.854a.5.5 0 0 0-.708-.708L7 7.293 4.854 5.146a.5.5 0 1 0-.708.708L6.293 8l-2.147 2.146a.5.5 0 0 0 .708.708L7 8.707l2.146 2.147a.5.5 0 0 0 .708-.708L7.707 8l2.147-2.146z'></path></svg></span>"+firstName +" " +lastName +"</span><span style='margin-left: 4px;'  class='custom_width_1 table_number'>"+tableNumber+"</span><span style='margin-left: 3px;'  class='custom_width_1 seat_number' >"+seatNumber+"</span></div>";
+
+        
+                if(jQuery.inArray(tableNumber, tableNum) === -1){
+                tableNum.push(tableNumber);
+                }
+       
+
+
+                
+                });
+                jQuery(document).find('.new_geust_all_list').html(html_guest_list);
+
+                addTableNumFilter(tableNum);
+
+
+            } 
+    }//addGuestsList
+
+    function addTableNumFilter(tableNum){
+            if(tableNum !== null){
+                tableNum.sort(function(a, b){return a-b});
+                var tableNumFilter = '';
+                window.tableNumArray = tableNum;
+                jQuery.each(tableNum, function(i, item) {
+                tableNumFilter += '<div class="table_num_'+item+'"><span><input type="checkbox" name="guest_filter_table_number" id="table_'+item+'" value="'+item+'"><label for="table_'+item+'">'+item+'</label></span></div>';
+                });
+                jQuery(document).find('#guest_filter_table_number_html').html(tableNumFilter);
+            }
+    }
+
+    //sorting
+
+    jQuery(document).on("click", ".arrows span" ,function(){      
+        
+        var sortType = jQuery(this).attr('data-sort');
+
+        var sorted_items,has_class;
+        has_class = jQuery(this).hasClass('active');
+          getSorted = function(selector, attrName) {
+              return $(
+                $(selector).toArray().sort(function(a, b){
+                    if(attrName === 'data_first'){
+                        var aVal = a.getAttribute(attrName).toLowerCase(),
+                        bVal = b.getAttribute(attrName).toLowerCase();
+                        if(has_class){
+                            //return bVal - aVal;
+                            return (bVal <  aVal) ? 1 : -1;
+                        }else{
+                             return (aVal <  bVal) ? 1 : -1;
+                        }
+
+                    }else{
+
+                    var aVal = parseInt(a.getAttribute(attrName)),
+                        bVal = parseInt(b.getAttribute(attrName));
+                        if(has_class){
+                            return bVal - aVal;
+                        }else{
+                            return aVal - bVal;
+                        }
+                    }//else
+                })
+              );
+          };
+
+        sorted_items = getSorted('.new_geust_all_list .new_guest_entry', sortType).clone();
+
+        jQuery('.new_geust_all_list').html(sorted_items);
+        jQuery(".arrows span").removeClass('active');
+        if(has_class){
+        jQuery(this).removeClass('active');
+         }else{
+        jQuery(this).addClass('active');
+        }
+    });
+
+    //sorting
+
+    //edit guest
+
+    $(document).on('dblclick', '.new_guest_entry', function () {
+           var data_tableno, data_seattype, data_dietary, data_first, data_lastname, data_seatnumber, data_search, data_id, dietary_all;
+        data_tableno = jQuery(this).attr('data_tableno');
+        data_seattype = jQuery(this).attr('data_seattype');
+        data_dietary = jQuery(this).attr('data_dietary');
+        data_first = jQuery(this).attr('data_first');
+        data_lastname = jQuery(this).attr('data_lastname');
+        data_seatnumber = jQuery(this).attr('data_seatnumber');
+        data_id = jQuery(this).attr('data_item_id');
+        dietary_all = jQuery(this).attr('data_dietary_all');
+
+        //DietaryValue
+        console.log(data_dietary);
+          if(dietary_all === 'none' || data_dietary === ''|| data_dietary === 'none'){
+
+                        
+                        
+                console.log('No data for dietary')
+            }else{
+
+                var dietary_allArray = dietary_all.replace("[","").replace("]","").split(',');
+                var dietary_html_data = '';
+                jQuery.each(dietary_allArray, function(i,item){
+                        var diet_detail = getDietaryValue(item);
+                        dietary_html_data += '<p class="select_dietary" data_color="'+diet_detail["dietary_color"] +'" data_title-text="'+diet_detail["dietary_text"] +'"><span> <span><svg xmlns="http://www.w3.org/2000/svg" width="20" height="12" fill="'+diet_detail["dietary_color"] +'" class="" viewBox="0 0 16 16" stroke="'+diet_detail["dietary_color"] +'" stroke-width="2px"><path fill-rule="evenodd" d="M0 3a2 2 0 0 1 2-2h7.08a2 2 0 0 1 1.519.698l4.843 5.651a1 1 0 0 1 0 1.302L10.6 14.3a2 2 0 0 1-1.52.7H2a2 2 0 0 1-2-2V3zm9.854 2.854a.5.5 0 0 0-.708-.708L7 7.293 4.854 5.146a.5.5 0 1 0-.708.708L6.293 8l-2.147 2.146a.5.5 0 0 0 .708.708L7 8.707l2.146 2.147a.5.5 0 0 0 .708-.708L7.707 8l2.147-2.146z"></path></svg></span>'+diet_detail["dietary_text"] +'</span> <span class="select_dietary_close"> x  </span> </p>';
+                        jQuery('input[name="dietary_requirements"][id="'+diet_detail["id"]+'"]').prop("checked",true);
+                    }); 
+
+            }
+        //DietaryValue              
+
+        //feed data 
+        jQuery('#new_guest_table #guest_allocation_new_guest_table_add_dietary_option').html(dietary_html_data);
+        jQuery('#new_guest_table #guest_allocation_new_guest_table_firstname').val(data_first);
+        jQuery('#new_guest_table #guest_allocation_new_guest_table_lastname').val(data_lastname);
+        jQuery('#new_guest_table #guest_allocation_new_guest_table_number').val(data_tableno);
+        jQuery('#new_guest_table #guest_allocation_new_guest_table_seat_type').val(data_seattype);
+        jQuery('#new_guest_table #guest_allocation_new_guest_table_seat_number').val(data_seatnumber);
+
+        jQuery('#new_guest_table #guest_allocation_new_guest_table_item_id').val(data_id);
+
+        jQuery('#new_guest_table_view h4').html('Edit Guest');
+        jQuery('#new_guest_table').addClass('active');
+
+        //feed data
+
+        });
+
+    //edit guest
+
+    //edit dietary
+
+    jQuery(document).on("click", ".edit_pencil" ,function(){ 
+    var diet_details, diet_title, diet_color,diet_id;     
+        jQuery(".create_new_dietary" ).addClass('active');
+        jQuery('.die_req_list').toggleClass('active');
+        diet_details = jQuery(this).parent('div').find('input[name="dietary_requirements"]');
+        diet_title = diet_details.attr('data_title_text');
+        diet_color = diet_details.attr('data_color');
+        diet_id = diet_details.attr('id');
+        editDietary(diet_title,diet_color,diet_id);
+    });
+
+    function editDietary(diet_title,diet_color,diet_id){
+
+    }
+
+    //edit dietary
+
+   window.getDietaryValue = function getDietaryValue(dietName){
+            var dietaryDetails = [];
+             var   dietDataAll = App.GuestDietTypes;
+            if(window.NewDietaryArray && window.NewDietaryArray.length > 0){
+            dietDataAll = window.NewDietaryArray;
+        }
+
+
+        jQuery.each(dietDataAll, function(i,item){
+                    if(item.id == dietName){
+                        dietaryDetails['dietary_text'] = item.name;
+                        dietaryDetails['dietary_color'] = item.color;
+                        dietaryDetails['id'] = item.id;
+                    }
+                });
+        return  dietaryDetails;
+    }
+
+    jQuery(document).on('click', '#modify_table_guest_allocation', function(){
+
+        // addSeatType(App.GuestSeatTypes);
+        // addDietary(App.GuestDietTypes);
+        // addGuestsList(App.GuestAllocUsers);
+
+    }); //
+
+        // addSeatType(App.GuestSeatTypes);
+        // console.log('check this');
+        // addDietary(App.GuestDietTypes);
+        // addGuestsList(App.GuestAllocUsers);
+//search function
+jQuery(document).on('input', '#guest_allocation_table_search_guests', function(){
+    var valu = jQuery(this).val();
+    jQuery('.new_geust_all_list .new_guest_entry').each(function(){
+        var search = jQuery(this).attr('data_search').toLowerCase();
+        if(search.indexOf(valu) != -1){
+         jQuery(this).show();
+        }else{
+         jQuery(this).hide();
+        }        
+    });
+    if(jQuery('.new_geust_all_list .new_guest_entry:visible').length == 0){
+        jQuery('.filter_note').show();
+    }else{
+       jQuery('.filter_note').hide(); 
+    }
+});//search function
+
+
+//Allocation tab, Delete and assign table
+jQuery(document).on('click','#allcation_user_delete_confirmation_yes', function(){
+jQuery('.new_geust_all_list input[name="guest"]:checked').parent('div.new_guest_entry').remove();
+jQuery('#guest_allocation_table_search_checkbox').prop('checked',false).trigger('change');
+jQuery('#allcation_user_delete_confirmation').hide();
+// jQuery('#allcation_user_delete_confirmation').hide();
+
+regenerateDataArray();
+});
+
+jQuery(document).on('click','#guest_allocation_table_delete_btn', function(){
+ jQuery('#allcation_user_delete_confirmation').show();
+});
+
+jQuery(document).on('click','#allcation_user_delete_confirmation_no', function(){
+ jQuery('#allcation_user_delete_confirmation').hide();
+});
+
+
+// jQuery(document).on('click','#guest_allocation_table_add_to_table_save_btn', function(){
+// var table_new = jQuery('#guest_allocation_add_to_table_table_number').val();
+// jQuery('.new_geust_all_list input[name="guest"]:checked').parent('div.new_guest_entry').attr('data_tableno',table_new);
+// jQuery('.new_geust_all_list input[name="guest"]:checked').parent('div.new_guest_entry').find('span.custom_width_1.table_number').html(table_new);
+//  jQuery('.add_to_table_popupform').removeClass('popup');
+// regenerateDataArray();
+// updateTableNumFilter(table_new);
+// });
+
+jQuery(document).on('click','#guest_allocation_table_add_to_table_save_btn', function(){
+var table_new = jQuery('#guest_allocation_add_to_table_table_number').val();
+var table_count = App.getTableChairsCount(table_new);
+
+var items_len = jQuery('.new_geust_all_list input[name="guest"]:checked').length;
+
+if(items_len > table_count ){
+    console.log('Table not suitable for selected guests');
+}
+
+
+
+jQuery('.new_geust_all_list input[name="guest"]:checked').each(function(){
+    var ex_table = jQuery(this).parent('div.new_guest_entry').attr('data_tableno');
+    var ex_seat = jQuery(this).parent('div.new_guest_entry').attr('data_seatnumber');
+
+    if(ex_table === table_new){ 
+                //check duplicate
+
+                 var seat_stat = jQuery('.new_guest_entry[data_seatnumber="'+ex_seat+'"][data_tableno="'+table_new+'"]').length;
+    //console.log('ttt' + seat_stat)
+              if(seat_stat > 1){
+                var next_tem = jQuery(this).next().parent('div');
+                console.log(' newsds ' + table_new);
+
+                    for(i = 1; i < table_count; i++) {
+                //console.log(i);
+               var seat_stat = jQuery('.new_guest_entry[data_seatnumber="'+i+'"][data_tableno="'+table_new+'"]').length;
+              if(seat_stat === 0){
+
+                console.log(next_tem);
+                 jQuery(next_tem).attr('data_tableno',table_new);
+                jQuery(next_tem).attr('data_seatnumber',i);
+                jQuery(next_tem).find('span.custom_width_1.table_number').html(table_new);
+                jQuery(next_tem).find('span.custom_width_1.seat_number').html(i);
+                   
+                break;
+             } 
+            }//for loop
+                   
+               
+             }
+                             //check duplicate    
+
+    }else{
+        for(i = 1; i < table_count; i++) {
+            //console.log(i);
+           var seat_stat = jQuery('.new_guest_entry[data_seatnumber="'+i+'"][data_tableno="'+table_new+'"]').length;
+          if(seat_stat === 0){
+
+            console.log(i+ ' new ' + table_new);
+                jQuery(this).parent('div.new_guest_entry').attr('data_tableno',table_new);
+            jQuery(this).parent('div.new_guest_entry').attr('data_seatnumber',i);
+            jQuery(this).parent('div.new_guest_entry').find('span.custom_width_1.table_number').html(table_new);
+            jQuery(this).parent('div.new_guest_entry').find('span.custom_width_1.seat_number').html(i);
+            break;
+         } 
+        }//for loop
+    }   
+});
+
+jQuery('.add_to_table_popupform').removeClass('popup');
+regenerateDataArray();
+updateTableNumFilter(table_new);
+
+});
+
+
+//Allocation tab, Delete and assign table
+
+
+} //initData 
+
+
+function SummaryDetails(){
+
+     window.GenerateSummary = function GenerateSummary(){
+
+        console.log('generating Summary');
+
+        var dietArray = App.GuestDietTypes;
+        var guestArray = App.GuestAllocUsers;
+        var seatArray = App.GuestSeatTypes;
+
+        if(window.NewDietaryArray && window.NewDietaryArray.length > 0 || window.NewGuestArray && window.NewGuestArray.length > 0){
+            var dietArray = window.NewDietaryArray;
+            var guestArray = window.NewGuestArray;
+        }
+        //sort array function 
+       window.dynamicSort =     function dynamicSort(property) {
+                var sortOrder = 1;
+                if(property[0] === "-") {
+                    sortOrder = -1;
+                    property = property.substr(1);
+                }
+                return function (a,b) {
+                    /* next line works with strings and numbers, 
+                     * and you may want to customize it to your needs
+                     */
+                    var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+                    return result * sortOrder;
+                }
+            }
+        //sort array function 
+
+
+        //tables 
+        var tableData = [];
+        var tableData_seat = [];
+        var all_seats = 0;
+
+        jQuery.each( guestArray, function( i, item ) {
+                        var tableNum = item.tableNumber;
+            if(jQuery.inArray(tableNum, tableData) === -1){
+                var seat = 1;
+                tableData.push(tableNum);
+                tableData_seat.push({tableNum,seat});
+            }else{
+                var objIndex = tableData_seat.findIndex((obj => obj.tableNum == item.tableNumber));
+                //Update tableData_seat property.
+                tableData_seat[objIndex].seat = tableData_seat[objIndex].seat + 1;
+            }    
+        });
+
+        tableData_seat.sort(dynamicSort("tableNum"));
+        var table_html = '<tr><th>Table #</th><th>Chairs</th></tr>';
+        var total_seat = 0;
+
+
+
+        jQuery.each( tableData_seat, function( i, item ) {
+                    var tab_n = item.tableNum;
+                     var tab_n_seat = item.seat;
+                     var num_of_chair = parseInt(App.getTableChairsCount(tab_n));
+                     all_seats = all_seats + num_of_chair;
+                var percentage = Math.round(((item.seat / num_of_chair) * 100)) +"%";
+                total_seat = total_seat+item.seat;
+        table_html += '<tr><td>'+ tab_n +'</td><td>'+tab_n_seat+'/'+num_of_chair+'<span>('+percentage+')</span></td></tr>';
+
+          });
+       console.log(all_seats);
+        table_html +=  '<tr><td><strong>Total chair</strong></td><td><strong>'+total_seat+'/'+ all_seats +'</strong><span>('+Math.round(((total_seat / (all_seats)) * 100))+'%)</span></td></tr>';
+        jQuery('#guest_allocation_table_summary_tables_data').html(table_html);
+
+        //tables 
+
+        //dietary Requriments
+
+        var dietreq = [];
+
+        jQuery.each( dietArray, function( i, item ) {
+            var dietId = item.id;
+            var dietName = item.name;
+            var dietColor = item.color;
+            var dietDetailsData = [];
+
+             jQuery.each( guestArray, function( i, guest ) {
+            var guestDiet = guest.dietary;
+            var dietary_allArray = guestDiet.replace("[","").replace("]","").split(',');
+            if(jQuery.inArray(dietId, dietary_allArray) !== -1){
+                var id= guest.id;
+                var lname = guest.lastName;
+                var table= guest.tableNumber;
+                var seat = guest.seatNumber;
+                var fname= guest.firstName;
+                dietDetailsData.push({id,fname,lname,table,seat});
+            } 
+
+            });
+            dietreq.push({dietId,dietDetailsData,dietName,dietColor});
+        });
+
+
+            var html_data = '';
+            jQuery.each( dietreq, function( i, diet ) {
+                
+            if(diet.dietDetailsData.length > 0){
+            console.log(diet.dietId + diet.dietName + diet.dietColor);
+            var table_html = '<div class="guest_allocation_table_summary_row_die">';
+            table_html += '<div class="title"><span class="svg_icon_radio"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="12" fill="'+ diet.dietColor+'" class="" viewBox="0 0 16 16" stroke="'+ diet.dietColor+'" stroke-width="2px"><path fill-rule="evenodd" d="M0 3a2 2 0 0 1 2-2h7.08a2 2 0 0 1 1.519.698l4.843 5.651a1 1 0 0 1 0 1.302L10.6 14.3a2 2 0 0 1-1.52.7H2a2 2 0 0 1-2-2V3zm9.854 2.854a.5.5 0 0 0-.708-.708L7 7.293 4.854 5.146a.5.5 0 1 0-.708.708L6.293 8l-2.147 2.146a.5.5 0 0 0 .708.708L7 8.707l2.146 2.147a.5.5 0 0 0 .708-.708L7.707 8l2.147-2.146z"></path></svg></span>'+ diet.dietName+'<span class="chair_qty">'+diet.dietDetailsData.length+' </span></div><div class="table_details_inner"><table><tbody>'; 
+            jQuery.each( diet.dietDetailsData, function( i, guest ) {
+            table_html += '<tr><td>'+ guest.fname+ ' '+ guest.lname +'</td><td>Table '+ guest.table +'</td><td>Seat '+ guest.seat +'</td></tr>';
+            });
+
+            table_html += '</tbody></table></div></div>';
+            html_data += table_html;
+            } 
+            });
+            // console.log(html_data);
+            jQuery('#guest_allocation_table_summary_diet_requriments').html(html_data);
+
+
+        //Dietary Requriments
+
+        //Seating Types
+        var seating_type_html = ''; 
+
+        jQuery.each(guestArray, function( i, item ) {
+        //console.log(item.seatType)
+        var objIndex = seatArray.findIndex((obj => obj.id == item.seatType));
+        console.log(seatArray[objIndex].name);
+        seating_type_html += '<tr><td>'+ item.tableNumber +'</td><td>'+item.seatNumber+'</td><td>'+seatArray[objIndex].name+' </td></tr>'; 
+        });
+        jQuery('#guest_allocation_table_summary_seating_types tbody').html(seating_type_html);
+
+        //Seating Types
+
+     }
+
+}  //SummaryDetails  
+
+function PrintTab(){
+    console.log('PrintTab function excute');
+    jQuery(document).on("click", "#guest_allocation_table_print_tab" ,function(){    
+        jQuery(".remove_class_selected").removeClass('selected');
+        jQuery("#guest_allocation_table_print").toggleClass('selected');
+        jQuery("div#list_tab ul button").removeClass('selected');
+        jQuery(this).toggleClass('selected');
+    });
+
+    // jQuery(document).on('click', '#guest_allocation_table_print_btn', function(){
+    //     // var print_type = jQuery
+    //     jQuery('#print_tab_confirm_popup').show();
+    // });
+
+    jQuery(document).on('click', '#print_tab_confirm_popup_cancel', function(){
+        // var print_type = jQuery
+        jQuery('#print_tab_confirm_popup').hide();
+    });
+
+    jQuery(document).on('click', '#guest_allocation_table_print_download', function(){
+        // var print_type = jQuery
+        print('pdf')
+        jQuery('#print_tab_confirm_popup').hide();
+    });
+
+    jQuery(document).on('click', '#print_tab_confirm_popup_xls', function(){
+        // var print_type = jQuery
+        print('xls')
+        jQuery('#print_tab_confirm_popup').hide();
+    });
+
+    
+
+    function print(type){
+
+        var dietArray_print = App.GuestDietTypes;
+        var guestArray_print = App.GuestAllocUsers;
+        var print_array = [];
+
+        if(window.NewDietaryArray && window.NewDietaryArray.length > 0 || window.NewGuestArray && window.NewGuestArray.length > 0){
+            var dietArray_print = window.NewDietaryArray;
+            var guestArray_print = window.NewGuestArray;
+        }
+
+        //code     
+
+        jQuery.each(guestArray_print, function(i, data_single) {
+            //diet
+            var diet = data_single.dietary;
+            var diet_name = '';
+                    if(diet == '' || diet == 'none' ){
+                        diet_name = 'none'
+                    }else{
+                              var  diet_array_single = diet.replace("[","").replace("]","").split(',');
+                               jQuery.each(diet_array_single, function(i, item_diet) { 
+                                    var objIndex = dietArray_print.findIndex((obj => obj.id == item_diet));
+                                    diet_name += dietArray_print[objIndex].name;
+
+                                if(diet_array_single.length > i+1){
+                                diet_name += ','
+                                }
+                               });
+
+                     }//else
+            //diet
+
+            //seat 
+            var objIndex = App.GuestSeatTypes.findIndex((obj => obj.id == data_single.seatType));
+            var seatName = App.GuestSeatTypes[objIndex].name;
+            //seat
+
+
+
+                    var diet_arr = JSON.parse('{"First Name": "'+data_single.firstName+'", "Last Name": "'+data_single.lastName+'","Seat Number": "'+data_single.seatNumber+'","Seat Type": "'+seatName+'","Table Number": "'+data_single.tableNumber+'","Dietary": "'+ diet_name +'"}');
+                   
+            print_array.push(diet_arr);
+                }); 
+
+
+        //code
+
+
+
+
+        var json = print_array;
+        var fields = Object.keys(json[0])
+        var replacer = function(key, value) { return value === null ? '' : value } 
+        var csv = json.map(function(row){
+          return fields.map(function(fieldName){
+            return JSON.stringify(row[fieldName], replacer)
+          }).join(',')
+        })
+        csv.unshift(fields.join(',')) // add header column
+         csv = csv.join('\r\n');
+        console.log(csv)
+        function save(filename, data) {
+            var blob = new Blob([data], {type: 'text/csv'});
+            if(window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveBlob(blob, filename);
+            }
+            else{
+                var elem = window.document.createElement('a');
+                elem.href = window.URL.createObjectURL(blob);
+                elem.download = filename;        
+                document.body.appendChild(elem);
+                elem.click();        
+                document.body.removeChild(elem);
+            }
+        }
+        // save('dsds.csv',csv);
+        save('guest.csv',csv);
+
+
+    }
+
+
+}//PrintTab
+
+ 
+</script>
+
+
+
+
+
+<script>
+includeHTML();
+</script>
+
+<script type="text/javascript">
+  function toolbar_dropdown(){
+
+    //custom 
+        jQuery('.custom_dropdown_field').each(function(){
+
+            var selectId = jQuery(this).attr('id');
+            var selectTitle = jQuery(this).attr('data-title');
+            var output_li = ''; 
+            var in_value = '';
+            jQuery(this).children('option').each(function(i){
+                var b_g = "design/icons/"+ jQuery(this).data('icon');
+                var class_this = jQuery(this).attr('class');
+                 if(class_this === '' || class_this === undefined){
+                    class_this = '';
+                 }
+
+                var text_right = jQuery(this).attr('data-right-text');
+                var selected = jQuery(this).attr('selected');
+
+                  output_li += '<li  class="'+class_this+'" data_val="'+ jQuery(this).val() + '" data_icon="' + jQuery(this).data('icon') + '" ><span style="" ></span><span class="text_lable">'+ jQuery(this).text() + '</span>';
+
+                  if(text_right === '' || text_right === undefined){
+                    
+                  }else{
+                    output_li +=  '<span class="right_text" >'+ text_right +'</span>';
+                  }
+
+                  output_li += '</li>';
+                  if(selected === 'selected'){
+                    in_value = jQuery(this).text();
+                  }
+
+                });
+            var output = '<div id="'+ selectId+'_cust" data_id="'+ selectId+'" class="custom_dropdown_field_wrap cust_select" data-title="'+ selectTitle +'"><div class="select_val">'+ in_value +'</div><ul>' + output_li + '</ul></div>';
+            jQuery(this).before(output);
+            jQuery(this).hide();
+        });//custom
+
+        jQuery(document).on('click', '.custom_dropdown_field_wrap div.select_val', function(){
+            jQuery('.cust_select').removeClass('open_drop');
+            jQuery(this).parent('.cust_select').addClass('open_drop');
+        });
+
+        jQuery(document).on('click', '.custom_dropdown_field_wrap.cust_select li', function(){         
+            var text = jQuery(this).find('span.text_lable').text();
+            var value = jQuery(this).attr('data_val');
+            jQuery(this).siblings().removeClass('selected_li');
+            jQuery(this).addClass('selected_li');
+            jQuery(this).closest('div.select_val').html(text);
+            jQuery(this).closest('.cust_select').find('.select_val').html(text);
+            jQuery(this).closest('.cust_select').removeClass('open_drop');
+            var selectId = jQuery(this).closest('.cust_select').attr('data_id');
+            jQuery('#'+selectId).val(value).change();
+        });
+
+        jQuery(document).click(function(event){
+            if(event.target.classList.contains('select_val')){
+
+            }else{
+            jQuery('.cust_select').removeClass('open_drop');
+                
+            }
+        }); 
+
+
+
+  }
+  jQuery(document).ready(function(){
+
+    setTimeout(function() {
+            toolbar_dropdown();
+            modifyTableCust();
+            initGuestAllocationData();
+            SummaryDetails();
+            PrintTab();
+          }, 1000); 
+
+  });
+</script>
+
+
+</body>
+
+</html>

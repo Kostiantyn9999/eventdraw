@@ -1,0 +1,124 @@
+<% capture assign='site_logo_src'%><% PROPERTY name="site.logo.src" %><% /capture %>
+<% capture assign='site_tagline_text'%><% PROPERTY name="site.tagline.text" %><% /capture %>
+<% capture assign='header_alignment'%><% PROPERTY name="header.alignment" %><% /capture %>
+<% include file='templates/common/primary_menu.tpl' submenutype=flyover assign='primary_menu'%>
+<% include file='templates/common/mobile_menu.tpl' assign='mobile_menu'%>
+<% include file='templates/common/sitelocation_json_ld.tpl' assign='sitelocation_json_ld'%>
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- normalize and html5 boilerplate resets -->
+        <link rel="stylesheet" href="<% 'templates/Skyline_v2/resources/css/reset.css'|anticache %>">
+        <link rel="stylesheet" href="<% 'templates/Skyline_v2/resources/css/less.build.css'|anticache %>">
+
+        <!--[if lte IE 9]>
+        <script src="<% 'templates/Skyline_v2/resources/js/html5shiv.js'|anticache %>"></script>
+        <script src="<% 'templates/Skyline_v2/resources/js/html5shiv-printshiv.js'|anticache %>"></script>
+
+        <![endif]-->
+
+        <% HEADER %>
+    </head>
+    <body lang="<% $locale %>" class="<% BODY_CLASS %>">
+        <% $sitelocation_json_ld %>
+        <div id="sys_background" class="yola_bg_overlay">
+            <div class="yola_inner_bg_overlay">
+                <div class="yola_outer_content_wrapper">
+                    <header role="header">
+                        <div class="yola_outer_heading_wrap">
+                            <div class="yola_heading_container">
+                                <div class="yola_inner_heading_wrap <% IFPROPERTY format='%s' name='header.alignment' %>">
+                                    <div class="yola_innermost_heading_wrap">
+                                        <% if !empty($navigation) %>
+                                        <nav class="mob_menu">
+                                            <div class="mob_menu_toggle"><!--Mobile Nav Toggle-->
+                                                <svg class="mobile_ham" width="40" height="25">
+                                                  <line x1="0" y1="3" x2="40" y2="3" stroke-width="2"/>
+                                                  <line x1="0" y1="13" x2="40" y2="13" stroke-width="2"/>
+                                                  <line x1="0" y1="23" x2="40" y2="23" stroke-width="2"/>
+                                                </svg>
+                                                <svg class="mobile_quit" width="26" height="50">
+                                                    <line x1="0" y1="1" x2="26" y2="25" stroke-width="2"/>
+                                                    <line x1="0" y1="25" x2="26" y2="1" stroke-width="2"/>
+                                                </svg>
+                                            </div>
+                                            <div class="mob_menu_overlay"> <!--Mobile Nav Overlay-->
+                                                <% $mobile_menu %>
+                                            </div>
+                                        </nav>
+                                        <% /if %>
+                                        <% if $header_alignment == 'bottom'%>
+                                        <div id="yola_nav_block"> <!--Nav-->
+                                            <nav role="navigation">
+                                                <div class="sys_navigation">
+                                                <% $primary_menu %>
+                                                </div>
+                                            </nav>
+                                        </div>
+                                        <div id="yola_heading_block"> <!--Title / Logo-->
+                                            <h1>
+                                                <a id="sys_heading" class="<% if $site_logo_src != ''%>yola_show_logo<% else %>yola_hide_logo<% /if %>" href="./">
+                                                    <img class="yola_site_logo" src="<% IFPROPERTY format='%s' name='site.logo.src' anticache='true' urlencode='true' %>" alt="<% IFPROPERTY format='%s' name='heading.text' %>" >
+                                                    <span><% PROPERTY name='heading.text' %></span>
+                                                </a>
+                                            </h1>
+                                        </div>
+                                        <% else %>
+                                        <div id="yola_heading_block"> <!--Title / Logo-->
+                                            <h1>
+                                                <a id="sys_heading" class="<% if $site_logo_src != ''%>yola_show_logo<% else %>yola_hide_logo<% /if %>" href="./">
+                                                    <img class="yola_site_logo" src="<% IFPROPERTY format='%s' name='site.logo.src' anticache='true' urlencode='true' %>" alt="<% IFPROPERTY format='%s' name='heading.text' %>" >
+                                                    <span><% PROPERTY name='heading.text' %></span>
+                                                </a>
+                                            </h1>
+                                        </div>
+                                        <div id="yola_nav_block"> <!--Nav-->
+                                            <nav role="navigation">
+                                                <div class="sys_navigation">
+                                                <% $primary_menu %>
+                                                </div>
+                                            </nav>
+                                        </div>
+                                        <% /if %>
+                                        <div style="padding:0; height:0; clear:both;">&nbsp;</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="sys_banner" class="yola_banner_wrap">
+                                <div class="yola_inner_banner_wrap">
+                                    <div class="yola_innermost_banner_wrap">
+                                        <h2 class="yola_site_tagline" style="display:<% if $site_tagline_text != ''%>block<% else %>none<% /if %>"><span><% PROPERTY name='site.tagline.text' %></span></h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main class="yola_content_wrap" role="main">
+                        <div class="yola_content_column">
+                            <div class="yola_inner_content_column clearFix">
+                                <% CONTENT %>
+                            </div>
+                        </div>
+                    </main>
+
+                    <div class="yola_footer_wrap">
+                        <div class="yola_footer_column">
+                            <footer id="yola_style_footer">
+                                <% STYLE_FOOTER %>
+                            </footer>
+                        </div>
+                    </div>
+                    <% YOLACREDIT %>
+                    <% TRACKING %>
+                </div>
+            </div> <!-- .inner_bg_overlay -->
+        </div> <!-- #sys_background / .bg_overlay -->
+        <script src="<% 'templates/Skyline_v2/resources/js/'|anticache %>browserify.build.js"></script>
+    </body>
+</html>

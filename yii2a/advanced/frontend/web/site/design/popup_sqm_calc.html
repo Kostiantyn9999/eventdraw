@@ -1,0 +1,144 @@
+<div class="sqm_calc_table">
+    <div class="sqm_calc_view">
+        <div class="buttons" style="padding-bottom: 0!important; border-bottom: 1px solid gray;">
+            <button class="sqm_calc_button popup sqm_calc_copy_report">
+                <svg
+                    class="copy"
+                    viewBox="1 1 14 14"
+                    width="14"
+                    height="14"
+                >
+                    <path class="copy-path" d="M 10.5 15 L 2.5 15 C 1.671947479248047 14.99909782409668 1.000903725624084 14.32805347442627 1.000000357627869 13.50000095367432 L 1 5.5 C 1.000904202461243 4.671947479248047 1.671947956085205 4.000904083251953 2.500000476837158 4.000000476837158 C 2.776142597198486 4 3.000000238418579 4.223857879638672 3.000000238418579 4.5 C 3.000000238418579 4.776142597198486 2.776142597198486 5 2.500000238418579 5 C 2.224006175994873 5.000358104705811 2.000358104705811 5.224006175994873 1.99999988079071 5.5 L 2 13.5 C 2.000550031661987 13.77591419219971 2.224085807800293 13.99945068359375 2.500000238418579 14 L 10.5 14 C 10.77591419219971 13.99945068359375 10.99945068359375 13.77591419219971 11 13.5 C 11 13.22385787963867 11.22385787963867 13 11.5 13 C 11.77614212036133 13 12 13.22385787963867 12 13.5 C 11.99909687042236 14.32805347442627 11.32805347442627 14.99909782409668 10.50000095367432 15.00000190734863 Z M 15 10.5 L 15 2.5 C 14.99909782409668 1.671947479248047 14.32805347442627 1.000903725624084 13.50000095367432 1.000000357627869 L 5.5 1 C 4.671947956085205 1.000904083251953 4.000904083251953 1.671947836875916 4.000000476837158 2.500000238418579 L 4 10.5 C 4.000904083251953 11.32805347442627 4.671948432922363 11.99909687042236 5.500000476837158 12.00000095367432 L 13.5 12 C 14.32805347442627 11.99909687042236 14.99909782409668 11.32805347442627 15.00000190734863 10.5 Z M 13.5 2 C 13.77599334716797 2.000358104705811 13.99964141845703 2.224005937576294 13.99999904632568 2.5 L 14 10.5 C 13.99945068359375 10.77591419219971 13.77591419219971 10.99945068359375 13.5 11 L 5.5 11 C 5.224085807800293 10.99945068359375 5.000549793243408 10.77591419219971 5 10.5 L 5 2.5 C 5.000358581542969 2.224006175994873 5.224006652832031 2.00035834312439 5.5 2 L 13.5 2 Z"></path>
+                </svg>
+                Copy report
+            </button>
+        </div>
+        <div style="border-bottom: 1px solid gray; padding: 5px 0;">
+            <div class="radio-group flex align-center">
+                <label><input type="radio" name="pp_object_type" value="selected" checked="checked"> Selected Objects</label>
+                <label><input type="radio" name="pp_object_type" style="margin-left: 5px;" value="all"> All Objects</label>
+                <a href="javascript:;" class="sqm-show-btn" style="margin-left: 5px; color: #0075ff; cursor: pointer;">[Show]</a>
+            </div>
+            <div style="padding: 0 5px;">
+                <div class="total-objects-sqm flex align-center justify-between">
+                    <div>
+                        Total <span class="unit-label">SQM</span> of Objects
+                    </div>
+                    <div>
+                        <span class="objects-sqm-number">0</span>
+                        <span class="unit-label">SQM</span>
+                    </div>
+                </div>
+
+                <div class="total-space-sqm flex align-center justify-between">
+                    <div>
+                        Total <span class="unit-label">SQM</span> of Space
+                    </div>
+                    <div>
+                        <input type="number" value="0" class="popup sqm-input-number" style="width: 70px; text-align: right;"></input>
+                    </div>
+                </div>
+
+                <div class="diff-sqm flex align-center justify-between" style="font-weight: bold;">
+                    <div>
+                        <span class="unit-label">SQM</span> difference
+                    </div>
+                    <div>
+                        <span class="diff-sqm-number">0</span>
+                        <span class="unit-label">SQM</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="border-bottom: 1px solid gray; padding: 5px 0;">
+            <div class="flex align-center justify-between" style="padding: 0 5px;">
+                <label>How many pax per <span class="unit-label">SQM</span>?</label>
+                <input type="number" value="1" class="popup pax-input-number" style="width: 70px; text-align: right;"></input>
+            </div>
+
+            <div class="radio-group flex align-center">
+                <label><input type="radio" name="pp_using_type" value="diff" checked="checked"> Use <span class="unit-label">SQM</span> Diff</label>
+                <label><input type="radio" name="pp_using_type" style="margin-left: 20px;" value="total"> Use Total <span class="unit-label">SQM</span></label>
+            </div>
+
+            <div class="flex align-center justify-between" style="padding: 0 5px; font-weight: bold;">
+                <label>Total people</label>
+                <span class="total-people-number">0</span>
+            </div>
+        </div>
+
+        <div class="" style="padding: 5px 0;">
+            <label style="padding: 0 5px; font-weight: bold;">Units</label>
+            <div>
+                <div class="radio-group flex align-center">
+                    <label><input type="radio" name="pp_units" value="sqm" checked="checked"> SQM</label>            
+                    <label><input type="radio" name="pp_units" style="margin-left: 20px;" value="sqf"> SQF</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style type="text/css">
+body {
+    color: #25302e;
+}
+.sqm_calc_table {
+    font-size: 14px;
+    line-height: 2;
+}
+.popup.sqm_calc_button {
+    border: 1px solid #d7dede;
+    border-radius: 3px;
+    padding: 3px 5px;
+    text-decoration: none;
+    color: #25302e;
+    font-family: 'open sans', sans-serif;
+    font-size: 13px;
+    vertical-align: text-bottom;
+    margin: 8px 4px;
+    width:auto!important;
+    background: transparent; cursor: pointer;
+    float: none !important;
+}
+button.sqm_calc_button svg {
+    vertical-align: inherit;
+}
+.buttons {
+    padding-bottom: 15px !important;
+}
+button.sqm_calc_button:hover {
+    color: #ab508b;
+}
+button.sqm_calc_button:hover svg {
+    fill: #ab508b;
+}
+button.sqm_calc_button.active {
+    background: #88979a;
+}
+button.sqm_calc_button.active svg {
+    fill: #fff;
+}
+button.sqm_calc_button.active {
+    background: #88979a;
+    color: #fff;
+    border-radius: 3px !important;
+}
+input[type=radio] {
+    margin-top: 0;
+}
+.flex {
+    display: flex;
+}
+.align-center {
+    align-items: center;
+}
+.justify-between {
+    justify-content: space-between;
+}
+input.popup.sqm-input-number, input.popup.pax-input-number {
+    font-family: inherit !important;
+    font-size: inherit !important;
+}
+</style>

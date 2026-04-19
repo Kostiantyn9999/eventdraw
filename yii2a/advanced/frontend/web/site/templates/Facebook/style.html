@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<% capture assign='primary_menu' %><% PRIMARY_MENU %><% /capture %>
+<% capture assign='secondary_menu' %><% SECONDARY_MENU %><% /capture %>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <% HEADER %>
+        <script type='text/javascript'>
+            var MORE_TEXT = "<%TRANSLATE%>More<%/TRANSLATE%>";
+        </script>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script type='text/javascript' src="templates/Facebook/resources/facebook.js"></script>
+    </head>
+    <body id="sys_background">
+        
+        <% IFPROPERTY format='<div class="ysf_banner"><img src="%s" /></div>' name='banner.src' anticache='true' urlencode='true' %>
+        
+        <div class='ysf_menus'>
+            <div id="ysf_menu" class='closed'>
+                <% $primary_menu %>
+                <div class='clear'></div>
+            </div>
+        
+            <% if $secondary_menu %>
+                <div id='ysf_menu_2'>
+                    <% $secondary_menu %>
+                    <div class='clear'></div>
+                </div>
+            <% /if %>
+        </div>
+        
+        <div class="ysf_wrap">
+            <div class="ysf_wrap_inner">
+                <% CONTENT %>
+            </div>
+        </div>
+        
+        <% TRACKING %>
+        
+    </body>
+</html>

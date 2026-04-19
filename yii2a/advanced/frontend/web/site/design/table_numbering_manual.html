@@ -1,0 +1,263 @@
+<div class="sidebar_right">
+<span class="close_sidebar" id="hide_table_numbering_manual" style="top: 0;padding: 5px;cursor: pointer;position: absolute;right: 0;">
+
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABlBMVEV7mr3///+wksspAAAAAnRSTlP/AOW3MEoAAAAdSURBVAgdY9jXwCDDwNDRwHCwgeExmASygSL7GgB12QiqNHZZIwAAAABJRU5ErkJggg==" title="Close" class="" style="">
+
+</span>
+<!-- theatre_style_table Start -->
+<div id="theatre_style_table">
+
+	<div id="theatre_style_inner_details">
+		<h4 id="theatre_style_inner_details_title">Manual numbering</h4>
+
+        <div class="spacer"></div>
+
+        <span>To assign the next number to a shape,</span>
+        <br>
+        <span>click the shape.</span>
+        <br>
+        <br>
+        <span>To stop numbering shapes, click Close.</span>
+        <br>
+        <br>
+		<div>
+			<span>Next number assigned</span>
+			<span><input type="number" value="1" name="manual_numbering_start_from" id="manual_numbering_start_from" min="1"></span>
+		</div>
+
+        <div id="div_manual_numbering_stop" style="text-align: center; margin-top: 15px;">
+            <button id="btn_manual_numbering_stop">Close</button>
+         </div> 
+
+
+		</div><!-- theatre_style_inner_details -->
+	</div><!-- theatre_style_table end -->
+
+</div><!-- Side_bar end -->
+
+<style type="text/css">
+	body {color: #25302e;}
+div#theatre_style_table {
+	position: relative;
+    max-width: 270px;
+
+}
+
+button#btn_manual_numbering_stop {    font-size: 14px;
+    color: #fff!important;
+    background: rgba(168,81,138,1);
+    padding: 7px 17px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 4px;
+    border:none;margin-right: 25px; cursor: pointer;}
+button#btn_manual_numbering_stop:hover {opacity: 0.8;}
+
+div#theatre_style_table > div >  div > span:nth-child(1) {
+max-width: 250px;
+    width: 68%;
+    display: inline-block;
+    font-size: 14px;
+    line-height: 19px;
+    color: #25302e;
+    font-weight: 500;
+    font-family: 'Open Sans', sans-serif;
+}
+div#theatre_style_table > div >  div > span:nth-child(2) {
+    max-width: 80px;
+    width: 40%;
+    display: inline-block;
+}
+div#theatre_style_table > div >  div > span:nth-child(2) input, div#theatre_style_table > div >  div > span:nth-child(2) select {
+    max-width: 180px;
+    width: 100%;
+    display: inline-block;
+}
+
+div#theatre_style_table > div >  div > span:nth-child(2) input[type="checkbox"] {
+    max-width: 180px;
+    width: auto;
+    display: inline-block;
+    position: relative;
+    margin: 0;
+}
+
+div#theatre_style_table > div , #theatre_style_table_no_object h4 {
+    text-align: left;
+    margin-bottom: 5px;
+    font-size: 15px;
+        font-family: 'Open Sans', sans-serif;
+        margin-bottom: 15px;
+}
+
+/*div#theatre_style_table > div >  div button { width: 90%; margin-top: 15px;}*/
+
+#theatre_style_table input {
+    border: 1px solid #d7dede;
+    border-radius: 3px;
+    background-color: #f7f8f8
+}
+
+#theatre_style_table div#theatre_style_inner_details > div {
+    margin-bottom: 7px;
+}
+#theatre_style_table select {
+    border: 1px solid #ccc;
+    opacity: 0.6;
+    background-color: #f7f8f8
+}
+#theatre_style_table input[type="checkbox"] {
+  visibility: hidden;
+}
+#theatre_style_table label {
+  cursor: pointer;
+  position: absolute;
+  margin-left: 49px
+  
+}
+#theatre_style_table input[type="checkbox"] + label:before {
+  border: 1px solid #ccc;
+  content: "\00a0";
+  display: inline-block;
+  font: 16px/1em sans-serif;
+  height: 16px;
+  padding: 0;
+  vertical-align: top;
+  width: 16px;
+  border-radius: 3px;
+  background-color: #f7f8f8;
+  
+}
+#theatre_style_table input[type="checkbox"]:checked + label:before {
+  background-color:#88979a;
+  color: #fff;
+  text-align: center;
+    background-image: url(./icons/check-24px.svg);
+    content: '';
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 10px;
+}
+#theatre_style_table input[type="checkbox"]:checked + label:after {
+  font-weight: bold;
+}
+
+#theatre_style_table input[type="checkbox"]:focus + label::before {
+    outline: rgb(59, 153, 252) auto 5px;
+}
+#theatre_style_table img.pattern {
+    position: absolute;
+    width: 220px;
+    left: -235px;
+    top: 90px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 15px #0000003d;
+    outline: 0;
+    background-color: transparent !important;
+    border-radius: 10px;
+    display: none;
+}
+#theatre_style_table .table_icon > div {
+    display: inline-block;
+    padding-bottom: 0 !important;
+}
+#theatre_style_table .table_icon > div {
+    display: inline-block;
+    padding-bottom: 0 !important;
+}
+#theatre_style_table .left-to-right {
+    float: left;
+    margin-right: 6px;
+    padding-bottom: 0 !important;
+}
+.table_icon img {
+    margin-right: 3px;
+    width: 18px;
+    border: 1px solid #ccc;
+    padding: 3px;
+    border-radius: 3px;
+}
+#theatre_style_table .top-to-bottom {
+    border-left: 1px solid #ccc;
+    float: left;
+    padding-bottom: 0 !important;
+    padding-left: 6px;
+}
+#theatre_style_table p.note {
+    font-size: 11px;
+    color: #88989a;
+    font-weight: 400;
+    font-style: italic;
+    font-family: 'Open Sans', sans-serif;
+    line-height: 15px;
+    clear: both;
+    margin-top: 0;
+        white-space: normal;
+}
+#theatre_style_table h5.sub-heading {
+    text-transform: uppercase;
+    margin-top: 10px;
+    font-size: 11px !important;
+    line-height: 30px;
+    color: #88989a;
+    font-weight: 400;
+    font-family: 'Open Sans', sans-serif;
+    margin-bottom: 0;
+    text-align: left !important
+}
+#theatre_style_table img.hover_element:hover + img.pattern {
+    display: block;
+}
+#theatre_style_table img.pattern {
+    position: absolute;
+    width: 220px !important;
+    margin-left: -20px;
+    top: 90px;
+    padding: 10px !important;
+    border: 1px solid #ccc !important;
+    box-shadow: 0 0 15px #0000003d;
+    outline: 0;
+    background-color: transparent !important;
+    border-radius: 10px !important;
+    display: none;
+}
+/*#theatre_style_table button {
+    font-size: 14px;
+    color: #fff!important;
+    background: rgba(168,81,138,1);
+    padding: 7px 17px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 4px;
+    margin: 10px 0 0;
+    border: 0;
+}*/
+#theatre_style_table .theatre_arrow {
+    border: 1px solid #d7dede;
+    text-align: center;
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    padding: 8px 5px 5px 5px;
+    border-radius: 4px;
+    vertical-align: middle;
+    cursor: pointer;
+    box-sizing: content-box;
+    background-color: #fff;
+}
+#theatre_style_table .theatre_arrow svg {
+    pointer-events: none;
+}
+#theatre_style_table button.theatre_arrow:hover {
+    background-color: #88979a;
+}
+
+#theatre_style_table button.theatre_arrow:hover svg {
+    fill: #fff;
+}
+#theatre_style_table .spacer {
+    margin-bottom: 25px !important;
+    clear: both;
+}
+</style>

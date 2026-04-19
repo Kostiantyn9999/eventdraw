@@ -1,0 +1,237 @@
+<div class="sidebar_right momentus_placed_shapes_sidebar">
+  <div class="mps_tabs_bar">
+    <button class="mps_tab" id="mps_tab_tableinfo" data-tab="tableinfo">Table(s) info</button>
+    <button class="mps_tab" id="mps_tab_designer" data-tab="designer">Designer</button>
+    <button class="mps_tab active" id="mps_tab_placed" data-tab="placed">Placed</button>
+    <span class="close_sidebar" id="hide_momentus_placed_shapes">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 1L9 9M9 1L1 9" stroke="#5f6f6f" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </span>
+  </div>
+
+  <div id="momentus_placed_shapes">
+    <div class="mps_tab_content" id="mps_content_tableinfo" style="display:none;"></div>
+    <div class="mps_tab_content" id="mps_content_designer" style="display:none;"></div>
+
+    <div class="mps_tab_content" id="mps_content_placed">
+      <h4 class="mps_panel_title">Momentus Placed Shapes</h4>
+
+      <div class="mps_search_wrap">
+        <svg class="mps_search_icon" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="10.5" cy="10.5" r="7" stroke="#8a9a9a" stroke-width="2"/>
+          <path d="M15.5 15.5L21 21" stroke="#8a9a9a" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input id="momentus_placed_shapes_search" type="text" placeholder="Resource" autocomplete="off" />
+      </div>
+
+      <div id="momentus_placed_shapes_list">
+        <div class="mps_list_empty">No items found.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mps_footer">
+    <button id="momentus_create_service_order" class="mps_primary_button">Create Service Order</button>
+  </div>
+</div>
+
+<style type="text/css">
+  .momentus_placed_shapes_sidebar {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    color: #25302e;
+    font-family: 'Open Sans', sans-serif;
+    overflow: hidden;
+  }
+
+  /* ---- Tabs bar ---- */
+  .mps_tabs_bar {
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid #d7dede;
+    flex: 0 0 auto;
+  }
+  .mps_tab {
+    flex: 1 1 0;
+    padding: 10px 4px;
+    font-size: 12px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+    color: #6b7a7a;
+    background: #f3f5f5;
+    border: none;
+    border-right: 1px solid #d7dede;
+    cursor: pointer;
+    text-align: center;
+    white-space: nowrap;
+    transition: background .15s, color .15s;
+  }
+  .mps_tab:last-of-type { border-right: none; }
+  .mps_tab:hover { background: #eaeeed; }
+  .mps_tab.active {
+    background: #fff;
+    color: #25302e;
+    border-bottom: 2px solid #2f6fed;
+    margin-bottom: -1px;
+  }
+  .mps_tabs_bar .close_sidebar {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    cursor: pointer;
+    border-left: 1px solid #d7dede;
+    background: #f3f5f5;
+  }
+  .mps_tabs_bar .close_sidebar:hover { background: #e0e3e3; }
+
+  /* ---- Panel content area ---- */
+  #momentus_placed_shapes {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+  }
+  .mps_tab_content { display: none; }
+  .mps_tab_content.active,
+  #mps_content_placed { display: block; }
+
+  .mps_panel_title {
+    margin: 0;
+    padding: 10px 10px 8px 10px;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: left;
+  }
+
+  /* ---- Search ---- */
+  .mps_search_wrap {
+    position: relative;
+    padding: 0 10px 10px 10px;
+  }
+  .mps_search_icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-65%);
+    pointer-events: none;
+  }
+  #momentus_placed_shapes_search {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #d7dede;
+    border-radius: 4px;
+    background-color: #f7f8f8;
+    padding: 7px 8px 7px 30px;
+    font-size: 13px;
+    font-family: 'Open Sans', sans-serif;
+    outline: none;
+  }
+  #momentus_placed_shapes_search:focus { border-color: #2f6fed; background: #fff; }
+
+  /* ---- List ---- */
+  #momentus_placed_shapes_list { padding: 0 4px 4px 4px; }
+  .mps_list_empty {
+    padding: 20px 8px;
+    color: #6b7a7a;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  /* ---- Item card ---- */
+  .mps_item {
+    position: relative;
+    margin: 6px 4px;
+    padding: 10px;
+    border: 1px solid #d7dede;
+    border-radius: 4px;
+    background: #fff;
+    font-family: 'Open Sans', sans-serif;
+  }
+  .mps_item.mps_unmapped { border-color: #f2c14e; box-shadow: 0 0 0 1px rgba(242, 193, 78, 0.2) inset; }
+
+  .mps_row_top { display: flex; align-items: flex-start; gap: 8px; }
+  .mps_icon {
+    width: 32px; height: 32px;
+    border: 1px solid #d7dede;
+    border-radius: 4px;
+    background: #f7f8f8;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    overflow: hidden;
+  }
+  .mps_icon img { max-width: 100%; max-height: 100%; }
+  .mps_title_wrap { flex: 1 1 auto; min-width: 0; }
+  .mps_title { font-weight: 600; font-size: 13px; color: #25302e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mps_sub { font-size: 11px; color: #7a8a8a; margin-top: 2px; }
+
+  .mps_warn {
+    position: relative;
+    flex: 0 0 auto;
+    width: 16px; height: 16px;
+    display: inline-block;
+    cursor: default;
+    margin-top: 2px;
+  }
+  .mps_warn svg { width: 16px; height: 16px; display: block; }
+  .mps_warn .mps_tooltip {
+    display: none;
+    position: absolute;
+    right: -4px;
+    top: -46px;
+    width: 190px;
+    padding: 8px 10px;
+    background: rgba(0,0,0,0.82);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 16px;
+    z-index: 9999;
+  }
+  .mps_warn:hover .mps_tooltip { display: block; }
+  .mps_warn .mps_tooltip:after {
+    content: "";
+    position: absolute;
+    right: 10px;
+    bottom: -6px;
+    border-width: 6px 6px 0 6px;
+    border-style: solid;
+    border-color: rgba(0,0,0,0.82) transparent transparent transparent;
+  }
+
+  .mps_row_counts { display: flex; gap: 24px; margin-top: 8px; padding-left: 40px; }
+  .mps_metric { font-size: 11px; color: #7a8a8a; }
+  .mps_metric_label { text-transform: uppercase; letter-spacing: 0.3px; font-size: 10px; display: block; margin-bottom: 1px; }
+  .mps_metric b { display: block; color: #25302e; font-size: 14px; font-weight: 700; }
+
+  /* ---- Footer (flex item, sticks to bottom) ---- */
+  .mps_footer {
+    flex: 0 0 auto;
+    padding: 10px;
+    background: #fff;
+    border-top: 1px solid #e8ecec;
+    z-index: 10;
+  }
+  .mps_primary_button {
+    width: 100%;
+    border: none;
+    background: #2f6fed;
+    color: #fff;
+    border-radius: 4px;
+    padding: 11px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Open Sans', sans-serif;
+    transition: background .15s;
+    box-sizing: border-box;
+  }
+  .mps_primary_button:hover { background: #245ed4; }
+  .mps_primary_button:disabled { opacity: 0.6; cursor: default; }
+</style>

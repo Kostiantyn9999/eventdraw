@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<% capture assign='phone' %><% $uniproperties.phone.main %><% /capture %>
+<% capture assign='address' %><% $uniproperties.address.line1 %> <% $uniproperties.address.line2 %> <% $uniproperties.address.city %> <% $uniproperties.address.state %> <% $uniproperties.address.postal_code %> <% $uniproperties.address.country %><% /capture %>
+
+<% capture assign='phone_display' %><% if $uniproperties.mobile.call.enabled == 'true' && $phone != '' %>true<% else %>false<% /if %><% /capture %>
+<% capture assign='address_display' %><% if $uniproperties.mobile.map.enabled == 'true' && $address != '' %>true<% else %>false<% /if %><% /capture %>
+
+<% capture assign='phone_url' %><% if $system.mode == 'STYLE_PREVIEW' %>#<% else %>tel:<% $phone %><% /if %><% /capture %>
+<% capture assign='address_url' %><% if $system.mode == 'STYLE_PREVIEW' %>#<% else %>http://maps.google.com/maps?q=<% $address|escape:"url" %><% /if %><% /capture %>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script src="templates/Mobile/resources/mobile.js"></script>
+        <% HEADER %>
+        <meta name="viewport" content="width=360" />
+        <noscript>
+            <style type='text/css'>
+                div#ysm_menu{
+                    border-top:1px solid #666;
+                    display:block;
+                }
+            </style>
+        </noscript>
+    </head>
+    <body id="sys_background">
+        
+        <div class="ysm_bar">
+            
+            <% HEADING %>
+            
+            <div class="ysm_buttons ysm_buttons_closed">
+                
+                <table cellpadding='0' cellspacing='0'>
+                    <tr>
+                        <td class='shadow' style='width:50%;'><div></div></td>
+                        <td class='shadow' <% if $phone_display == 'false' %>style='display:none;'<% /if %>>
+                            
+                            <a id='ysm_call_button' href='<% $phone_url %>'>
+                                <span class='bg'>
+                                    <span class='text'><%TRANSLATE%>Call<%/TRANSLATE%></span>
+                                </span>
+                            </a>
+                            
+                        </td>
+                        <td class='shadow' <% if $address_display == 'false' %>style='display:none;'<% /if %>>
+                            
+                            <a id='ysm_map_button' href='<% $address_url %>'>
+                                <span class='bg'>
+                                    <span class='text'><%TRANSLATE%>Map<%/TRANSLATE%></span>
+                                </span>
+                            </a>
+                            
+                        </td>
+                        <td>
+                            
+                            <a id="ysm_menu_toggle" href="#">
+                                <span class='bg'>
+                                    <span class='text'><%TRANSLATE%>More<%/TRANSLATE%></span>
+                                </span>
+                            </a>
+                            
+                        </td>
+                        <td class='shadow' style='width:50%;'><div></div></td>
+                    </tr>
+                </table>
+                
+            </div>
+            
+        </div>
+        
+        <div id="ysm_menu" class='closed'>
+            <% NESTED_MENU %>
+        </div>
+        
+        <% if $uniproperties.mobile.banner.enabled == 'true' %>
+            <% IFPROPERTY format='<div class="ysm_banner" style="display:block;"><img src="%s" /></div>' name='banner.src' anticache='true' urlencode='true' %>
+        <% else %>
+            <% IFPROPERTY format='<div class="ysm_banner" style="display:none;"><img src="%s" /></div>' name='banner.src' anticache='true' urlencode='true' %>
+        <% /if %>
+        
+        <div class="ysm_wrap">
+            <div class="ysm_wrap_inner sys_layout">
+                <% CONTENT %>
+            </div>
+        </div>
+        
+        <div class='ysm_switch_mode'>
+            <a href='?disable_mobile=true'><%TRANSLATE%>View full site<%/TRANSLATE%></a>
+        </div>
+        
+        <% TRACKING %>
+        
+    </body>
+</html>
