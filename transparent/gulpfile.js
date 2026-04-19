@@ -103,17 +103,17 @@ gulp.task("compress-css", function () {
 gulp.task("copyToServer", function () {
   const indexHtml = gulp
     .src("index.html")
-    .pipe(gulp.dest("F:/eventdraw/test"))
+    .pipe(gulp.dest("C:/WorkSpace/eventdraw/test"))
     .pipe(browserSync.stream());
 
   const bundleJs = gulp
     .src("dist/js/bundle.js")
-    .pipe(gulp.dest("F:/eventdraw/test/assets/js"))
+    .pipe(gulp.dest("C:/WorkSpace/eventdraw/test/assets/js"))
     .pipe(browserSync.stream());
 
   const stylesheetCss = gulp
     .src("dist/css/stylesheet.css")
-    .pipe(gulp.dest("F:/eventdraw/test/assets/css"))
+    .pipe(gulp.dest("C:/WorkSpace/eventdraw/test/assets/css"))
     .pipe(browserSync.stream());
 
   // Merge all streams into one
