@@ -13,8 +13,8 @@ return [
         's3' => [
             'class' => 'frostealth\yii2\aws\s3\Service',
             'credentials' => [
-                'key' => getenv('AWS_ACCESS_KEY_ID') ?: '',
-                'secret' => getenv('AWS_SECRET_ACCESS_KEY') ?: '',
+                'key' => '',
+                'secret' => '',
             ],
             'region' => 'ap-southeast-2',
             'defaultBucket' => 'eventdraw01syd',

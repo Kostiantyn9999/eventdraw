@@ -1,15 +1,11 @@
 <?php
 return [
-    /**
-     * Momentus Connect (gomomentus). Used by frontend + client (MomentusClient reads Yii::$app->params['momentus']).
-     * Prefer env vars on staging/production; optional fallbacks match client/config/params.php for local/dev parity.
-     */
     'momentus' => [
-        'baseUrl' => getenv('MOMENTUS_BASE_URL') ?: 'https://api-sandbox.gomomentus.com/enterprise/connect/api',
-        'apiToken' => getenv('MOMENTUS_API_TOKEN') ?: '',
-        'subscriptionKey' => getenv('MOMENTUS_SUBSCRIPTION_KEY') ?: '',
-        'orgCode' => getenv('MOMENTUS_ORG_CODE') ?: '10',
-        'timeout' => (int) (getenv('MOMENTUS_TIMEOUT') ?: 20),
+        'baseUrl' => 'https://api-sandbox.gomomentus.com/enterprise/connect/api',
+        'apiToken' => '',
+        'subscriptionKey' => '',
+        'orgCode' => '10',
+        'timeout' => 20,
         'floorplanWorkflow' => [
             'enabled' => true,
             'defaultMomentusEventId' => 9427,
@@ -21,11 +17,11 @@ return [
     'senderEmail' => 'support@eventdraw.com.au',
     'senderName' => 'EventDraw support',
     'user.passwordResetTokenExpire' => 86400,
-     'microsoft' => [
-        'tenant_id' => getenv('MICROSOFT_TENANT_ID') ?: '',
-        'client_id' => getenv('MICROSOFT_CLIENT_ID') ?: '',
-        'client_secret' => getenv('MICROSOFT_CLIENT_SECRET') ?: '',
-        'redirect_uri' => getenv('MICROSOFT_REDIRECT_URI') ?: 'https://momentusstaging.eventdrawus.com/frontend/web/site/sso-login',
+    'microsoft' => [
+        'tenant_id' => 'efbdcbf7-4ed4-4c69-9d7a-d9391905bdbd',
+        'client_id' => 'f1aa6f15-6503-4fb7-b4c8-0ee67ebd3029',
+        'client_secret' => '',
+        'redirect_uri' => 'https://momentusstaging.eventdrawus.com/frontend/web/site/sso-login',
         'scope' => 'openid profile email User.Read',
     ],
 ];
