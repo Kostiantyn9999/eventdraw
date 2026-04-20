@@ -5,10 +5,6 @@
 !**/*.php
 !**/*.html
 
-# Local env template / secrets — never commit (copy to server env or a private file).
-advanced/common/config/params.php
-advanced/common/config/main.php
-
 # Do not commit Composer dependencies (still lots of .php)
 advanced/vendor/
 
