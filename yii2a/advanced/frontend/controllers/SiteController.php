@@ -4605,16 +4605,38 @@ public function actionSaveTemplateJson()
         $userType = Yii::$app->user->identity->userType;
 
         // Read Momentus Room Diagram URL parameters.
-        // SpaceID = EventDraw Template ID, EventID = Momentus Event ID.
+        // SpaceCode = Momentus Space Code (used to look up the EventDraw Template), EventID = Momentus Event ID.
         $orgCode             = trim((string) Yii::$app->request->get('OrgCode', ''));
         $momentusEventId     = (int) Yii::$app->request->get('EventID', 0);
-        $templateId          = (int) Yii::$app->request->get('SpaceID', 0);
+        $spaceCode           = trim((string) Yii::$app->request->get('SpaceCode', ''));
         $eventSpaceDiagramId = (int) Yii::$app->request->get('EventSpaceDiagramID', 0);
+
+        // Resolve the EventDraw template from OrgCode + SpaceCode.
+        // OrgCode identifies the client; SpaceCode identifies the space within that client.
+        // Both are required together because the same SpaceCode can exist across multiple Momentus organisations.
+        $templateId = 0;
+        if ($spaceCode !== '' && $orgCode !== '') {
+            $client = \common\models\Client::find()
+                ->where(['momentusOrgCode' => $orgCode])
+                ->one();
+            if ($client) {
+                $tmpl = \common\models\Template::find()
+                    ->where([
+                        'momentusSpaceCode' => $spaceCode,
+                        'clientid'          => $client->id,
+                        'templateActive'    => 1,
+                    ])
+                    ->one();
+                if ($tmpl) {
+                    $templateId = (int) $tmpl->id;
+                }
+            }
+        }
 
         // When a Momentus Template Link is clicked, persist the EventSpaceDiagramID
         // onto the template row so it is always available even if the URL param is later absent.
         if ($templateId > 0 && $eventSpaceDiagramId > 0) {
-            $tmpl = \common\models\Template::findOne($templateId);
+            $tmpl = $tmpl ?? \common\models\Template::findOne($templateId);
             if ($tmpl && (int) $tmpl->momentusEventSpaceDiagramId !== $eventSpaceDiagramId) {
                 $tmpl->momentusEventSpaceDiagramId = $eventSpaceDiagramId;
                 $tmpl->save(false, ['momentusEventSpaceDiagramId']);
@@ -4626,7 +4648,7 @@ public function actionSaveTemplateJson()
             'user_id'                => $user_id,
             'urlOrgCode'             => $orgCode,
             'urlMomentusEventId'     => $momentusEventId,
-            'urlSpaceId'             => (string) $templateId,
+            'urlSpaceCode'           => $spaceCode,
             'urlEventSpaceDiagramId' => $eventSpaceDiagramId,
             'urlTemplateId'          => $templateId,
         ]);

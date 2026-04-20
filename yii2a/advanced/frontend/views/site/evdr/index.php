@@ -51,7 +51,7 @@ $momentusOrg = Yii::$app->params['momentus']['orgCode'] ?? '';
 // URL params passed from actionEventdraw() — default to empty/0 when opened without a Momentus link
 $urlOrgCode             = isset($urlOrgCode)             ? $urlOrgCode             : '';
 $urlMomentusEventId     = isset($urlMomentusEventId)     ? (int) $urlMomentusEventId : 0;
-$urlSpaceId             = isset($urlSpaceId)             ? $urlSpaceId             : '';
+$urlSpaceCode           = isset($urlSpaceCode)           ? $urlSpaceCode           : '';
 $urlEventSpaceDiagramId = isset($urlEventSpaceDiagramId) ? (int) $urlEventSpaceDiagramId : 0;
 $urlTemplateId          = isset($urlTemplateId)          ? (int) $urlTemplateId     : 0;
 
@@ -74,7 +74,7 @@ window.MomentusFloorplanWorkflow = <?= json_encode([
     'enabled'              => array_key_exists('enabled', $momentusFw) ? (bool) $momentusFw['enabled'] : true,
     'momentusEventId'      => $resolvedMomentusEventId,
     'orgCode'              => $resolvedOrgCode,
-    'spaceId'              => $urlSpaceId,
+    'spaceCode'            => $urlSpaceCode,
     'eventSpaceDiagramId'  => $urlEventSpaceDiagramId,
     'templateId'           => $urlTemplateId,
 ], JSON_UNESCAPED_UNICODE) ?>;
