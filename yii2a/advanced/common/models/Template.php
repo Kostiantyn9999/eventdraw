@@ -25,6 +25,7 @@ use \DateTime;
  * @property string $image
  * @property string $momentusSpaceDescr
  * @property string $momentusSpaceCode
+ * @property int|null $momentusEventSpaceDiagramId
  */
 class Template extends \yii\db\ActiveRecord
 {
@@ -317,7 +318,7 @@ class Template extends \yii\db\ActiveRecord
         return [
             [['templateName', 'xmlCode'], 'required'],
             [['xmlCode','momentusSpaceDescr','momentusSpaceCode'], 'string'],
-            [['templateActive','templateDefault','clientid','shadow'], 'integer'],
+            [['templateActive','templateDefault','clientid','shadow','momentusEventSpaceDiagramId'], 'integer'],
             ['templateActive', 'default', 'value' => 1],
             [['templateName'], 'string', 'max' => 100],
             [['imageFile'], 'file', 'skipOnEmpty' => false, 'extensions' => 'png, jpg, jpeg, gif'],
@@ -363,7 +364,8 @@ class Template extends \yii\db\ActiveRecord
             'imageFile' => 'Template image',
             'image' => 'Image file name',
             'momentusSpaceDescr'=> 'Momentus Space',
-            'momentusSpaceCode'=> 'Momentus Code',
+            'momentusSpaceCode'=> 'Momentus Space Code',
+            'momentusEventSpaceDiagramId' => 'Default EventSpaceDiagram ID',
         ];
     }
 

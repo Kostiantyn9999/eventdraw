@@ -19,9 +19,20 @@ use yii\web\BadRequestHttpException;
 class TemplateController extends Controller
 {
     /**
+     * Disable CSRF for endpoints called from the Draw.io iframe (no Yii session).
+     */
+    public function beforeAction($action)
+    {
+        $csrfExempt = ['ajax-set-momentus-space', 'ajax-set-momentus-diagram-id', 'index-json'];
+        if (in_array($action->id, $csrfExempt)) {
+            $this->enableCsrfValidation = false;
+        }
+        return parent::beforeAction($action);
+    }
+
+    /**
      * {@inheritdoc}
      */
-
     public function behaviors()
     {
         return [
@@ -29,15 +40,14 @@ class TemplateController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['login', 'error','ajax-set-momentus-space'],
+                        // Publicly accessible — called from Draw.io iframe without a session
+                        'actions' => ['login', 'error', 'ajax-set-momentus-space', 'ajax-set-momentus-diagram-id', 'index-json'],
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['logout', 'index', 'view', 'update', 'create','delete','search','psw','template'
-                                      ],
+                        'actions' => ['logout', 'index', 'view', 'update', 'create', 'delete', 'search', 'psw', 'template'],
                         'allow' => true,
                         'roles' => ['@'],
-                        
                     ],
                 ],
             ],
@@ -87,6 +97,50 @@ public function actionAjaxSetMomentusSpace()
     return ['ok' => false, 'errors' => $m->errors];
 }
 
+
+    public function actionAjaxSetMomentusDiagramId()
+    {
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $templateId = (int)\Yii::$app->request->post('id');
+        $diagramId  = (int)\Yii::$app->request->post('diagram_id');
+
+        if (!$templateId) {
+            throw new BadRequestHttpException('No template id');
+        }
+
+        $m = Template::findOne($templateId);
+        if (!$m) {
+            throw new BadRequestHttpException('Template not found');
+        }
+
+        $m->momentusEventSpaceDiagramId = $diagramId > 0 ? $diagramId : null;
+
+        if ($m->save(false, ['momentusEventSpaceDiagramId'])) {
+            return ['ok' => true];
+        }
+        return ['ok' => false, 'errors' => $m->errors];
+    }
+
+    /**
+     * JSON endpoint for the Space Mapping dialog in Draw.io.
+     * Returns all templates as [{id, templateName, momentusSpaceCode, momentusSpaceDescr}].
+     */
+    public function actionIndexJson()
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $templates = Template::find()->orderBy('templateName')->all();
+        $out = [];
+        foreach ($templates as $t) {
+            $out[] = [
+                'id'               => $t->id,
+                'templateName'     => $t->templateName,
+                'momentusSpaceCode'  => $t->momentusSpaceCode,
+                'momentusSpaceDescr' => $t->momentusSpaceDescr,
+            ];
+        }
+        return $out;
+    }
 
     public function actionIndex()
     {

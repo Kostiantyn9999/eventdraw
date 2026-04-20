@@ -45,13 +45,38 @@ $userClientName = $tmplInfo["clientName"];
 window.variableUserName = "<?php echo Yii::$app->user->identity->userfullname; ?>" ;
 window.variableUserID = "<?php echo Yii::$app->user->identity->id; ?>" ;
 <?php
-$momentusFw = Yii::$app->params['momentus']['floorplanWorkflow'] ?? [];
-$momentusOrg = Yii::$app->params['momentus']['orgCode'] ?? '10';
+$momentusFw  = Yii::$app->params['momentus']['floorplanWorkflow'] ?? [];
+$momentusOrg = Yii::$app->params['momentus']['orgCode'] ?? '';
+
+// URL params passed from actionEventdraw() — default to empty/0 when opened without a Momentus link
+$urlOrgCode             = isset($urlOrgCode)             ? $urlOrgCode             : '';
+$urlMomentusEventId     = isset($urlMomentusEventId)     ? (int) $urlMomentusEventId : 0;
+$urlSpaceId             = isset($urlSpaceId)             ? $urlSpaceId             : '';
+$urlEventSpaceDiagramId = isset($urlEventSpaceDiagramId) ? (int) $urlEventSpaceDiagramId : 0;
+$urlTemplateId          = isset($urlTemplateId)          ? (int) $urlTemplateId     : 0;
+
+// Resolve orgCode: URL param → client DB → global params config
+$clientOrgCode = '';
+$clientModel = \common\models\Client::findIdentity(Yii::$app->user->identity->clientid);
+if ($clientModel) {
+    $clientOrgCode = trim((string) $clientModel->momentusOrgCode);
+}
+$resolvedOrgCode = $urlOrgCode !== ''
+    ? $urlOrgCode
+    : ($clientOrgCode !== '' ? $clientOrgCode : (string) ($momentusFw['defaultOrgCode'] ?? $momentusOrg));
+
+// Resolve momentusEventId: URL param → config default (no hardcoded fallback)
+$resolvedMomentusEventId = $urlMomentusEventId > 0
+    ? $urlMomentusEventId
+    : (int) ($momentusFw['defaultMomentusEventId'] ?? 0);
 ?>
 window.MomentusFloorplanWorkflow = <?= json_encode([
-    'enabled' => array_key_exists('enabled', $momentusFw) ? (bool) $momentusFw['enabled'] : true,
-    'momentusEventId' => (int) ($momentusFw['defaultMomentusEventId'] ?? 9427),
-    'orgCode' => (string) ($momentusFw['defaultOrgCode'] ?? $momentusOrg),
+    'enabled'              => array_key_exists('enabled', $momentusFw) ? (bool) $momentusFw['enabled'] : true,
+    'momentusEventId'      => $resolvedMomentusEventId,
+    'orgCode'              => $resolvedOrgCode,
+    'spaceId'              => $urlSpaceId,
+    'eventSpaceDiagramId'  => $urlEventSpaceDiagramId,
+    'templateId'           => $urlTemplateId,
 ], JSON_UNESCAPED_UNICODE) ?>;
 
 window.variableUserNRelease = "<?php echo Yii::$app->user->identity->nrelease; ?>" ;

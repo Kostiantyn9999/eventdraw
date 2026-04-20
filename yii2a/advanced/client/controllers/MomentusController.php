@@ -174,7 +174,7 @@ class MomentusController extends Controller
     }
 
     /**
-     * Resolve org_code from request or from config (front-end does not need to send it).
+     * Resolve org_code: request param → client DB value → global params config.
      */
     private function getOrgCode()
     {
@@ -182,6 +182,19 @@ class MomentusController extends Controller
         if ($fromRequest !== '') {
             return $fromRequest;
         }
+
+        // Prefer the Account Code stored on the client record in the DB
+        if (!\Yii::$app->user->isGuest) {
+            $clientId = \Yii::$app->user->identity->clientid;
+            $client = \common\models\Client::findOne($clientId);
+            if ($client) {
+                $fromDb = trim((string) $client->momentusOrgCode);
+                if ($fromDb !== '') {
+                    return $fromDb;
+                }
+            }
+        }
+
         return trim((string) (\Yii::$app->params['momentus']['orgCode'] ?? ''));
     }
 
@@ -955,16 +968,18 @@ class MomentusController extends Controller
             $payload = Yii::$app->request->post();
         }
 
-        $eventdrawEventId = isset($payload['eventdraw_event_id']) ? $payload['eventdraw_event_id'] : null;
-        // Default to 2110 when not provided (hardcoded until floor plan carries the real ID)
-        $eventSpaceDiagramId = isset($payload['event_space_diagram_id']) && (int) $payload['event_space_diagram_id'] > 0
-            ? (int) $payload['event_space_diagram_id']
-            : 2110;
-        $orgCode = isset($payload['org_code']) ? (string) $payload['org_code'] : $this->getOrgCode();
+        $eventdrawEventId    = isset($payload['eventdraw_event_id']) ? $payload['eventdraw_event_id'] : null;
+        $eventSpaceDiagramId = isset($payload['event_space_diagram_id']) ? (int) $payload['event_space_diagram_id'] : 0;
+        $orgCode             = isset($payload['org_code']) ? (string) $payload['org_code'] : $this->getOrgCode();
 
         if ($eventdrawEventId === null) {
             Yii::$app->response->statusCode = 400;
             return ['error' => 'eventdraw_event_id is required.'];
+        }
+
+        if ($eventSpaceDiagramId <= 0) {
+            Yii::$app->response->statusCode = 400;
+            return ['error' => 'event_space_diagram_id is required and must be a positive integer.'];
         }
 
         // Prefer the URL provided by the caller (e.g. the check-guid URL from momentus-copy)

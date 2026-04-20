@@ -4599,15 +4599,37 @@ public function actionSaveTemplateJson()
     //         ]);
     // } 
     public function actionEventdraw()
-    {        
+    {
         $this->layout = 'empty';
-        $user_id = Yii::$app->user->identity->id;       
-        $userType   =   Yii::$app->user->identity->userType;
-        return $this->render('evdr/index',
-            [
-                'userType'=>$userType,
-                'user_id'=>$user_id
-            ]);
+        $user_id  = Yii::$app->user->identity->id;
+        $userType = Yii::$app->user->identity->userType;
+
+        // Read Momentus Room Diagram URL parameters.
+        // SpaceID = EventDraw Template ID, EventID = Momentus Event ID.
+        $orgCode             = trim((string) Yii::$app->request->get('OrgCode', ''));
+        $momentusEventId     = (int) Yii::$app->request->get('EventID', 0);
+        $templateId          = (int) Yii::$app->request->get('SpaceID', 0);
+        $eventSpaceDiagramId = (int) Yii::$app->request->get('EventSpaceDiagramID', 0);
+
+        // When a Momentus Template Link is clicked, persist the EventSpaceDiagramID
+        // onto the template row so it is always available even if the URL param is later absent.
+        if ($templateId > 0 && $eventSpaceDiagramId > 0) {
+            $tmpl = \common\models\Template::findOne($templateId);
+            if ($tmpl && (int) $tmpl->momentusEventSpaceDiagramId !== $eventSpaceDiagramId) {
+                $tmpl->momentusEventSpaceDiagramId = $eventSpaceDiagramId;
+                $tmpl->save(false, ['momentusEventSpaceDiagramId']);
+            }
+        }
+
+        return $this->render('evdr/index', [
+            'userType'               => $userType,
+            'user_id'                => $user_id,
+            'urlOrgCode'             => $orgCode,
+            'urlMomentusEventId'     => $momentusEventId,
+            'urlSpaceId'             => (string) $templateId,
+            'urlEventSpaceDiagramId' => $eventSpaceDiagramId,
+            'urlTemplateId'          => $templateId,
+        ]);
     }
     /**
      * Signs user up.

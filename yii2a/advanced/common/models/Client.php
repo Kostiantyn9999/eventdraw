@@ -23,6 +23,7 @@ use yii\web\IdentityInterface;
  * @property int $AllowSaveCloud
  * @property int $AllowFavouriteStencils
  * @property int $AllowSaveFolder
+ * @property string|null $momentusOrgCode
  */
 class Client extends \yii\db\ActiveRecord
 {
@@ -108,6 +109,8 @@ class Client extends \yii\db\ActiveRecord
             [['expiry_date'], 'default', 'value' => null],
             [['AllowSaveFolder'], 'number', 'min' => 0],
             ['AllowSaveFolder', 'default', 'value' => 0],
+            ['momentusOrgCode', 'string', 'max' => 50],
+            ['momentusOrgCode', 'default', 'value' => null],
         ];
     }
 
@@ -174,8 +177,22 @@ class Client extends \yii\db\ActiveRecord
             'AllowSaveCloud' => 'Allow EventDraw Cloud',
             'client_settings_meas_unit'=> 'Measurement Units',
             'AllowFavouriteStencils' => 'Allow Favourite Stencils',
-            'AllowSaveFolder' => 'Allow Save Folder'
+            'AllowSaveFolder' => 'Allow Save Folder',
+            'momentusOrgCode' => 'Account Code',
         ];
+    }
+
+    /**
+     * Returns this client's Momentus Account Code (OrgCode).
+     * Falls back to the global params value if not set on the client.
+     */
+    public function getMomentusOrgCode()
+    {
+        $code = trim((string) $this->momentusOrgCode);
+        if ($code !== '') {
+            return $code;
+        }
+        return trim((string) (\Yii::$app->params['momentus']['orgCode'] ?? ''));
     }
 
     public function saveTemplates()

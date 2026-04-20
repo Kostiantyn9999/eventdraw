@@ -61,7 +61,7 @@ class MomentusClient
     {
         $orgCode = $orgCode !== null && $orgCode !== '' ? (string) $orgCode : $this->orgCode;
 
-        $filter = $this->buildSearchQuery($searchString, 'ResourceTypeDescription');
+        $filter = $this->buildSearchQuery($searchString, 'ResourceTypeDescription', 'ResourceCodeDescription');
 
         // Momentus Resources endpoint only accepts the "search" param;
         // page/pageSize/order are not supported and cause HTTP 400.
@@ -438,6 +438,38 @@ class MomentusClient
         $items = $this->extractODataItems($result);
         if (isset($items[0]) && is_array($items[0])) {
             return $items[0];
+        }
+        return null;
+    }
+
+    // ---------------------------------------------------------------
+    // Organizations
+    // ---------------------------------------------------------------
+
+    /**
+     * GET /Organizations/{OrgCode}
+     * Returns the organisation name for a given org code, or null if not found.
+     *
+     * @param string $orgCode
+     * @return string|null
+     */
+    public function getOrganizationName($orgCode)
+    {
+        $orgCode = trim((string) $orgCode);
+        if ($orgCode === '') {
+            return null;
+        }
+        try {
+            $result = $this->request('GET', '/Organizations/' . rawurlencode($orgCode));
+            if (is_array($result)) {
+                foreach (['OrganizationName', 'Description', 'Name', 'LongDescription'] as $key) {
+                    if (!empty($result[$key])) {
+                        return (string) $result[$key];
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // best-effort — don't break the page
         }
         return null;
     }

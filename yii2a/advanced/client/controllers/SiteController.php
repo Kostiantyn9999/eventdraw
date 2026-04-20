@@ -6,7 +6,11 @@ use Yii;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\web\Response;
+use yii\web\BadRequestHttpException;
 use common\models\LoginFormClient;
+use common\models\Client;
+use common\components\MomentusClient;
 /**
  * Site controller
  */
@@ -26,9 +30,9 @@ class SiteController extends Controller
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['logout', 'index'],
-                        'allow' => true,
-                        'roles' => ['@'],
+                    'actions' => ['logout', 'index', 'account-code', 'ajax-set-account-code', 'ajax-get-org-name'],
+                    'allow' => true,
+                    'roles' => ['@'],
                     ],
                 ],
             ],
@@ -70,7 +74,59 @@ class SiteController extends Controller
         return $this->render('user');
     }
 
-        /**
+    /**
+     * Account Code (Momentus OrgCode) management page.
+     */
+    public function actionAccountCode()
+    {
+        $clientId = Yii::$app->user->identity->clientid;
+        $client = Client::findOne($clientId);
+        if (!$client) {
+            throw new \yii\web\NotFoundHttpException('Client not found.');
+        }
+        return $this->render('account-code', [
+            'client' => $client,
+        ]);
+    }
+
+    /**
+     * AJAX POST: save the Account Code (OrgCode) for the current client.
+     */
+    public function actionAjaxSetAccountCode()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $clientId = Yii::$app->user->identity->clientid;
+        $client = Client::findOne($clientId);
+        if (!$client) {
+            throw new BadRequestHttpException('Client not found.');
+        }
+
+        $code = trim((string) Yii::$app->request->post('account_code', ''));
+        $client->momentusOrgCode = $code !== '' ? $code : null;
+
+        if ($client->save(false, ['momentusOrgCode'])) {
+            return ['ok' => true, 'account_code' => $client->momentusOrgCode];
+        }
+        return ['ok' => false, 'errors' => $client->errors];
+    }
+
+    /**
+     * AJAX GET: return the organisation name for a given org code from Momentus.
+     */
+    public function actionAjaxGetOrgName()
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $code = trim((string) Yii::$app->request->get('code', ''));
+        if ($code === '') {
+            return ['ok' => false, 'name' => null];
+        }
+        $mc = new MomentusClient(['orgCode' => $code]);
+        $name = $mc->getOrganizationName($code);
+        return ['ok' => true, 'name' => $name];
+    }
+
+    /**
      * Login action.
      *
      * @return string
