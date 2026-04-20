@@ -34,6 +34,10 @@ phpunit.phar
 # vagrant runtime
 /.vagrant
 
+# config files with secrets - never commit
+/common/config/main.php
+/common/config/params.php
+
 # ignore generated files
 /frontend/web/index.php
 /frontend/web/index-test.php
