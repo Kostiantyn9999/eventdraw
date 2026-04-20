@@ -515,7 +515,7 @@ window.variableUserIsExpiry = 0;
 <!-- new js file -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.7.7/xlsx.core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xls/0.7.4-a/xls.core.min.js"></script>
-    <script type="text/javascript" src="/frontend/web/site/design/test-demo_023.js?no-cache=<?php echo time(); ?>"></script>
+    <script type="text/javascript" src="/advanced/frontend/web/site/design/test-demo_023.js?no-cache=<?php echo time(); ?>"></script>
     <!-- <script type="text/javascript" src="/frontend/web/site/design/guest_allocation.js?no-cache=<?php echo time(); ?>"></script> -->
 <!--     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="http://code.jquery.com/ui/1.8.24/jquery-ui.min.js" type="text/javascript"></script>
