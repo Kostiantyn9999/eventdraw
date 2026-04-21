@@ -32,6 +32,7 @@ class MomentusController extends Controller
         $csrfExempt = [
             'assign-mapping',
             'unassign-mapping',
+            'add-shape',
             'add-service-order-item',
             'update-service-order-item',
             'delete-service-order-item',
@@ -109,6 +110,7 @@ class MomentusController extends Controller
                             'shape-primary-resource',
                             'assign-mapping',
                             'unassign-mapping',
+                            'add-shape',
                             // Service Orders
                             'list-service-orders',
                             'list-service-order-items',
@@ -142,6 +144,7 @@ class MomentusController extends Controller
                     'shape-primary-resource' => ['GET'],
                     'assign-mapping' => ['POST'],
                     'unassign-mapping' => ['POST'],
+                    'add-shape' => ['POST'],
                     // Service Orders
                     'list-service-orders' => ['GET'],
                     'list-service-order-items' => ['GET'],
@@ -498,6 +501,61 @@ class MomentusController extends Controller
 
         Yii::$app->response->statusCode = 400;
         return ['error' => 'Either mapping_id or shape_id is required. When using shape_id, org_code must be configured.'];
+    }
+
+    public function actionAddShape()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $shapeType = trim((string) Yii::$app->request->post('shape_type', ''));
+        if ($shapeType === '') {
+            Yii::$app->response->statusCode = 400;
+            return ['ok' => false, 'error' => 'shape_type is required.'];
+        }
+
+        // Return existing record if the shapeType is already in the DB (idempotent).
+        $existing = MomentusShape::find()->where(['shapeType' => $shapeType])->one();
+        if ($existing !== null) {
+            return [
+                'ok' => true,
+                'shape' => [
+                    'id'        => (int) $existing->id,
+                    'source_id' => (int) $existing->source_id,
+                    'shapeType' => $existing->shapeType,
+                    'mappings'  => [],
+                ],
+            ];
+        }
+
+        // Auto-generate source_id as MAX(source_id) + 1.
+        $maxSourceId = (int) (new \yii\db\Query())
+            ->from('{{%shapes}}')
+            ->max('source_id', Yii::$app->db);
+        $newSourceId = $maxSourceId + 1;
+
+        $shape = new MomentusShape();
+        $shape->source_id   = $newSourceId;
+        $shape->shapeType   = $shapeType;
+        $shape->category    = 0;
+        $shape->elevate     = 0;
+        $shape->height      = 0;
+        $shape->model       = 'standard';
+        $shape->description = $shapeType;
+
+        if (!$shape->save(false)) {
+            Yii::$app->response->statusCode = 500;
+            return ['ok' => false, 'error' => 'Failed to save shape to database.'];
+        }
+
+        return [
+            'ok' => true,
+            'shape' => [
+                'id'        => (int) $shape->id,
+                'source_id' => (int) $shape->source_id,
+                'shapeType' => $shape->shapeType,
+                'mappings'  => [],
+            ],
+        ];
     }
 
     // ---------------------------------------------------------------
