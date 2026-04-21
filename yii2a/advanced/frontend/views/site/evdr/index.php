@@ -1104,7 +1104,8 @@ window.UseS3Preview = App.UseS3Preview;
 // window.UseS3Preview = true;
 
 
- window.site_url = "https://staging.eventdraw.com.au/frontend/web/site/";
+ // window.site_url = "https://staging.eventdraw.com.au/frontend/web/site/";
+ window.site_url = "https://momentusstaging.eventdrawus.com/frontend/web/site/";
 
    if(window.UseS3Preview == true){
     window.site_url = "https://eventdraw-public.s3.ap-southeast-2.amazonaws.com/staging_data/tmpl_images/";
