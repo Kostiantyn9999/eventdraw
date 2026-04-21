@@ -100,17 +100,24 @@ class MomentusController extends Controller
                         'roles' => ['?', '@'],
                     ],
                     [
+                        // Shape mapping actions called from Draw.io — no client-app session available.
                         'actions' => [
+                            'assign-mapping',
+                            'unassign-mapping',
+                            'add-shape',
                             'search-resources',
+                            'shape-primary-resource',
+                        ],
+                        'allow' => true,
+                        'roles' => ['?', '@'],
+                    ],
+                    [
+                        'actions' => [
                             'shape-manager',
                             'view',
                             'create',
                             'update',
                             'delete',
-                            'shape-primary-resource',
-                            'assign-mapping',
-                            'unassign-mapping',
-                            'add-shape',
                             // Service Orders
                             'list-service-orders',
                             'list-service-order-items',
