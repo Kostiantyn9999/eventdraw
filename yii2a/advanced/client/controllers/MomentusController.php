@@ -1189,7 +1189,8 @@ class MomentusController extends Controller
     /**
      * POST /momentus/upsert-service-order
      * Body: {
-     *   "eventdraw_event_id": 187763,
+     *   "eventdraw_space_diagram_id": 2114,   // EventSpaceDiagramID — one SO per Room Diagram
+     *   "eventdraw_event_id": 187763,          // optional, stored for reference
      *   "momentus_event_id": 9427,
      *   "momentus_function_id": 123,
      *   "price_list": "PRICELIST01",
@@ -1203,9 +1204,9 @@ class MomentusController extends Controller
      * }
      *
      * Behavior:
-     * - If EventDraw event has no mapped order: create Service Order (POST /ServiceOrders).
-     * - If mapped order exists: update that Service Order (PUT /ServiceOrders/{OrgCode}/{OrderNumber}).
-     * - Keeps local mapping table in sync.
+     * - If the Room Diagram has no mapped order: create Service Order (POST /ServiceOrders).
+     * - If a mapped order already exists for this diagram: update it (PUT /ServiceOrders/{OrgCode}/{OrderNumber}).
+     * - Keeps local mapping table in sync, keyed by eventdraw_space_diagram_id.
      */
     public function actionUpsertServiceOrder()
     {
@@ -1217,6 +1218,7 @@ class MomentusController extends Controller
             return ['error' => 'Invalid or missing JSON body.'];
         }
 
+        $spaceDiagramId   = isset($payload['eventdraw_space_diagram_id']) ? (int) $payload['eventdraw_space_diagram_id'] : 0;
         $eventdrawEventId = isset($payload['eventdraw_event_id']) ? (int) $payload['eventdraw_event_id'] : 0;
         // $momentusEventId = isset($payload['momentus_event_id']) ? (int) $payload['momentus_event_id'] : 0;
         $momentusEventId = 9427;
@@ -1238,9 +1240,9 @@ class MomentusController extends Controller
         $department = isset($payload['department']) ? trim((string) $payload['department']) : '';
         $taxable = isset($payload['taxable']) ? trim((string) $payload['taxable']) : '';
 
-        if (!$eventdrawEventId || !$momentusEventId || !$momentusFunctionId || $priceList === '') {
+        if (!$spaceDiagramId || !$momentusEventId || !$momentusFunctionId || $priceList === '') {
             Yii::$app->response->statusCode = 400;
-            return ['error' => 'eventdraw_event_id, momentus_event_id, momentus_function_id, and price_list are required.'];
+            return ['error' => 'eventdraw_space_diagram_id, momentus_event_id, momentus_function_id, and price_list are required.'];
         }
         if ($orgCode === '') {
             Yii::$app->response->statusCode = 400;
@@ -1248,7 +1250,7 @@ class MomentusController extends Controller
         }
 
         $client = new MomentusClient();
-        $mapping = MomentusServiceOrder::findByEventDrawEvent($eventdrawEventId, $orgCode);
+        $mapping = MomentusServiceOrder::findBySpaceDiagram($spaceDiagramId, $orgCode);
 
         try {
             if ($mapping !== null) {
@@ -1384,7 +1386,7 @@ class MomentusController extends Controller
                 ];
             }
 
-            $mappingRow = MomentusServiceOrder::findAnyByEventDrawEvent($eventdrawEventId, $orgCode);
+            $mappingRow = MomentusServiceOrder::findAnyBySpaceDiagram($spaceDiagramId, $orgCode);
             if ($mappingRow !== null) {
                 $mappingRow->momentus_event_id = $momentusEventId;
                 $mappingRow->momentus_function_id = $momentusFunctionId;
@@ -1397,7 +1399,8 @@ class MomentusController extends Controller
                 }
             } else {
                 $newMapping = new MomentusServiceOrder();
-                $newMapping->eventdraw_event_id = $eventdrawEventId;
+                $newMapping->eventdraw_space_diagram_id = $spaceDiagramId;
+                $newMapping->eventdraw_event_id = $eventdrawEventId ?: null;
                 $newMapping->momentus_event_id = $momentusEventId;
                 $newMapping->momentus_function_id = $momentusFunctionId;
                 $newMapping->momentus_order_number = (int) $orderNumber;
@@ -1449,10 +1452,11 @@ class MomentusController extends Controller
     }
 
     /**
-     * GET /momentus/get-event-service-order?eventdraw_event_id=...&org_code=...
+     * GET /momentus/get-event-service-order?eventdraw_space_diagram_id=...&org_code=...
      *
-     * Checks if a Momentus service order already exists for this EventDraw event.
-     * If found, also fetches current items from Momentus.
+     * Checks if a Momentus service order already exists for this Room Diagram.
+     * Falls back to eventdraw_event_id for legacy callers that have not yet been
+     * updated.  If found, also fetches current items from Momentus.
      */
     public function actionGetEventServiceOrder()
     {
@@ -1460,15 +1464,21 @@ class MomentusController extends Controller
         Yii::$app->response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate');
         Yii::$app->response->headers->set('Pragma', 'no-cache');
 
+        $spaceDiagramId   = Yii::$app->request->get('eventdraw_space_diagram_id');
         $eventdrawEventId = Yii::$app->request->get('eventdraw_event_id');
         $orgCode = $this->getOrgCode();
 
-        if ($eventdrawEventId === null) {
+        if ($spaceDiagramId === null && $eventdrawEventId === null) {
             Yii::$app->response->statusCode = 400;
-            return ['error' => 'eventdraw_event_id is required.'];
+            return ['error' => 'eventdraw_space_diagram_id is required.'];
         }
 
-        $mapping = MomentusServiceOrder::findByEventDrawEvent($eventdrawEventId, $orgCode);
+        if ($spaceDiagramId !== null) {
+            $mapping = MomentusServiceOrder::findBySpaceDiagram($spaceDiagramId, $orgCode);
+        } else {
+            // Legacy fallback
+            $mapping = MomentusServiceOrder::findByEventDrawEvent($eventdrawEventId, $orgCode);
+        }
 
         if ($mapping === null) {
             return [
@@ -1549,7 +1559,8 @@ class MomentusController extends Controller
     /**
      * POST /momentus/save-service-order-mapping
      * Body: {
-     *   "eventdraw_event_id": 187763,
+     *   "eventdraw_space_diagram_id": 2114,    // Room Diagram ID (primary key)
+     *   "eventdraw_event_id": 187763,           // optional, stored for reference
      *   "momentus_event_id": 9427,
      *   "momentus_function_id": 123,
      *   "momentus_order_number": 132598,
@@ -1557,8 +1568,8 @@ class MomentusController extends Controller
      *   "price_list": "Corporate List 2026"
      * }
      *
-     * Stores the link between an EventDraw event and a Momentus service order.
-     * Called after a service order is created (manually or via future create API).
+     * Stores the link between an EventDraw Room Diagram and a Momentus service
+     * order.  Called after a service order is created manually.
      */
     public function actionSaveServiceOrderMapping()
     {
@@ -1569,6 +1580,7 @@ class MomentusController extends Controller
             $payload = Yii::$app->request->post();
         }
 
+        $spaceDiagramId   = isset($payload['eventdraw_space_diagram_id']) ? (int) $payload['eventdraw_space_diagram_id'] : null;
         $eventdrawEventId = isset($payload['eventdraw_event_id']) ? (int) $payload['eventdraw_event_id'] : null;
         $momentusEventId = isset($payload['momentus_event_id']) ? (int) $payload['momentus_event_id'] : null;
         $momentusFunctionId = isset($payload['momentus_function_id']) ? (int) $payload['momentus_function_id'] : null;
@@ -1576,12 +1588,12 @@ class MomentusController extends Controller
         $orgCode = isset($payload['org_code']) ? (string) $payload['org_code'] : $this->getOrgCode();
         $priceList = isset($payload['price_list']) ? (string) $payload['price_list'] : null;
 
-        if (!$eventdrawEventId || !$momentusEventId || !$orderNumber) {
+        if (!$spaceDiagramId || !$momentusEventId || !$orderNumber) {
             Yii::$app->response->statusCode = 400;
-            return ['error' => 'eventdraw_event_id, momentus_event_id, and momentus_order_number are required.'];
+            return ['error' => 'eventdraw_space_diagram_id, momentus_event_id, and momentus_order_number are required.'];
         }
 
-        $existing = MomentusServiceOrder::findAnyByEventDrawEvent($eventdrawEventId, $orgCode);
+        $existing = MomentusServiceOrder::findAnyBySpaceDiagram($spaceDiagramId, $orgCode);
         if ($existing !== null) {
             $existing->momentus_order_number = $orderNumber;
             $existing->momentus_event_id = $momentusEventId;
@@ -1596,7 +1608,8 @@ class MomentusController extends Controller
         }
 
         $model = new MomentusServiceOrder();
-        $model->eventdraw_event_id = $eventdrawEventId;
+        $model->eventdraw_space_diagram_id = $spaceDiagramId;
+        $model->eventdraw_event_id = $eventdrawEventId ?: null;
         $model->momentus_event_id = $momentusEventId;
         $model->momentus_function_id = $momentusFunctionId;
         $model->momentus_order_number = $orderNumber;
