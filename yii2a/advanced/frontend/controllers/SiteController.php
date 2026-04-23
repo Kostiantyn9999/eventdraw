@@ -2563,6 +2563,8 @@ public function actionSaveEventJson()
         $responseData = $item->toArray();
         $responseData['momentusEventSpaceDiagramId'] = (int) ($item->momentus_space_diagram_id ?? 0);
         $responseData['momentusOrgCode'] = (string) ($item->momentus_org_code ?? '');
+        $responseData['momentusEventId'] = (int) ($item->momentus_event_id ?? 0);
+        $responseData['momentusSpaceCode'] = (string) ($item->momentus_space_code ?? '');
 
         return $this->asJson($responseData);
 
@@ -2628,15 +2630,22 @@ public function actionSaveEventJsonNew()
                 $evnt->eventdate = NULL;
             }
 
-            // Persist the Momentus EventSpaceDiagramID and OrgCode so we can
-            // resolve the service order when this layout is reopened later.
+            // Persist all Momentus URL values so they can be restored when this layout is reopened.
             $momentusSpaceDiagramId = (int) $request->post('momentus_space_diagram_id');
             $momentusOrgCode = trim((string) $request->post('momentus_org_code', ''));
+            $momentusEventId = (int) $request->post('momentus_event_id');
+            $momentusSpaceCode = trim((string) $request->post('momentus_space_code', ''));
             if ($momentusSpaceDiagramId > 0) {
                 $evnt->momentus_space_diagram_id = $momentusSpaceDiagramId;
             }
             if ($momentusOrgCode !== '') {
                 $evnt->momentus_org_code = $momentusOrgCode;
+            }
+            if ($momentusEventId > 0) {
+                $evnt->momentus_event_id = $momentusEventId;
+            }
+            if ($momentusSpaceCode !== '') {
+                $evnt->momentus_space_code = $momentusSpaceCode;
             }
 
             $evnt->save(false);

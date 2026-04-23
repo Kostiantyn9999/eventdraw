@@ -41,6 +41,7 @@ class MomentusController extends Controller
             'update-price-list-item',
             'delete-price-list-item',
             'update-event-space-diagram-url',
+            'get-event-space-diagram',
             'save-event-png',
             'save-service-order-mapping',
             'sync-service-order-items',
@@ -87,6 +88,7 @@ class MomentusController extends Controller
                             'list-price-lists',
                             'get-price-list-items-by-list',
                             'get-event-service-order',
+                            'get-event-space-diagram',
                             'upsert-service-order',
                             'sync-service-order-items',
                         ],
@@ -170,6 +172,7 @@ class MomentusController extends Controller
                     'delete-price-list-item' => ['DELETE', 'POST'],
                     'get-price-list-items-by-list' => ['GET'],
                     // Saved Layout link + PNG
+                    'get-event-space-diagram' => ['GET'],
                     'update-event-space-diagram-url' => ['POST'],
                     'save-event-png' => ['POST'],
                     'save-event-svg-s3' => ['POST'],
@@ -188,12 +191,7 @@ class MomentusController extends Controller
      */
     private function getOrgCode()
     {
-        $fromRequest = trim((string) (\Yii::$app->request->get('org_code') ?: \Yii::$app->request->post('org_code', '')));
-        if ($fromRequest !== '') {
-            return $fromRequest;
-        }
-
-        // Prefer the Account Code stored on the client record in the DB
+        // Prefer the Account Code stored on the client record in the DB — never trust client-supplied value.
         if (!\Yii::$app->user->isGuest) {
             $clientId = \Yii::$app->user->identity->clientid;
             $client = \common\models\Client::findOne($clientId);
@@ -205,7 +203,13 @@ class MomentusController extends Controller
             }
         }
 
-        return trim((string) (\Yii::$app->params['momentus']['orgCode'] ?? ''));
+        $fromConfig = trim((string) (\Yii::$app->params['momentus']['orgCode'] ?? ''));
+        if ($fromConfig !== '') {
+            return $fromConfig;
+        }
+
+        // Fall back to request only when nothing is configured server-side (e.g. dev/local).
+        return trim((string) (\Yii::$app->request->get('org_code') ?: \Yii::$app->request->post('org_code', '')));
     }
 
     public function actionSearchResources()
@@ -449,23 +453,19 @@ class MomentusController extends Controller
 
         $codeForDb = ($resourceCode !== '') ? $resourceCode : null;
 
-        $mapping = ShapeMomentusMapping::find()
-            ->where([
-                'shape_id' => $shapeId,
-                'org_code' => $orgCode,
-                'momentus_resource_code' => $codeForDb,
-            ])
-            ->one();
+        // Delete any existing mappings for this shape + org to avoid stale duplicates,
+        // then create a single fresh row.
+        ShapeMomentusMapping::deleteAll([
+            'shape_id' => $shapeId,
+            'org_code'  => $orgCode,
+        ]);
 
-        if ($mapping === null) {
-            $mapping = new ShapeMomentusMapping();
-            $mapping->shape_id = $shapeId;
-            $mapping->org_code = $orgCode;
-            $mapping->momentus_resource_code = $codeForDb;
-        }
-
+        $mapping = new ShapeMomentusMapping();
+        $mapping->shape_id                      = $shapeId;
+        $mapping->org_code                      = $orgCode;
+        $mapping->momentus_resource_code        = $codeForDb;
         $mapping->momentus_resource_description = $resourceDescription ?: null;
-        $mapping->sequence = $sequence ?: 1;
+        $mapping->sequence                      = $sequence ?: 1;
 
         if (!$mapping->save()) {
             Yii::$app->response->statusCode = 422;
@@ -1024,6 +1024,34 @@ class MomentusController extends Controller
      *  - A GET is performed first to retrieve current values; only EventdrawDiagramUrl is changed.
      *  - Read-only fields (EnteredBy, EnteredOn, ChangedBy, ChangedOn) are ignored on update.
      */
+    /**
+     * GET /momentus/get-event-space-diagram?id=2111&org_code=10
+     *
+     * Returns the Momentus EventSpaceDiagram record for the given ID.
+     * The frontend uses DefaultOrderFunctionID and DefaultOrderPriceList
+     * to pre-select the defaults in the Create Service Order dialog.
+     */
+    public function actionGetEventSpaceDiagram()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $id = (int) Yii::$app->request->get('id', 0);
+        if ($id <= 0) {
+            Yii::$app->response->statusCode = 400;
+            return ['error' => 'id is required and must be a positive integer.'];
+        }
+
+        try {
+            $client = new MomentusClient();
+            $result = $client->getEventSpaceDiagram($id);
+            return $result;
+        } catch (\Exception $e) {
+            Yii::error($e->getMessage(), __METHOD__);
+            Yii::$app->response->statusCode = 500;
+            return ['error' => $e->getMessage()];
+        }
+    }
+
     public function actionUpdateEventSpaceDiagramUrl()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
@@ -1220,8 +1248,7 @@ class MomentusController extends Controller
 
         $spaceDiagramId   = isset($payload['eventdraw_space_diagram_id']) ? (int) $payload['eventdraw_space_diagram_id'] : 0;
         $eventdrawEventId = isset($payload['eventdraw_event_id']) ? (int) $payload['eventdraw_event_id'] : 0;
-        // $momentusEventId = isset($payload['momentus_event_id']) ? (int) $payload['momentus_event_id'] : 0;
-        $momentusEventId = 9427;
+        $momentusEventId = isset($payload['momentus_event_id']) ? (int) $payload['momentus_event_id'] : 0;
         $momentusFunctionId = isset($payload['momentus_function_id']) ? (int) $payload['momentus_function_id'] : 0;
         $orgCode = isset($payload['org_code']) ? (string) $payload['org_code'] : $this->getOrgCode();
         $priceList = isset($payload['price_list']) ? trim((string) $payload['price_list']) : '';
@@ -1307,6 +1334,7 @@ class MomentusController extends Controller
 
                 $serviceOrderResponse = $client->updateServiceOrder($orgCode, $orderNumber, $updatePayload);
 
+                $mapping->eventdraw_event_id = $eventdrawEventId ?: null;
                 $mapping->momentus_event_id = $momentusEventId;
                 $mapping->momentus_function_id = $momentusFunctionId;
                 $mapping->price_list = $priceList;
@@ -1388,6 +1416,7 @@ class MomentusController extends Controller
 
             $mappingRow = MomentusServiceOrder::findAnyBySpaceDiagram($spaceDiagramId, $orgCode);
             if ($mappingRow !== null) {
+                $mappingRow->eventdraw_event_id = $eventdrawEventId ?: null;
                 $mappingRow->momentus_event_id = $momentusEventId;
                 $mappingRow->momentus_function_id = $momentusFunctionId;
                 $mappingRow->momentus_order_number = (int) $orderNumber;
@@ -1944,16 +1973,23 @@ class MomentusController extends Controller
     {
         $items = [];
         foreach ($this->extractItems($payload) as $resource) {
+            // Only show Class 2 or Class 3 resources.
+            $class = isset($resource['Class']) ? (string) $resource['Class'] : '';
+            if ($class !== '2' && $class !== '3') {
+                continue;
+            }
+
             $description = isset($resource['ResourceCodeDescription']) ? (string) $resource['ResourceCodeDescription'] : '';
             $code = isset($resource['Code']) ? (string) $resource['Code'] : (isset($resource['ResourceCode']) ? (string) $resource['ResourceCode'] : '');
             $sequence = isset($resource['Sequence']) ? (int) $resource['Sequence'] : 1;
             $id = $code . '-' . $sequence;
 
             $items[] = [
-                'id' => $id,
+                'id'          => $id,
                 'description' => trim($description),
-                'code' => $code,
-                'sequence' => $sequence,
+                'code'        => $code,
+                'sequence'    => $sequence,
+                'class'       => $class,
             ];
         }
 

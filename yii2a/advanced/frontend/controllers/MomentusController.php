@@ -2,8 +2,6 @@
 
 namespace frontend\controllers;
 
-use common\models\MomentusShape;
-use common\models\ShapeMomentusMapping;
 use common\components\MomentusClient;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -30,7 +28,7 @@ class MomentusController extends Controller
      */
     public function beforeAction($action)
     {
-        $csrfExempt = ['assign-mapping', 'unassign-mapping', 'create-note', 'update-note', 'delete-note'];
+        $csrfExempt = ['create-note', 'update-note', 'delete-note'];
         if (in_array($action->id, $csrfExempt)) {
             $this->enableCsrfValidation = false;
         }
@@ -55,18 +53,13 @@ class MomentusController extends Controller
                     [
                         'actions' => [
                             'search-spaces',
-                            'search-resources',
                             'search-notes',
                             'get-note',
                             'create-note',
                             'update-note',
                             'delete-note',
-                            'shapes',
                             'shapes-api',
                             'shape-manager',
-                            'shape-primary-resource',
-                            'assign-mapping',
-                            'unassign-mapping',
                             'event-fields-for-floorplan',
                         ],
                         'allow' => true,
@@ -77,19 +70,14 @@ class MomentusController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'search-spaces' => ['GET'],
-                    'search-resources' => ['GET'],
-                    'search-notes' => ['GET'],
-                    'get-note' => ['GET'],
-                    'create-note' => ['POST'],
-                    'update-note' => ['PUT', 'PATCH'],
-                    'delete-note' => ['DELETE'],
-                    'shapes' => ['GET'],
-                    'shapes-api' => ['GET'],
-                    'shape-manager' => ['GET'],
-                    'shape-primary-resource' => ['GET'],
-                    'assign-mapping' => ['POST'],
-                    'unassign-mapping' => ['POST'],
+                    'search-spaces'            => ['GET'],
+                    'search-notes'             => ['GET'],
+                    'get-note'                 => ['GET'],
+                    'create-note'              => ['POST'],
+                    'update-note'              => ['PUT', 'PATCH'],
+                    'delete-note'              => ['DELETE'],
+                    'shapes-api'               => ['GET'],
+                    'shape-manager'            => ['GET'],
                     'event-fields-for-floorplan' => ['GET', 'OPTIONS'],
                 ],
             ],
@@ -118,36 +106,15 @@ class MomentusController extends Controller
     }
 
     /**
-     * Resolve org_code from request or from config (front-end does not need to send it).
+     * Resolve org_code — prefer server config, fall back to request for dev/local.
      */
     private function getOrgCode()
     {
-        $fromRequest = trim((string) (\Yii::$app->request->get('org_code') ?: \Yii::$app->request->post('org_code', '')));
-        if ($fromRequest !== '') {
-            return $fromRequest;
+        $fromConfig = trim((string) (\Yii::$app->params['momentus']['orgCode'] ?? ''));
+        if ($fromConfig !== '') {
+            return $fromConfig;
         }
-        return trim((string) (\Yii::$app->params['momentus']['orgCode'] ?? ''));
-    }
-
-    public function actionSearchResources()
-    {
-        \Yii::$app->response->format = Response::FORMAT_JSON;
-
-        $query = trim((string) \Yii::$app->request->get('q', ''));
-        $page = \Yii::$app->request->get('page');
-        $pageSize = \Yii::$app->request->get('pageSize');
-        $order = \Yii::$app->request->get('order');
-
-        try {
-            $client = new MomentusClient();
-            $result = $client->searchResources($query, $page, $pageSize, $order);
-
-            return $this->formatResources($result);
-        } catch (\Exception $exception) {
-            \Yii::error($exception->getMessage(), __METHOD__);
-            \Yii::$app->response->statusCode = 500;
-            return ['error' => $exception->getMessage()];
-        }
+        return trim((string) (\Yii::$app->request->get('org_code') ?: \Yii::$app->request->post('org_code', '')));
     }
 
     public function actionSearchNotes()
@@ -314,212 +281,6 @@ class MomentusController extends Controller
         return $this->render('shapes');
     }
 
-    public function actionShapes()
-    {
-        \Yii::$app->response->format = Response::FORMAT_JSON;
-
-        $orgCode = $this->getOrgCode();
-        $search = trim((string) \Yii::$app->request->get('q', ''));
-
-        $query = (new \yii\db\Query())
-            ->select([
-                's.id',
-                's.source_id',
-                's.shapeType',
-                's.category',
-                's.description',
-                's.model',
-                'm.id AS mapping_id',
-                'm.momentus_resource_code',
-                'm.momentus_resource_description',
-                'm.sequence',
-                'm.org_code',
-            ])
-            ->from('{{%shapes}} s');
-
-        if ($orgCode !== '') {
-            $query->leftJoin(
-                '{{%shape_momentus_mapping}} m',
-                's.id = m.shape_id AND m.org_code = :org_code',
-                [':org_code' => $orgCode]
-            );
-        } else {
-            $query->leftJoin('{{%shape_momentus_mapping}} m', '0 = 1');
-        }
-
-        if ($search !== '') {
-            $query->andWhere([
-                'or',
-                ['like', 's.shapeType', $search],
-                ['like', 'm.momentus_resource_code', $search],
-                ['like', 'm.momentus_resource_description', $search],
-            ]);
-        }
-
-        $query->orderBy(['s.shapeType' => SORT_ASC, 'm.sequence' => SORT_ASC]);
-        $rows = $query->all(\Yii::$app->db);
-
-        $shapesMap = [];
-        foreach ($rows as $row) {
-            $sid = (int) $row['id'];
-            if (!isset($shapesMap[$sid])) {
-                $shapesMap[$sid] = [
-                    'id' => $sid,
-                    'source_id' => (int) $row['source_id'],
-                    'shapeType' => $row['shapeType'],
-                    'category' => (int) $row['category'],
-                    'description' => $row['description'],
-                    'model' => $row['model'],
-                    'mappings' => [],
-                ];
-            }
-
-            if ($row['mapping_id'] !== null) {
-                $shapesMap[$sid]['mappings'][] = [
-                    'mapping_id' => (int) $row['mapping_id'],
-                    'resource_code' => $row['momentus_resource_code'],
-                    'resource_description' => $row['momentus_resource_description'],
-                    'sequence' => (int) $row['sequence'],
-                    'org_code' => $row['org_code'],
-                ];
-            }
-        }
-
-        return array_values($shapesMap);
-    }
-
-    /**
-     * Given org_code + shape_id, return highest priority resource (lowest sequence).
-     */
-    public function actionShapePrimaryResource()
-    {
-        \Yii::$app->response->format = Response::FORMAT_JSON;
-
-        $shapeId = (int) \Yii::$app->request->get('shape_id', 0);
-        $orgCode = $this->getOrgCode();
-
-        if (!$shapeId) {
-            \Yii::$app->response->statusCode = 400;
-            return ['error' => 'shape_id is required.'];
-        }
-        if ($orgCode === '') {
-            \Yii::$app->response->statusCode = 400;
-            return ['error' => 'org_code is not configured (set params[momentus][orgCode] or pass org_code).'];
-        }
-
-        $mapping = ShapeMomentusMapping::findPrimaryMapping($shapeId, $orgCode);
-
-        if ($mapping === null) {
-            return [
-                'shape_id' => $shapeId,
-                'org_code' => $orgCode,
-                'resource_code' => null,
-                'resource_description' => null,
-                'sequence' => null,
-            ];
-        }
-
-        return [
-            'shape_id' => $shapeId,
-            'org_code' => $orgCode,
-            'resource_code' => $mapping->momentus_resource_code,
-            'resource_description' => $mapping->momentus_resource_description,
-            'sequence' => $mapping->sequence,
-        ];
-    }
-
-    /**
-     * Creates a mapping between a shape and a Momentus resource for a given org_code.
-     */
-    public function actionAssignMapping()
-    {
-        \Yii::$app->response->format = Response::FORMAT_JSON;
-        $request = \Yii::$app->request;
-
-        $shapeId = (int) $request->post('shape_id', 0);
-        $orgCode = $this->getOrgCode();
-        $resourceCode = trim((string) $request->post('resource_code', ''));
-        $resourceDescription = trim((string) $request->post('resource_description', ''));
-        $sequence = (int) $request->post('sequence', 1);
-
-        if (!$shapeId) {
-            \Yii::$app->response->statusCode = 400;
-            return ['error' => 'shape_id is required.'];
-        }
-        if ($orgCode === '') {
-            \Yii::$app->response->statusCode = 400;
-            return ['error' => 'org_code is not configured (set params[momentus][orgCode] or pass org_code).'];
-        }
-
-        $shape = MomentusShape::findOne($shapeId);
-        if ($shape === null) {
-            \Yii::$app->response->statusCode = 404;
-            return ['error' => 'Shape not found.'];
-        }
-
-        $codeForDb = ($resourceCode !== '') ? $resourceCode : null;
-
-        $mapping = ShapeMomentusMapping::find()
-            ->where([
-                'shape_id' => $shapeId,
-                'org_code' => $orgCode,
-                'momentus_resource_code' => $codeForDb,
-            ])
-            ->one();
-
-        if ($mapping === null) {
-            $mapping = new ShapeMomentusMapping();
-            $mapping->shape_id = $shapeId;
-            $mapping->org_code = $orgCode;
-            $mapping->momentus_resource_code = $codeForDb;
-        }
-
-        $mapping->momentus_resource_description = $resourceDescription ?: null;
-        $mapping->sequence = $sequence ?: 1;
-
-        if (!$mapping->save()) {
-            \Yii::$app->response->statusCode = 422;
-            return ['error' => 'Failed to save.', 'details' => $mapping->getErrors()];
-        }
-
-        return ['success' => true, 'mapping_id' => $mapping->id];
-    }
-
-    /**
-     * Removes a shape-resource mapping.
-     * Accepts either mapping_id (preferred) or shape_id + org_code (removes primary mapping for that shape/org).
-     */
-    public function actionUnassignMapping()
-    {
-        \Yii::$app->response->format = Response::FORMAT_JSON;
-
-        $mappingId = (int) \Yii::$app->request->post('mapping_id', 0);
-        $shapeId = (int) \Yii::$app->request->post('shape_id', 0);
-        $orgCode = $this->getOrgCode();
-
-        if ($mappingId) {
-            $mapping = ShapeMomentusMapping::findOne($mappingId);
-            if ($mapping === null) {
-                \Yii::$app->response->statusCode = 404;
-                return ['error' => 'Mapping not found.'];
-            }
-            $mapping->delete();
-            return ['success' => true];
-        }
-
-        if ($shapeId && $orgCode !== '') {
-            $mapping = ShapeMomentusMapping::findPrimaryMapping($shapeId, $orgCode);
-            if ($mapping === null) {
-                return ['success' => true];
-            }
-            $mapping->delete();
-            return ['success' => true];
-        }
-
-        \Yii::$app->response->statusCode = 400;
-        return ['error' => 'Either mapping_id or shape_id is required. When using shape_id, org_code must be configured.'];
-    }
-
     private function formatSpaces(array $payload)
     {
         $items = [];
@@ -539,39 +300,18 @@ class MomentusController extends Controller
         return $items;
     }
 
-    private function formatResources(array $payload)
-    {
-        $items = [];
-        foreach ($this->extractItems($payload) as $resource) {
-            $description = isset($resource['ResourceDescription']) ? (string) $resource['ResourceDescription'] : '';
-            $code = isset($resource['Code']) ? (string) $resource['Code'] : (isset($resource['ResourceCode']) ? (string) $resource['ResourceCode'] : '');
-            $id = isset($resource['ResourceID']) ? (string) $resource['ResourceID'] : '';
-
-            $items[] = [
-                'id' => $id,
-                'text' => trim($description . ($code !== '' ? ' (' . $code . ')' : '')),
-                'description' => $description,
-                'code' => $code,
-            ];
-        }
-
-        return $items;
-    }
-
     private function extractItems(array $payload)
     {
         $keys = array_keys($payload);
         if ($keys === range(0, count($payload) - 1) || $payload === []) {
             return $payload;
         }
-
         $candidateKeys = ['Results', 'results', 'Value', 'value', 'Items', 'items'];
         foreach ($candidateKeys as $key) {
             if (isset($payload[$key]) && is_array($payload[$key])) {
                 return $payload[$key];
             }
         }
-
         return [];
     }
 

@@ -63,12 +63,12 @@ class MomentusClient
 
         $filter = $this->buildSearchQuery($searchString, 'ResourceTypeDescription', 'ResourceCodeDescription');
 
-        // Momentus Resources endpoint only accepts the "search" param;
-        // page/pageSize/order are not supported and cause HTTP 400.
-        $params = [];
-        if ($filter !== '') {
-            $params['search'] = $filter;
-        }
+        // The Resources endpoint requires the "search" param to be present.
+        // Use the user's search string if provided, otherwise "All" for a full list.
+        // Class filtering is applied PHP-side in formatResources().
+        $params = [
+            'search' => $filter !== '' ? $filter : 'All',
+        ];
 
         return $this->request('GET', '/Resources/' . $this->normalizeOrgCode($orgCode), $params);
     }
