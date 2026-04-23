@@ -92,10 +92,11 @@ class MomentusController extends Controller
         $page = \Yii::$app->request->get('page');
         $pageSize = \Yii::$app->request->get('pageSize');
         $order = \Yii::$app->request->get('order');
+        $orgCode = $this->getOrgCode();
 
         try {
             $client = new MomentusClient();
-            $result = $client->searchSpaces($query, $page, $pageSize, $order);
+            $result = $client->searchSpaces($query, $page, $pageSize, $order, $orgCode);
 
             return $this->formatSpaces($result);
         } catch (\Exception $exception) {
@@ -106,15 +107,29 @@ class MomentusController extends Controller
     }
 
     /**
-     * Resolve org_code — prefer server config, fall back to request for dev/local.
+     * Resolve org_code: request param first, then logged-in user's client org code.
      */
     private function getOrgCode()
     {
-        $fromConfig = trim((string) (\Yii::$app->params['momentus']['orgCode'] ?? ''));
-        if ($fromConfig !== '') {
-            return $fromConfig;
+        $fromRequest = trim((string) (\Yii::$app->request->get('org_code') ?: \Yii::$app->request->post('org_code', '')));
+        if ($fromRequest !== '') {
+            return $fromRequest;
         }
-        return trim((string) (\Yii::$app->request->get('org_code') ?: \Yii::$app->request->post('org_code', '')));
+
+        if (!\Yii::$app->user->isGuest) {
+            $clientId = \Yii::$app->user->identity->clientid ?? null;
+            if ($clientId) {
+                $client = \common\models\Client::findOne($clientId);
+                if ($client) {
+                    $fromUser = trim((string) $client->momentusOrgCode);
+                    if ($fromUser !== '') {
+                        return $fromUser;
+                    }
+                }
+            }
+        }
+
+        return trim((string) (\Yii::$app->params['momentus']['orgCode'] ?? ''));
     }
 
     public function actionSearchNotes()

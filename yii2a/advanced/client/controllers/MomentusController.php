@@ -187,11 +187,15 @@ class MomentusController extends Controller
     }
 
     /**
-     * Resolve org_code: request param → client DB value → global params config.
+     * Resolve org_code: request param first, then logged-in user's client org code.
      */
     private function getOrgCode()
     {
-        // Prefer the Account Code stored on the client record in the DB — never trust client-supplied value.
+        $fromRequest = trim((string) (\Yii::$app->request->get('org_code') ?: \Yii::$app->request->post('org_code', '')));
+        if ($fromRequest !== '') {
+            return $fromRequest;
+        }
+
         if (!\Yii::$app->user->isGuest) {
             $clientId = \Yii::$app->user->identity->clientid;
             $client = \common\models\Client::findOne($clientId);
@@ -203,13 +207,7 @@ class MomentusController extends Controller
             }
         }
 
-        $fromConfig = trim((string) (\Yii::$app->params['momentus']['orgCode'] ?? ''));
-        if ($fromConfig !== '') {
-            return $fromConfig;
-        }
-
-        // Fall back to request only when nothing is configured server-side (e.g. dev/local).
-        return trim((string) (\Yii::$app->request->get('org_code') ?: \Yii::$app->request->post('org_code', '')));
+        return trim((string) (\Yii::$app->params['momentus']['orgCode'] ?? ''));
     }
 
     public function actionSearchResources()

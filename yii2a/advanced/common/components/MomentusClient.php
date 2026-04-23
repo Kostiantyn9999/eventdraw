@@ -18,7 +18,7 @@ class MomentusClient
             'baseUrl' => 'https://api-sandbox.gomomentus.com/enterprise/connect/api',
             'apiToken' => '',
             'subscriptionKey' => '',
-            'orgCode' => '20',
+            'orgCode' => '10',
             'timeout' => 20,
         ];
 
@@ -38,8 +38,9 @@ class MomentusClient
         $this->timeout = (int) $config['timeout'];
     }
 
-    public function searchSpaces($searchString, $page = null, $pageSize = null, $order = null)
+    public function searchSpaces($searchString, $page = null, $pageSize = null, $order = null, $orgCode = null)
     {
+        $orgCode = $orgCode !== null && $orgCode !== '' ? (string) $orgCode : $this->orgCode;
         $params = [
             'search' => $this->buildSearchQuery($searchString, 'SpaceDescription', 'Code'),
         ];
@@ -54,7 +55,7 @@ class MomentusClient
             $params['order'] = (string) $order;
         }
 
-        return $this->request('GET', '/Spaces/' . $this->orgCode, $params);
+        return $this->request('GET', '/Spaces/' . $this->normalizeOrgCode($orgCode), $params);
     }
 
     public function searchResources($searchString, $page = null, $pageSize = null, $order = null, $orgCode = null)
