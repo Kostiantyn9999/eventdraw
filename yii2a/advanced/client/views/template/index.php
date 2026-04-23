@@ -5,6 +5,8 @@ use yii\grid\GridView;
 use kartik\select2\Select2;
 use yii\web\JsExpression;
 use yii\helpers\Url;
+use Yii;
+use common\models\Client;
 
 
 /* @var $this yii\web\View */
@@ -13,6 +15,19 @@ use yii\helpers\Url;
 
 $this->title = 'Templates';
 $this->params['breadcrumbs'][] = $this->title;
+
+// Same host as this admin app; swap /client/web → /frontend/web (matches Draw.io Menus.js).
+$clientWebBase = rtrim(Yii::$app->request->hostInfo . Yii::$app->request->baseUrl, '/');
+$searchSpacesBaseUrl = str_replace('/client/web', '/frontend/web', $clientWebBase) . '/momentus/search-spaces';
+
+$momentusOrgForSearch = '';
+if (!Yii::$app->user->isGuest && !empty(Yii::$app->user->identity->clientid)) {
+    $clientRow = Client::findOne((int) Yii::$app->user->identity->clientid);
+    if ($clientRow !== null) {
+        $momentusOrgForSearch = trim((string) $clientRow->momentusOrgCode);
+    }
+}
+$momentusOrgJson = json_encode($momentusOrgForSearch);
 ?>
 <div class="row-full">
 
@@ -56,9 +71,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'momentusSpaceDescr',
                 'label' => 'Momentus space',
                 'format' => 'raw',
-                'value' => function($model) {
+                'value' => function($model) use ($searchSpacesBaseUrl, $momentusOrgJson) {
 
-                    $searchUrl = 'https://momentusadmin.eventdrawus.com/frontend/web/momentus/search-spaces';
+                    $searchUrl = $searchSpacesBaseUrl;
                     $saveUrl = Url::to(['template/ajax-set-momentus-space']);
 
                     $initText = $model->momentusSpaceCode
@@ -82,7 +97,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'url' => $searchUrl,
                                 'dataType' => 'json',
                                 'delay' => 250,
-                                'data' => new JsExpression('function(params){ return {q: params.term}; }'),
+                                'data' => new JsExpression('function(params){ return { q: params.term, org_code: ' . $momentusOrgJson . ' }; }'),
                                 'processResults' => new JsExpression('function(data){
                                     var items = (data || []).map(function(x){
                                         return {
