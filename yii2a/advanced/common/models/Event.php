@@ -19,6 +19,8 @@ use yii\behaviors\TimestampBehavior;
  * @property string $imageCode
  * @property string $eventInfo
  * @property string $event_uuid
+ * @property int|null $momentus_space_diagram_id
+ * @property string|null $momentus_org_code
  */
 class Event extends \yii\db\ActiveRecord
 {
@@ -49,6 +51,8 @@ class Event extends \yii\db\ActiveRecord
             [['eventName', 'xmlCode', 'created_at', 'updated_at', 'eventdate','userid'], 'required'],
             [['xmlCode','imageCode','eventInfo','event_uuid'], 'string'],
             [['created_at', 'updated_at','userid','eventActive'], 'integer'],
+            [['momentus_space_diagram_id'], 'integer'],
+            [['momentus_org_code'], 'string', 'max' => 50],
             [['eventdate'], 'safe'],
             [['eventName'], 'string', 'max' => 100],
         ];
@@ -243,7 +247,9 @@ public static function getUserEvents($userid, $includeImages)
             'eventActive' => 'Event Active',
             'imageCode' => 'Image',
             'eventInfo' => 'Event Info',
-            'event_uuid'=> 'Event UUID'
+            'event_uuid'=> 'Event UUID',
+            'momentus_space_diagram_id' => 'Momentus Space Diagram ID',
+            'momentus_org_code' => 'Momentus Org Code',
         ];
     }
 }

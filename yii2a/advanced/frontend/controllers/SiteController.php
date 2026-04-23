@@ -2557,7 +2557,14 @@ public function actionSaveEventJson()
         
         }
 
-        return $this->asJson($item);
+        // Return the Momentus EventSpaceDiagramID and OrgCode stored on the event
+        // record so the frontend can call get-event-service-order without needing
+        // the original Momentus deep-link URL parameters.
+        $responseData = $item->toArray();
+        $responseData['momentusEventSpaceDiagramId'] = (int) ($item->momentus_space_diagram_id ?? 0);
+        $responseData['momentusOrgCode'] = (string) ($item->momentus_org_code ?? '');
+
+        return $this->asJson($responseData);
 
     }
 
@@ -2621,6 +2628,16 @@ public function actionSaveEventJsonNew()
                 $evnt->eventdate = NULL;
             }
 
+            // Persist the Momentus EventSpaceDiagramID and OrgCode so we can
+            // resolve the service order when this layout is reopened later.
+            $momentusSpaceDiagramId = (int) $request->post('momentus_space_diagram_id');
+            $momentusOrgCode = trim((string) $request->post('momentus_org_code', ''));
+            if ($momentusSpaceDiagramId > 0) {
+                $evnt->momentus_space_diagram_id = $momentusSpaceDiagramId;
+            }
+            if ($momentusOrgCode !== '') {
+                $evnt->momentus_org_code = $momentusOrgCode;
+            }
 
             $evnt->save(false);
             
