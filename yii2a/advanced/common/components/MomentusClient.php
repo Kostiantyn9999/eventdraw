@@ -41,8 +41,16 @@ class MomentusClient
     public function searchSpaces($searchString, $page = null, $pageSize = null, $order = null, $orgCode = null)
     {
         $orgCode = $orgCode !== null && $orgCode !== '' ? (string) $orgCode : $this->orgCode;
+        $q = trim((string) $searchString);
+        $bookable = "(Bookable eq 'Y')";
+        if ($q === '') {
+            $search = $bookable;
+        } else {
+            $text = $this->buildSearchQuery($q, 'SpaceDescription', 'Code');
+            $search = '(' . $text . ') and ' . $bookable;
+        }
         $params = [
-            'search' => $this->buildSearchQuery($searchString, 'SpaceDescription', 'Code'),
+            'search' => $search,
         ];
 
         if ($page !== null && $page !== '') {

@@ -300,6 +300,9 @@ class MomentusController extends Controller
     {
         $items = [];
         foreach ($this->extractItems($payload) as $space) {
+            if (isset($space['Bookable']) && strtoupper(trim((string) $space['Bookable'])) !== 'Y') {
+                continue;
+            }
             $description = isset($space['SpaceDescription']) ? (string) $space['SpaceDescription'] : '';
             $code = isset($space['Code']) ? (string) $space['Code'] : (isset($space['SpaceCode']) ? (string) $space['SpaceCode'] : '');
             $id = isset($space['SpaceID']) ? (string) $space['SpaceID'] : '';

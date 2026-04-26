@@ -7,6 +7,8 @@ use yii\web\JsExpression;
 use yii\helpers\Url;
 use Yii;
 use common\models\Client;
+use common\models\Template;
+use yii\helpers\Json;
 
 
 /* @var $this yii\web\View */
@@ -28,6 +30,25 @@ if (!Yii::$app->user->isGuest && !empty(Yii::$app->user->identity->clientid)) {
     }
 }
 $momentusOrgJson = json_encode($momentusOrgForSearch);
+
+$momentusSpaceOwners = [];
+foreach (Template::find()->asArray()->all() as $row) {
+    $c = trim((string) ($row['momentusSpaceCode'] ?? ''));
+    if ($c !== '') {
+        $momentusSpaceOwners[$c] = (int) $row['id'];
+    }
+}
+$momentusSpaceOwnersJson = Json::encode($momentusSpaceOwners);
+$saveUrlSpaceJs = Json::encode(Url::to(['template/ajax-set-momentus-space']));
+
+$this->registerJs(
+    'window.__momentusSpaceCodeOwner = ' . $momentusSpaceOwnersJson . ";\n" .
+    "$(document).on('select2:open', 'select[name^=\"momentus_space_\"]', function() {\n" .
+    "  var m = (this.name || '').match(/momentus_space_(\\d+)/);\n" .
+    "  window.__mpsCurrentTid = m ? parseInt(m[1], 10) : 0;\n" .
+    "});\n",
+    \yii\web\View::POS_READY
+);
 ?>
 <div class="row-full">
 
@@ -71,10 +92,9 @@ $momentusOrgJson = json_encode($momentusOrgForSearch);
                 'attribute' => 'momentusSpaceDescr',
                 'label' => 'Momentus space',
                 'format' => 'raw',
-                'value' => function($model) use ($searchSpacesBaseUrl, $momentusOrgJson) {
+                'value' => function ($model) use ($searchSpacesBaseUrl, $momentusOrgJson, $saveUrlSpaceJs) {
 
                     $searchUrl = $searchSpacesBaseUrl;
-                    $saveUrl = Url::to(['template/ajax-set-momentus-space']);
 
                     $initText = $model->momentusSpaceCode
                         ? ($model->momentusSpaceDescr
@@ -99,34 +119,64 @@ $momentusOrgJson = json_encode($momentusOrgForSearch);
                                 'delay' => 250,
                                 'data' => new JsExpression('function(params){ return { q: params.term, org_code: ' . $momentusOrgJson . ' }; }'),
                                 'processResults' => new JsExpression('function(data){
-                                    var items = (data || []).map(function(x){
-                                        return {
-                                            id: x.code,
-                                            text: x.text || (x.code + " — " + x.description),
-                                            desc: x.description || ""
-                                        };
+                                    var owners = window.__momentusSpaceCodeOwner;
+                                    if (!owners) { return { results: [] }; }
+                                    var myTid = parseInt(window.__mpsCurrentTid, 10) || 0;
+                                    var arr = Array.isArray(data) ? data : [];
+                                    var filtered = arr.filter(function (x) {
+                                        if (!myTid) { return true; }
+                                        if (!x || x.code === undefined || x.code === null) { return true; }
+                                        var code = String(x.code);
+                                        var oid = owners[code];
+                                        if (oid === undefined) { return true; }
+                                        return parseInt(oid, 10) === myTid;
                                     });
-                                    return {results: items};
+                                    return {
+                                        results: filtered.map(function(x) {
+                                            return {
+                                                id: x.code,
+                                                text: x.text || (x.code + " — " + (x.description || "")),
+                                                desc: x.description || ""
+                                            };
+                                        })
+                                    };
                                 }'),
                             ],
                             'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
                         ],
                         'pluginEvents' => [
-                            "select2:select" => new JsExpression("function(e){
-                                var el = $(this);
-                                var templateId = el.data('template-id');
-                                var item = e.params.data || {};
-                                $.post('$saveUrl', {
-                                    id: templateId,
-                                    code: item.id || '',
-                                    desc: item.desc || ''
-                                });
-                            }"),
-                            "select2:clear" => new JsExpression("function(e){
-                                var el = $(this);
-                                var templateId = el.data('template-id');
-                                $.post('$saveUrl', {id: templateId, code: '', desc: ''});
-                            }"),
+                            'select2:select' => new JsExpression('function (e) {
+    var el = jQuery(this);
+    var templateId = el.data("templateId");
+    var item = e.params.data || {};
+    jQuery.post(' . $saveUrlSpaceJs . ', { id: templateId, code: item.id || "", desc: item.desc || "" })
+        .done(function (resp) {
+            if (resp && resp.ok) {
+                var o = window.__momentusSpaceCodeOwner;
+                if (!o) { o = window.__momentusSpaceCodeOwner = {}; }
+                var tid = parseInt(templateId, 10);
+                jQuery.each(o, function (k, v) { if (parseInt(v, 10) === tid) { delete o[k]; } });
+                if (item.id) { o[item.id] = tid; }
+                return;
+            }
+            if (resp && resp.message) { window.alert(resp.message); }
+            el.val(null).trigger("change");
+        })
+        .fail(function () { window.alert("Save failed"); el.val(null).trigger("change"); });
+}'),
+                            'select2:clear' => new JsExpression('function (e) {
+    var el = jQuery(this);
+    var templateId = el.data("templateId");
+    jQuery.post(' . $saveUrlSpaceJs . ', { id: templateId, code: "", desc: "" })
+        .done(function (resp) {
+            if (resp && resp.ok) {
+                var o = window.__momentusSpaceCodeOwner;
+                if (!o) { return; }
+                var tid = parseInt(templateId, 10);
+                jQuery.each(o, function (k, v) { if (parseInt(v, 10) === tid) { delete o[k]; } });
+            }
+        });
+}'),
                         ],
                     ]);
                 },

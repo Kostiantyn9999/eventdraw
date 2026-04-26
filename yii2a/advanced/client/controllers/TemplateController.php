@@ -85,14 +85,28 @@ public function actionAjaxSetMomentusSpace()
 
     if ($code === '') {
         $m->momentusSpaceCode = null;
-        $m->momentusSpaceDescr = null; 
+        $m->momentusSpaceDescr = null;
     } else {
+        $other = Template::find()
+            ->where(['momentusSpaceCode' => $code])
+            ->andWhere(['<>', 'id', $templateId])
+            ->one();
+        if ($other !== null) {
+            return [
+                'ok' => false,
+                'message' => 'This Momentus space is already assigned to template: ' . $other->templateName,
+            ];
+        }
         $m->momentusSpaceCode = $code;
         $m->momentusSpaceDescr = $desc ?: null;
     }
 
-    if ($m->save(false, ['momentusSpaceCode','momentusSpaceDescr'])) {
+    if ($m->save(false, ['momentusSpaceCode', 'momentusSpaceDescr'])) {
         return ['ok' => true];
+    }
+    $err = $m->getFirstError('momentusSpaceCode');
+    if ($err !== null) {
+        return ['ok' => false, 'message' => $err, 'errors' => $m->errors];
     }
     return ['ok' => false, 'errors' => $m->errors];
 }

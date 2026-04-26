@@ -325,7 +325,29 @@ class Template extends \yii\db\ActiveRecord
             [['image'], 'string'],
             ['image', 'default', 'value' => ''],
             ['subtemplate', 'validateSubtemplate', 'skipOnEmpty' => true],
+            ['momentusSpaceCode', 'validateMomentusSpaceCodeUnique'],
          ];
+    }
+
+    /**
+     * A Momentus space code may be linked to at most one EventDraw template.
+     */
+    public function validateMomentusSpaceCodeUnique($attribute)
+    {
+        $c = trim((string) $this->$attribute);
+        if ($c === '') {
+            return;
+        }
+        $q = self::find()->where(['momentusSpaceCode' => $c]);
+        if (!$this->isNewRecord && $this->id) {
+            $q->andWhere(['<>', 'id', (int) $this->id]);
+        }
+        if ($q->exists()) {
+            $this->addError(
+                $attribute,
+                'This Momentus space is already assigned to another EventDraw template.'
+            );
+        }
     }
 
     public function validateSubtemplate($attribute)
