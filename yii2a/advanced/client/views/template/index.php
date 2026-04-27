@@ -63,31 +63,31 @@ $this->registerJs(
         'columns' => [
             'id',
             'templateName',
-            [
-                'attribute' => 'momentusSpaceCode',
-                'label' => 'Momentus Space Code',
-                'contentOptions' => ['style' => 'white-space:nowrap;'],
-            ],
-            [
-                'attribute' => 'momentusEventSpaceDiagramId',
-                'label' => 'EventSpaceDiagram ID',
-                'format' => 'raw',
-                'value' => function($model) {
-                    $saveUrl = Url::to(['template/ajax-set-momentus-diagram-id']);
-                    return Html::input('number', 'diagram_id_' . $model->id,
-                        $model->momentusEventSpaceDiagramId,
-                        [
-                            'class'            => 'form-control js-diagram-id',
-                            'data-template-id' => $model->id,
-                            'data-save-url'    => $saveUrl,
-                            'style'            => 'width:130px',
-                            'placeholder'      => 'e.g. 2110',
-                            'min'              => '1',
-                        ]
-                    );
-                },
-                'contentOptions' => ['style' => 'min-width:150px;'],
-            ],
+            // [
+            //     'attribute' => 'momentusSpaceCode',
+            //     'label' => 'Momentus Space Code',
+            //     'contentOptions' => ['style' => 'white-space:nowrap;'],
+            // ],
+            // [
+            //     'attribute' => 'momentusEventSpaceDiagramId',
+            //     'label' => 'EventSpaceDiagram ID',
+            //     'format' => 'raw',
+            //     'value' => function($model) {
+            //         $saveUrl = Url::to(['template/ajax-set-momentus-diagram-id']);
+            //         return Html::input('number', 'diagram_id_' . $model->id,
+            //             $model->momentusEventSpaceDiagramId,
+            //             [
+            //                 'class'            => 'form-control js-diagram-id',
+            //                 'data-template-id' => $model->id,
+            //                 'data-save-url'    => $saveUrl,
+            //                 'style'            => 'width:130px',
+            //                 'placeholder'      => 'e.g. 2110',
+            //                 'min'              => '1',
+            //             ]
+            //         );
+            //     },
+            //     'contentOptions' => ['style' => 'min-width:150px;'],
+            // ],
             [
                 'attribute' => 'momentusSpaceDescr',
                 'label' => 'Momentus space',
