@@ -1032,6 +1032,8 @@ class MomentusController extends Controller
     public function actionGetEventSpaceDiagram()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
+        Yii::$app->response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate');
+        Yii::$app->response->headers->set('Pragma', 'no-cache');
 
         $id = (int) Yii::$app->request->get('id', 0);
         if ($id <= 0) {
@@ -1694,7 +1696,7 @@ class MomentusController extends Controller
         }
 
         $client = new MomentusClient();
-        $results = ['added' => [], 'updated' => [], 'deleted' => [], 'errors' => []];
+        $results = ['added' => [], 'updated' => [], 'deleted' => [], 'skipped' => [], 'errors' => []];
 
         // 0) Resolve StartDate/EndDate from the function if not provided
         if (($startDate === '' || $endDate === '') && $momentusEventId && $momentusFunctionId) {
@@ -1854,7 +1856,7 @@ class MomentusController extends Controller
             }
         }
 
-        // 6) Items in SO but not in diagram → delete
+        // 6) Items in SO but not in diagram → delete (excludes system tax/gratuity at fetch; see catch for API guard)
         foreach ($currentByResource as $resourceCode => $currentItem) {
             if (!isset($diagramByResource[$resourceCode])) {
                 $orderLineNumber = isset($currentItem['OrderLineNumber']) ? (int) $currentItem['OrderLineNumber'] : null;
@@ -1866,11 +1868,21 @@ class MomentusController extends Controller
                             'order_line_number' => $orderLineNumber,
                         ];
                     } catch (\Exception $e) {
-                        $results['errors'][] = [
-                            'action' => 'delete',
-                            'resource_code' => $resourceCode,
-                            'error' => $e->getMessage(),
-                        ];
+                        if ($this->isServiceOrderItemNonDeletableException($e)) {
+                            $results['skipped'][] = [
+                                'action' => 'delete',
+                                'resource_code' => $resourceCode,
+                                'order_line_number' => $orderLineNumber,
+                                'reason' => 'non_deletable',
+                                'message' => $e->getMessage(),
+                            ];
+                        } else {
+                            $results['errors'][] = [
+                                'action' => 'delete',
+                                'resource_code' => $resourceCode,
+                                'error' => $e->getMessage(),
+                            ];
+                        }
                     }
                 }
             }
@@ -1884,6 +1896,7 @@ class MomentusController extends Controller
                 'added' => count($results['added']),
                 'updated' => count($results['updated']),
                 'deleted' => count($results['deleted']),
+                'skipped' => count($results['skipped']),
                 'errors' => count($results['errors']),
             ],
             'details' => $results,
@@ -1893,6 +1906,21 @@ class MomentusController extends Controller
     // ---------------------------------------------------------------
     // Helpers
     // ---------------------------------------------------------------
+
+    /**
+     * True when Momentus will not allow deleting a line (e.g. system-calculated tax/gratuity).
+     */
+    private function isServiceOrderItemNonDeletableException(\Exception $e)
+    {
+        $m = (string) $e->getMessage();
+        if ($m === '') {
+            return false;
+        }
+        if (stripos($m, 'system calculated') === false) {
+            return false;
+        }
+        return (stripos($m, 'tax') !== false || stripos($m, 'gratuit') !== false);
+    }
 
     /**
      * Parse JSON request body.
