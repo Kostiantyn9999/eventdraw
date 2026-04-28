@@ -14,8 +14,8 @@ $this->title = 'Admin EventDraw';
         <div class="row">
 
             <div class="col-lg-4">
-                <h2>Account Code</h2>
-                <p><a class="btn btn-default" href="../web/site/account-code">Manage Account Code &raquo;</a></p>
+                <h2>Account</h2>
+                <p><a class="btn btn-default" href="../web/site/account-code">Manage Org Code &raquo;</a></p>
             </div>
 
             <div class="col-lg-4">

@@ -6,7 +6,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 
-$this->title = 'Account Code';
+$this->title = 'Org Code';
 $this->params['breadcrumbs'][] = $this->title;
 
 $saveUrl       = Url::to(['/site/ajax-set-account-code']);
@@ -19,10 +19,10 @@ $inputValue    = $currentCode !== '' ? $currentCode : ($effectiveCode !== '' ? $
 
 <div class="site-account-code">
 
-    <h1>Account Code</h1>
+    <h1>Org Code</h1>
 
     <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:20px;">
-        <label for="account-code-input" style="margin:0; white-space:nowrap;">Account Code</label>
+        <label for="account-code-input" style="margin:0; white-space:nowrap;">Org Code</label>
         <input type="text"
                id="account-code-input"
                class="form-control"
