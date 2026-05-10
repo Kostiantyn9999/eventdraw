@@ -11,6 +11,7 @@ class MomentusClient
     private $subscriptionKey;
     private $orgCode;
     private $timeout;
+    private $diagramEndpoint;
 
     public function __construct(array $config = [])
     {
@@ -21,9 +22,15 @@ class MomentusClient
             'orgCode' => '10',
             'timeout' => 20,
         ];
-
+        $hostName = (string) \Yii::$app->request->hostName;
         if (class_exists('\Yii', false) && \Yii::$app !== null) {
             $paramsConfig = (array) \Yii::$app->params;
+            if ($hostName === 'momentusqa.eventdrawusqa.com') {
+                $paramsConfig['momentus'] = $paramsConfig['momentusqa'];
+                $paramsConfig['isMomentusQa'] = true;
+            } else {
+                $paramsConfig['momentus'] = $paramsConfig['momentus'];
+            }
             if (isset($paramsConfig['momentus']) && is_array($paramsConfig['momentus'])) {
                 $defaultConfig = array_merge($defaultConfig, $paramsConfig['momentus']);
             }
@@ -36,6 +43,7 @@ class MomentusClient
         $this->subscriptionKey = (string) $config['subscriptionKey'];
         $this->orgCode = (string) $config['orgCode'];
         $this->timeout = (int) $config['timeout'];
+        $this->diagramEndpoint = !empty($config['isMomentusQa']) ? '/ExternalDiagrams' : '/EventSpaceDiagrams';
     }
 
     public function searchSpaces($searchString, $page = null, $pageSize = null, $order = null, $orgCode = null)
@@ -484,50 +492,55 @@ class MomentusClient
     }
 
     // ---------------------------------------------------------------
-    // Event Space Diagrams
+    // Event Space / External Diagrams
     // ---------------------------------------------------------------
 
     /**
-     * GET /EventSpaceDiagrams/{ID}
-     * Retrieve a single Event Space Diagram entry by its ID.
+     * GET /EventSpaceDiagrams/{ID} or /ExternalDiagrams/{ID}
+     * Retrieve a single diagram entry by its ID.
      *
-     * @param int $id  The EventSpaceDiagram ID
+     * @param int $id  The diagram ID
      * @return array   The diagram model as an associative array
      */
     public function getEventSpaceDiagram($id)
     {
-        return $this->request('GET', '/EventSpaceDiagrams/' . (int) $id);
+        return $this->request('GET', $this->diagramEndpoint . '/' . (int) $id);
     }
 
     /**
-     * Update the EventdrawDiagramUrl field on a Momentus EventSpaceDiagram.
+     * Update the EventdrawDiagramUrl field on a Momentus diagram record.
      *
-     * Performs a GET to fetch current values, sets EventdrawDiagramUrl to the
-     * given URL, then PUTs the full model back (Momentus requires the full body).
+     * Performs a GET to fetch current values, sets EventdrawDiagramUrl and
+     * optionally EventdrawSvgUrl for QA ExternalDiagrams, then PUTs the full
+     * model back (Momentus requires the full body).
      *
-     * @param int    $id      The EventSpaceDiagram ID
-     * @param string $url     The EventDraw floor plan URL to store
-     * @param string $orgCode Organisation code (optional)
-     * @return array          The API response
+     * @param int         $id      The diagram ID
+     * @param string      $url     The EventDraw floor plan URL to store
+     * @param string      $orgCode Organisation code (optional)
+     * @param string|null $svgUrl  The EventDraw SVG URL to store (optional)
+     * @return array               The API response
      */
-    public function updateEventSpaceDiagramUrl($id, $url, $orgCode = null)
+    public function updateEventSpaceDiagramUrl($id, $url, $orgCode = null, $svgUrl = null)
     {
         $id = (int) $id;
         if ($id <= 0) {
-            throw new RuntimeException('Invalid EventSpaceDiagram ID: ' . $id);
+            throw new RuntimeException('Invalid diagram ID: ' . $id);
         }
 
         try {
             $current = $this->getEventSpaceDiagram($id);
         } catch (\Exception $e) {
             throw new RuntimeException(
-                'Failed to GET EventSpaceDiagram ' . $id . ': ' . $e->getMessage()
+                'Failed to GET diagram ' . $id . ' from ' . $this->diagramEndpoint . ': ' . $e->getMessage()
             );
         }
 
         // Ensure the ID in the body matches the URL path parameter (API requirement)
         $current['ID'] = $id;
         $current['EventdrawDiagramUrl'] = (string) $url;
+        if ($this->diagramEndpoint === '/ExternalDiagrams' && $svgUrl !== null && $svgUrl !== '') {
+            $current['EventdrawSvgUrl'] = (string) $svgUrl;
+        }
 
         // Override org code if provided
         if ($orgCode !== null && $orgCode !== '') {
@@ -535,10 +548,10 @@ class MomentusClient
         }
 
         try {
-            return $this->request('PUT', '/EventSpaceDiagrams/' . $id, [], $current);
+            return $this->request('PUT', $this->diagramEndpoint . '/' . $id, [], $current);
         } catch (\Exception $e) {
             throw new RuntimeException(
-                'Failed to PUT EventSpaceDiagram ' . $id . ': ' . $e->getMessage()
+                'Failed to PUT diagram ' . $id . ' to ' . $this->diagramEndpoint . ': ' . $e->getMessage()
             );
         }
     }

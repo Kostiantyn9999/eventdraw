@@ -64,6 +64,7 @@ class MomentusController extends Controller
                         'http://yii2a',
                         'http://localhost',
                         'https://momentusstaging.eventdrawus.com',
+                        'https://momentusqa.eventdrawusqa.com',
                         'https://momentus.eventdrawus.com',
                     ],
                     'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -1011,21 +1012,23 @@ class MomentusController extends Controller
      * Body: {
      *   "eventdraw_event_id": 187763,
      *   "event_space_diagram_id": 2110,   (optional – defaults to 2110 if not supplied)
+     *   "eventdraw_svg_url": "https://...", (optional)
      *   "org_code": "10"                  (optional)
      * }
      *
-     * Writes the EventDraw floor plan URL into the EventdrawDiagramUrl field of
-     * the given Momentus EventSpaceDiagram via PUT /EventSpaceDiagrams/{ID}.
+     * Writes the EventDraw floor plan URL into the EventdrawDiagramUrl field and,
+     * on QA ExternalDiagrams, can also write the SVG URL into EventdrawSvgUrl.
      *
      * Important notes (from Momentus API docs):
      *  - The ID in the request body must match the ID in the URL path parameter.
-     *  - A GET is performed first to retrieve current values; only EventdrawDiagramUrl is changed.
+     *  - A GET is performed first to retrieve current values; only the supplied
+     *    EventDraw URL fields are changed.
      *  - Read-only fields (EnteredBy, EnteredOn, ChangedBy, ChangedOn) are ignored on update.
      */
     /**
      * GET /momentus/get-event-space-diagram?id=2111&org_code=10
      *
-     * Returns the Momentus EventSpaceDiagram record for the given ID.
+     * Returns the Momentus diagram record for the given ID.
      * The frontend uses DefaultOrderFunctionID and DefaultOrderPriceList
      * to pre-select the defaults in the Create Service Order dialog.
      */
@@ -1064,6 +1067,7 @@ class MomentusController extends Controller
         $eventdrawEventId    = isset($payload['eventdraw_event_id']) ? $payload['eventdraw_event_id'] : null;
         $eventSpaceDiagramId = isset($payload['event_space_diagram_id']) ? (int) $payload['event_space_diagram_id'] : 0;
         $orgCode             = isset($payload['org_code']) ? (string) $payload['org_code'] : $this->getOrgCode();
+        $eventdrawSvgUrl     = !empty($payload['eventdraw_svg_url']) ? (string) $payload['eventdraw_svg_url'] : null;
 
         if ($eventdrawEventId === null) {
             Yii::$app->response->statusCode = 400;
@@ -1080,16 +1084,17 @@ class MomentusController extends Controller
         if (!empty($payload['eventdraw_url'])) {
             $eventdrawUrl = (string) $payload['eventdraw_url'];
         } else {
-            $frontendBase = rtrim((string) (\Yii::$app->params['frontendBaseUrl'] ?? 'https://momentusstaging.eventdrawus.com/frontend/web/site'), '/');
-            $eventdrawUrl = $frontendBase . '/eventdraw?EventID=' . rawurlencode((string) $eventdrawEventId);
+            $hostInfo = Yii::$app->request->hostInfo;
+            $eventdrawUrl = $hostInfo . '/frontend/web/site/eventdraw?EventID=' . rawurlencode((string) $eventdrawEventId);
         }
 
         try {
             $client = new MomentusClient();
-            $result = $client->updateEventSpaceDiagramUrl($eventSpaceDiagramId, $eventdrawUrl, $orgCode);
+            $result = $client->updateEventSpaceDiagramUrl($eventSpaceDiagramId, $eventdrawUrl, $orgCode, $eventdrawSvgUrl);
             return [
                 'success' => true,
                 'url' => $eventdrawUrl,
+                'svg_url' => $eventdrawSvgUrl,
                 'event_space_diagram_id' => $eventSpaceDiagramId,
                 'result' => $result,
             ];
@@ -2006,6 +2011,7 @@ class MomentusController extends Controller
             }
 
             $description = isset($resource['ResourceCodeDescription']) ? (string) $resource['ResourceCodeDescription'] : '';
+            $type = isset($resource['ResourceTypeDescription']) ? (string) $resource['ResourceTypeDescription'] : '';
             $code = isset($resource['Code']) ? (string) $resource['Code'] : (isset($resource['ResourceCode']) ? (string) $resource['ResourceCode'] : '');
             $sequence = isset($resource['Sequence']) ? (int) $resource['Sequence'] : 1;
             $id = $code . '-' . $sequence;
@@ -2013,6 +2019,7 @@ class MomentusController extends Controller
             $items[] = [
                 'id'          => $id,
                 'description' => trim($description),
+                'type'        => trim($type),
                 'code'        => $code,
                 'sequence'    => $sequence,
                 'class'       => $class,

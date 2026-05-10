@@ -862,8 +862,9 @@ function actionMomentusCredentials()
 			$userlogon->save(false);
 		}
 
-       return 'https://momentusstaging.eventdrawus.com/frontend/web/site/check-guid?guid=' . $userlogon->guid; 
+        $hostInfo = Yii::$app->request->hostInfo;
 
+        return $hostInfo . '/frontend/web/site/check-guid?guid=' . $userlogon->guid; 
     }
 
 function actionGetMomentusState()

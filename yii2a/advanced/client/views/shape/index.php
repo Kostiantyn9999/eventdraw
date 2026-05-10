@@ -122,8 +122,9 @@ $unassignMappingUrl = Url::to(['momentus/unassign-mapping']);
                                     var items = (data || []).map(function(x){
                                         return {
                                             id: x.id,
-                                            text: x.description,
+                                            text: x.description + " (" + x.type + ")",
                                             description: x.description,
+                                            type: x.type,
                                             code: x.code,
                                             sequence: x.sequence
                                         };
