@@ -21,15 +21,13 @@ class MomentusClient
             'subscriptionKey' => '',
             'orgCode' => '10',
             'timeout' => 20,
+            'isMomentusQa' => false,
         ];
         $hostName = (string) \Yii::$app->request->hostName;
         if (class_exists('\Yii', false) && \Yii::$app !== null) {
             $paramsConfig = (array) \Yii::$app->params;
             if ($hostName === 'momentusqa.eventdrawusqa.com') {
                 $paramsConfig['momentus'] = $paramsConfig['momentusqa'];
-                $paramsConfig['isMomentusQa'] = true;
-            } else {
-                $paramsConfig['momentus'] = $paramsConfig['momentus'];
             }
             if (isset($paramsConfig['momentus']) && is_array($paramsConfig['momentus'])) {
                 $defaultConfig = array_merge($defaultConfig, $paramsConfig['momentus']);
@@ -43,7 +41,7 @@ class MomentusClient
         $this->subscriptionKey = (string) $config['subscriptionKey'];
         $this->orgCode = (string) $config['orgCode'];
         $this->timeout = (int) $config['timeout'];
-        $this->diagramEndpoint = !empty($config['isMomentusQa']) ? '/ExternalDiagrams' : '/EventSpaceDiagrams';
+        $this->diagramEndpoint = $config['isMomentusQa'] ? '/ExternalDiagrams' : '/EventSpaceDiagrams';
     }
 
     public function searchSpaces($searchString, $page = null, $pageSize = null, $order = null, $orgCode = null)
