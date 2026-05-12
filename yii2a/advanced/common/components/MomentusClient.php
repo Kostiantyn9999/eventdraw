@@ -26,7 +26,7 @@ class MomentusClient
         $hostName = (string) \Yii::$app->request->hostName;
         if (class_exists('\Yii', false) && \Yii::$app !== null) {
             $paramsConfig = (array) \Yii::$app->params;
-            if ($hostName === 'momentusqa.eventdrawusqa.com') {
+            if ($hostName === 'momentusqa.eventdrawusqa.com' || $hostName === 'momentusadmin.eventdrawusqa.com' || $hostName === 'yii2a') {
                 $paramsConfig['momentus'] = $paramsConfig['momentusqa'];
             }
             if (isset($paramsConfig['momentus']) && is_array($paramsConfig['momentus'])) {

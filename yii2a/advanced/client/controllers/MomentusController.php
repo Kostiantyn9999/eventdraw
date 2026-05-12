@@ -1157,15 +1157,20 @@ class MomentusController extends Controller
     
     /**
      * Store rendered floorplan SVG on the public bucket for direct HTTPS access:
-     * https://eventdraw-public.s3.ap-southeast-2.amazonaws.com/test_folder/{EventID}.svg
+     * https://eventdraw-public.s3.ap-southeast-2.amazonaws.com/test_folder[Momentus_QA_SVG]/{EventID}.svg
      */
     public function saveEventSvg_S3($eventID, $svgContent)
     {
         if ($eventID <= 0 || $svgContent === null || $svgContent === '') {
             return false;
         }
+
+        $hostName = (string) \Yii::$app->request->hostName;
         $s3 = Yii::$app->get('s3');
         $key = 'test_folder/' . strval((int) $eventID) . '.svg';
+        if ($hostName === 'momentusqa.eventdrawusqa.com' || $hostName === 'momentusadmin.eventdrawusqa.com' || $hostName === 'yii2a') {
+            $key = 'Momentus_QA_SVG/' . strval((int) $eventID) . '.svg';
+        }
         $s3->commands()
             ->put($key, $svgContent)
             ->inBucket('eventdraw-public')

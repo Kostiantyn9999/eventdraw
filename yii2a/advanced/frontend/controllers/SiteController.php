@@ -101,6 +101,7 @@ class SiteController extends Controller
                             'get-guid-desktop',
                             'check-guid',
                             'check-guid-desktop',
+                            'eventdraw',
                             'get-api-token',
                             'captcha',
                             'get-library',
@@ -150,7 +151,7 @@ class SiteController extends Controller
 
                     ],
                     [
-                        'actions' => ['logout','eventdraw'],
+                        'actions' => ['logout'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -864,7 +865,7 @@ function actionMomentusCredentials()
 
         $hostInfo = Yii::$app->request->hostInfo;
 
-        return $hostInfo . '/frontend/web/site/check-guid?guid=' . $userlogon->guid; 
+        return $hostInfo . '/frontend/web/site/eventdraw?guid=' . $userlogon->guid;
     }
 
 function actionGetMomentusState()
@@ -1054,7 +1055,8 @@ function actionUpdateMomentusLink()
         {
             $docName =$EventInfo->eventName;  
         }
-        $data = '{"name":"' .  $docName .  '", "functionId":"' . $momentus_function .'", "fileUrl":"' . 'https://login.eventdraw.com.au/frontend/web/site/check-guid?guid=' . $userlogon->guid . '"}';
+        $momentusFileUrl = Yii::$app->request->hostInfo . '/frontend/web/site/eventdraw?guid=' . $userlogon->guid;
+        $data = '{"name":"' .  $docName .  '", "functionId":"' . $momentus_function .'", "fileUrl":"' . $momentusFileUrl . '"}';
             
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
 
@@ -2812,37 +2814,32 @@ public function actionGetUserEvents()
         return $this->asJson($item);
 
     }
-public function actionCheckGuid()
+    /**
+     * Momentus return URL: validates ?guid=..., shows login, then redirects to the editor.
+     * Legacy route: /site/check-guid?guid=...
+     * Preferred route: /site/eventdraw?guid=...
+     *
+     * @return mixed
+     */
+    protected function processMomentusGuidReturn()
     {
-        //get guid
         $guid = Yii::$app->getRequest()->getQueryParam('guid');
 
-        //check user name with this guid
         $guidInfo = \common\models\Userlogon::findByGUID($guid);
 
         if ($guidInfo) {
-            //remove used GUID record
-
             $creator_client = $this->getUserClient($guidInfo->userid);
 
             $model = new LoginForm();
             if ($model->load(Yii::$app->request->post()) && $model->login()) {
-                // return Yii::$app->getResponse()->redirect('/frontend/web/site/eventdraw');
-
-                $logged_client =  $this->getUserClient(Yii::$app->user->identity->id);
-                //check is this logged user the same client as user who create this floorplan
-                if ($creator_client == $logged_client)
-                {
-                    Yii::$app->response->redirect('eventdraw?EventID=' . $guidInfo->xml) ;
+                $logged_client = $this->getUserClient(Yii::$app->user->identity->id);
+                if ($creator_client == $logged_client) {
+                    return Yii::$app->response->redirect('eventdraw?EventID=' . $guidInfo->xml);
+                } else {
+                    return $this->render('another_client', [
+                        'model' => $model,
+                    ]);
                 }
-                else
-                {
-                     return $this->render('another_client', [
-            'model' => $model,]);
-            // Yii::$app->response->redirect('eventdraw?EventID=' . $guidInfo->xml . '&client1=' . $creator_client . '&client2=' . $logged_client) ;
-                }
-                
-                // return $this->goBack(); 
             } else {
                 $model->password = '';
 
@@ -2850,29 +2847,14 @@ public function actionCheckGuid()
                     'model' => $model,
                 ]);
             }
-
-            //authenticate user with this guid
-            // $userID = \common\models\User::findIdentity($guidInfo->userid);
-
-            // if ($userID) {
-            //     Yii::$app->user->login($userID);
-
-            //     $this->layout = 'empty';
-            //     Yii::$app->response->redirect('eventdraw?EventID=' . $guidInfo->xml);
-
-            // }
-            // else
-            // {
-            //    return $this->asJson('Incorrect User' );
-            // }
-
-        } else
-        {
-            return $this->asJson('Incorrect GUID' );
+        } else {
+            return $this->asJson('Incorrect GUID');
         }
+    }
 
-
-
+    public function actionCheckGuid()
+    {
+        return $this->processMomentusGuidReturn();
     }
     public function actionGetGuid()
     {
@@ -4627,6 +4609,16 @@ public function actionSaveTemplateJson()
     // } 
     public function actionEventdraw()
     {
+        $guid = trim((string) Yii::$app->getRequest()->getQueryParam('guid', ''));
+        if ($guid !== '') {
+            return $this->processMomentusGuidReturn();
+        }
+
+        if (Yii::$app->user->isGuest) {
+            Yii::$app->user->setReturnUrl(Yii::$app->request->url);
+            return Yii::$app->response->redirect(['site/login']);
+        }
+
         $this->layout = 'empty';
         $user_id  = Yii::$app->user->identity->id;
         $userType = Yii::$app->user->identity->userType;
