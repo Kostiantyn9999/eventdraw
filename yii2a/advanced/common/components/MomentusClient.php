@@ -302,12 +302,19 @@ class MomentusClient
      *
      * Typical filter: $filter=OrganizationCode eq '10'
      * Event-specific: $filter=OrganizationCode eq '10' and EventID eq 9427
+     *
+     * When $odataQuery is empty, optional $functionIdFilter (EventSpaceDiagram default FunctionID)
+     * appends: and FunctionID eq {int}
      */
-    public function listFunctions($odataQuery = '', $orgCode = null)
+    public function listFunctions($odataQuery = '', $orgCode = null, $functionIdFilter = null)
     {
         $orgCode = ($orgCode !== null && $orgCode !== '') ? (string) $orgCode : $this->orgCode;
         if ($odataQuery === '' || $odataQuery === null) {
             $odataQuery = '$filter=OrganizationCode eq \'' . addslashes($orgCode) . '\'';
+            $fid = ($functionIdFilter !== null && $functionIdFilter !== '') ? (int) $functionIdFilter : 0;
+            if ($fid > 0) {
+                $odataQuery .= ' and FunctionID eq ' . $fid;
+            }
         }
         $params = ['ODataQuery' => $odataQuery];
         return $this->request('GET', '/odata/Functions', $params);
@@ -318,12 +325,20 @@ class MomentusClient
      * Endpoint: GET /odata/PriceList
      *
      * Typical filter: $filter=OrganizationCode eq '10'
+     *
+     * When $odataQuery is empty, optional $priceListCodeFilter (EventSpaceDiagram default price list Code)
+     * appends: and Code eq '...' (OData single-quote escaping inside the literal)
      */
-    public function listPriceLists($odataQuery = '', $orgCode = null)
+    public function listPriceLists($odataQuery = '', $orgCode = null, $priceListCodeFilter = null)
     {
         $orgCode = ($orgCode !== null && $orgCode !== '') ? (string) $orgCode : $this->orgCode;
         if ($odataQuery === '' || $odataQuery === null) {
             $odataQuery = '$filter=OrganizationCode eq \'' . addslashes($orgCode) . '\'';
+            $plCode = ($priceListCodeFilter !== null) ? trim((string) $priceListCodeFilter) : '';
+            if ($plCode !== '') {
+                $codeLit = str_replace("'", "''", $plCode);
+                $odataQuery .= " and Code eq '" . $codeLit . "'";
+            }
         }
         $params = ['ODataQuery' => $odataQuery];
         return $this->request('GET', '/odata/PriceList', $params);

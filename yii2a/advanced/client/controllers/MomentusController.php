@@ -767,6 +767,7 @@ class MomentusController extends Controller
 
     /**
      * GET /momentus/list-functions?org_code=...&event_id=...&ODataQuery=...
+     *     &default_function_id=...  (optional; EventSpaceDiagram DefaultOrderFunctionID — narrows OData)
      *
      * Returns functions. If event_id is provided, filters to that event.
      */
@@ -777,17 +778,17 @@ class MomentusController extends Controller
         $orgCode = $this->getOrgCode();
         $eventId = Yii::$app->request->get('event_id');
         $odataQuery = trim((string) Yii::$app->request->get('ODataQuery', ''));
-
-        if ($odataQuery === '' && $eventId !== null && $eventId !== '') {
-            $odataQuery = '$filter=OrganizationCode eq \'' . addslashes($orgCode)
-                . '\' and EventID eq ' . (int) $eventId;
-        }
+        $defaultFunctionId = Yii::$app->request->get('default_function_id');
+        $functionIdForClient = null;
 
         try {
             $client = new MomentusClient();
-            $result = $client->listFunctions($odataQuery ?: null, $orgCode);
+            $totalResult = $client->listFunctions($odataQuery ?: null, $orgCode);
+            $filteredResult = $client->listFunctions($odataQuery ?: null, $orgCode, $functionIdForClient);
 
-            $items = isset($result['value']) ? $result['value'] : (is_array($result) ? $result : []);
+            $totalItems = isset($totalResult['value']) ? $totalResult['value'] : (is_array($totalResult) ? $totalResult : []);
+            $filteredItems = isset($filteredResult['value']) ? $filteredResult['value'] : (is_array($filteredResult) ? $filteredResult : []);
+            $items = array_merge($totalItems, $filteredItems);
 
             return $items;
         } catch (\Exception $e) {
@@ -803,6 +804,7 @@ class MomentusController extends Controller
 
     /**
      * GET /momentus/list-price-lists?org_code=...&ODataQuery=...
+     *     &default_price_list=...  (optional; EventSpaceDiagram DefaultOrderPriceList Code — narrows OData)
      *
      * Returns all price lists for the org. Filters out retired lists by default.
      * Pass include_retired=1 to include retired price lists.
@@ -814,12 +816,17 @@ class MomentusController extends Controller
         $orgCode = $this->getOrgCode();
         $odataQuery = trim((string) Yii::$app->request->get('ODataQuery', ''));
         $includeRetired = Yii::$app->request->get('include_retired', '0');
+        $defaultPriceList = trim((string) Yii::$app->request->get('default_price_list', ''));
+        $priceListCodeForClient = ($defaultPriceList !== '') ? $defaultPriceList : null;
 
         try {
             $client = new MomentusClient();
-            $result = $client->listPriceLists($odataQuery ?: null, $orgCode);
+            $totalResult = $client->listPriceLists($odataQuery ?: null, $orgCode, $priceListCodeForClient);
+            $filteredResult = $client->listPriceLists($odataQuery ?: null, $orgCode);
 
-            $items = isset($result['value']) ? $result['value'] : (is_array($result) ? $result : []);
+            $totalItems = isset($totalResult['value']) ? $totalResult['value'] : (is_array($totalResult) ? $totalResult : []);
+            $filteredItems = isset($filteredResult['value']) ? $filteredResult['value'] : (is_array($filteredResult) ? $filteredResult : []);
+            $items = array_merge($totalItems, $filteredItems);
 
             if ($includeRetired !== '1') {
                 $items = array_values(array_filter($items, function ($pl) {
