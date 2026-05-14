@@ -302,19 +302,19 @@ class MomentusClient
      *
      * Typical filter: $filter=OrganizationCode eq '10'
      * Event-specific: $filter=OrganizationCode eq '10' and EventID eq 9427
+     * Function-specific: $filter=OrganizationCode eq '10' and EventID eq 9427 and FunctionID eq 123
      *
-     * When $odataQuery is empty, optional $functionIdFilter (EventSpaceDiagram default FunctionID)
-     * appends: and FunctionID eq {int}
+     * When $odataQuery is empty, builds the filter from OrganizationCode plus
+     * optional EventID and FunctionID values.
      */
-    public function listFunctions($odataQuery = '', $orgCode = null, $functionIdFilter = null)
+    public function listFunctions($orgCode, $eventId, $functionId = null)
     {
-        $orgCode = ($orgCode !== null && $orgCode !== '') ? (string) $orgCode : $this->orgCode;
-        if ($odataQuery === '' || $odataQuery === null) {
-            $odataQuery = '$filter=OrganizationCode eq \'' . addslashes($orgCode) . '\'';
-            $fid = ($functionIdFilter !== null && $functionIdFilter !== '') ? (int) $functionIdFilter : 0;
-            if ($fid > 0) {
-                $odataQuery .= ' and FunctionID eq ' . $fid;
-            }
+        $odataQuery = '$filter=OrganizationCode eq \'' . addslashes($orgCode) . '\'';
+        if ($eventId > 0) {
+            $odataQuery .= ' and EventID eq ' . $eventId;
+        }
+        if ($functionId > 0) {
+            $odataQuery .= ' and FunctionID eq ' . $functionId;
         }
         $params = ['ODataQuery' => $odataQuery];
         return $this->request('GET', '/odata/Functions', $params);

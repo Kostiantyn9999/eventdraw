@@ -777,18 +777,13 @@ class MomentusController extends Controller
 
         $orgCode = $this->getOrgCode();
         $eventId = Yii::$app->request->get('event_id');
-        $odataQuery = trim((string) Yii::$app->request->get('ODataQuery', ''));
         $defaultFunctionId = Yii::$app->request->get('default_function_id');
-        $functionIdForClient = null;
 
         try {
             $client = new MomentusClient();
-            $totalResult = $client->listFunctions($odataQuery ?: null, $orgCode);
-            $filteredResult = $client->listFunctions($odataQuery ?: null, $orgCode, $functionIdForClient);
+            $totalResult = $client->listFunctions($orgCode, $eventId, null);
 
-            $totalItems = isset($totalResult['value']) ? $totalResult['value'] : (is_array($totalResult) ? $totalResult : []);
-            $filteredItems = isset($filteredResult['value']) ? $filteredResult['value'] : (is_array($filteredResult) ? $filteredResult : []);
-            $items = array_merge($totalItems, $filteredItems);
+            $items = isset($totalResult['value']) ? $totalResult['value'] : (is_array($totalResult) ? $totalResult : []);
 
             return $items;
         } catch (\Exception $e) {
@@ -1718,10 +1713,7 @@ class MomentusController extends Controller
         // 0) Resolve StartDate/EndDate from the function if not provided
         if (($startDate === '' || $endDate === '') && $momentusEventId && $momentusFunctionId) {
             try {
-                $fnOdata = '$filter=OrganizationCode eq \'' . addslashes($orgCode)
-                    . '\' and EventID eq ' . (int) $momentusEventId
-                    . ' and FunctionID eq ' . (int) $momentusFunctionId;
-                $fnResult = $client->listFunctions($fnOdata, $orgCode);
+                $fnResult = $client->listFunctions($orgCode, $momentusEventId, $momentusFunctionId);
                 $fnItems = isset($fnResult['value']) ? $fnResult['value'] : (is_array($fnResult) ? $fnResult : []);
                 if (!empty($fnItems[0])) {
                     $fn = $fnItems[0];
