@@ -9,6 +9,7 @@ class MomentusShapeSearch extends MomentusShape
 {
     public $mapping_resource_code;
     public $mapping_resource_description;
+    public $mapping_resource_type;
     public $mapping_sequence;
     public $mapping_id;
 
@@ -17,7 +18,7 @@ class MomentusShapeSearch extends MomentusShape
         return [
             [['id', 'source_id', 'category', 'elevate', 'height'], 'integer'],
             [['shapeType', 'description', 'model', 'shapetypes'], 'safe'],
-            [['mapping_resource_code', 'mapping_resource_description', 'mapping_sequence', 'mapping_id'], 'safe'],
+            [['mapping_resource_code', 'mapping_resource_description', 'mapping_resource_type', 'mapping_sequence', 'mapping_id'], 'safe'],
         ];
     }
 
@@ -45,6 +46,7 @@ class MomentusShapeSearch extends MomentusShape
                 's.*',
                 'm.momentus_resource_code AS mapping_resource_code',
                 'm.momentus_resource_description AS mapping_resource_description',
+                'm.momentus_resource_type AS mapping_resource_type',
                 'm.sequence AS mapping_sequence',
                 'm.id AS mapping_id',
             ]);
@@ -67,6 +69,10 @@ class MomentusShapeSearch extends MomentusShape
             $sortConfig['attributes']['mapping_resource_description'] = [
                 'asc' => ['m.momentus_resource_description' => SORT_ASC],
                 'desc' => ['m.momentus_resource_description' => SORT_DESC],
+            ];
+            $sortConfig['attributes']['mapping_resource_type'] = [
+                'asc' => ['m.momentus_resource_type' => SORT_ASC],
+                'desc' => ['m.momentus_resource_type' => SORT_DESC],
             ];
             $sortConfig['attributes']['mapping_sequence'] = [
                 'asc' => ['m.sequence' => SORT_ASC],
@@ -100,7 +106,8 @@ class MomentusShapeSearch extends MomentusShape
 
         if ($orgCode !== '') {
             $query->andFilterWhere(['like', 'm.momentus_resource_code', $this->mapping_resource_code])
-                ->andFilterWhere(['like', 'm.momentus_resource_description', $this->mapping_resource_description]);
+                ->andFilterWhere(['like', 'm.momentus_resource_description', $this->mapping_resource_description])
+                ->andFilterWhere(['like', 'm.momentus_resource_type', $this->mapping_resource_type]);
         }
 
         return $dataProvider;

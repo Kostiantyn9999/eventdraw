@@ -12,6 +12,7 @@ use Yii;
  * @property string $org_code
  * @property string $momentus_resource_code
  * @property string|null $momentus_resource_description
+ * @property string|null $momentus_resource_type
  * @property int $sequence
  * @property string $created_at
  * @property string $updated_at
@@ -37,7 +38,7 @@ class ShapeMomentusMapping extends \yii\db\ActiveRecord
             [['shape_id', 'sequence'], 'integer'],
             [['org_code'], 'string', 'max' => 50],
             [['momentus_resource_code'], 'string', 'max' => 100],
-            [['momentus_resource_description'], 'string', 'max' => 255],
+            [['momentus_resource_description', 'momentus_resource_type'], 'string', 'max' => 255],
             [['sequence'], 'default', 'value' => 1],
             [
                 ['shape_id', 'org_code', 'momentus_resource_code'],
@@ -60,6 +61,7 @@ class ShapeMomentusMapping extends \yii\db\ActiveRecord
             'org_code' => 'Org Code',
             'momentus_resource_code' => 'Resource Code',
             'momentus_resource_description' => 'Resource Description',
+            'momentus_resource_type' => 'Resource Type',
             'sequence' => 'Sequence',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',

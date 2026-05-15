@@ -254,6 +254,7 @@ class MomentusController extends Controller
                 's.shapetypes',
                 'm.momentus_resource_code',
                 'm.momentus_resource_description',
+                'm.momentus_resource_type',
                 'm.sequence',
             ])
             ->from('{{%shapes}} s')
@@ -284,6 +285,7 @@ class MomentusController extends Controller
                 'linkedToMomentus' => $linked,
                 'momentus_resource_code' => $linked ? $row['momentus_resource_code'] : null,
                 'momentus_resource_description' => $linked ? $row['momentus_resource_description'] : null,
+                'momentus_resource_type' => $linked ? $row['momentus_resource_type'] : null,
                 'momentus_sequence' => $linked ? (int) $row['sequence'] : null,
             ];
         }

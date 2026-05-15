@@ -26,7 +26,7 @@ class MomentusClient
         $hostName = (string) \Yii::$app->request->hostName;
         if (class_exists('\Yii', false) && \Yii::$app !== null) {
             $paramsConfig = (array) \Yii::$app->params;
-            if ($hostName === 'momentusqa.eventdrawusqa.com' || $hostName === 'momentusadmin.eventdrawusqa.com' || $hostName === 'yii2a') {
+            if ($hostName === 'momentusqa.eventdrawusqa.com' || $hostName === 'momentusadmin.eventdrawusqa.com') {
                 $paramsConfig['momentus'] = $paramsConfig['momentusqa'];
             }
             if (isset($paramsConfig['momentus']) && is_array($paramsConfig['momentus'])) {
@@ -52,7 +52,7 @@ class MomentusClient
         if ($q === '') {
             $search = $bookable;
         } else {
-            $text = $this->buildSearchQuery($q, 'SpaceDescription', 'Code');
+            $text = $this->buildSearchQuery($q, ['SpaceDescription', 'Code']);
             $search = '(' . $text . ') and ' . $bookable;
         }
         $params = [
@@ -76,7 +76,11 @@ class MomentusClient
     {
         $orgCode = $orgCode !== null && $orgCode !== '' ? (string) $orgCode : $this->orgCode;
 
-        $filter = $this->buildSearchQuery($searchString, 'ResourceTypeDescription', 'ResourceCodeDescription');
+        $filter = $this->buildSearchQuery($searchString, [
+            'ResourceTypeDescription',
+            'ResourceCodeDescription',
+            'ResourceCode',
+        ]);
 
         // The Resources endpoint requires the "search" param to be present.
         // Use the user's search string if provided, otherwise "All" for a full list.
@@ -658,13 +662,27 @@ class MomentusClient
         return rawurlencode($value);
     }
 
-    private function buildSearchQuery($searchString, $fieldName, $fieldName2 = null)
+    /**
+     * Build an OData-style substring filter across one or more fields (OR).
+     *
+     * @param string $searchString user text (single quotes escaped for OData literals)
+     * @param string[] $fields property names on the target entity
+     */
+    private function buildSearchQuery($searchString, array $fields)
     {
         $safeSearch = str_replace("'", "''", trim((string) $searchString));
-        if ($fieldName2) {
-            return "substringof('" . $safeSearch . "', " . $fieldName . ") or substringof('" . $safeSearch . "', " . $fieldName2 . ")";
+        $parts = [];
+        foreach ($fields as $field) {
+            $field = trim((string) $field);
+            if ($field === '') {
+                continue;
+            }
+            $parts[] = "substringof('" . $safeSearch . "', " . $field . ")";
         }
-        return "substringof('" . $safeSearch . "', " . $fieldName . ")";
+        if ($parts === []) {
+            return '';
+        }
+        return implode(' or ', $parts);
     }
 
     private function buildSearchNoteOdata($searchString)

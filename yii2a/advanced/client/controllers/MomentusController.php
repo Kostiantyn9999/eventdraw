@@ -226,7 +226,7 @@ class MomentusController extends Controller
         try {
             $client = new MomentusClient();
             $result = $client->searchResources($query, $page, $pageSize, $order, $orgCode);
-
+            
             return $this->formatResources($result);
         } catch (\Exception $exception) {
             \Yii::error($exception->getMessage(), __METHOD__);
@@ -320,6 +320,7 @@ class MomentusController extends Controller
                 'm.id AS mapping_id',
                 'm.momentus_resource_code',
                 'm.momentus_resource_description',
+                'm.momentus_resource_type',
                 'm.sequence',
                 'm.org_code',
             ])
@@ -333,6 +334,7 @@ class MomentusController extends Controller
                 ['like', 's.shapeType', $search],
                 ['like', 'm.momentus_resource_code', $search],
                 ['like', 'm.momentus_resource_description', $search],
+                ['like', 'm.momentus_resource_type', $search],
             ]);
         }
 
@@ -354,6 +356,7 @@ class MomentusController extends Controller
                     'linkedToMomentus' => false,
                     'momentus_resource_code' => null,
                     'momentus_resource_description' => null,
+                    'momentus_resource_type' => null,
                     'momentus_sequence' => null,
                     'mappings' => [],
                 ];
@@ -364,6 +367,7 @@ class MomentusController extends Controller
                     'mapping_id' => (int) $row['mapping_id'],
                     'resource_code' => $row['momentus_resource_code'],
                     'resource_description' => $row['momentus_resource_description'],
+                    'resource_type' => $row['momentus_resource_type'],
                     'sequence' => (int) $row['sequence'],
                     'org_code' => $row['org_code'],
                 ];
@@ -373,6 +377,7 @@ class MomentusController extends Controller
                     $shapesMap[$sid]['linkedToMomentus'] = true;
                     $shapesMap[$sid]['momentus_resource_code'] = $row['momentus_resource_code'];
                     $shapesMap[$sid]['momentus_resource_description'] = $row['momentus_resource_description'];
+                    $shapesMap[$sid]['momentus_resource_type'] = $row['momentus_resource_type'];
                     $shapesMap[$sid]['momentus_sequence'] = (int) $row['sequence'];
                 }
             }
@@ -408,6 +413,7 @@ class MomentusController extends Controller
                 'org_code' => $orgCode,
                 'resource_code' => null,
                 'resource_description' => null,
+                'resource_type' => null,
                 'sequence' => null,
             ];
         }
@@ -417,6 +423,7 @@ class MomentusController extends Controller
             'org_code' => $orgCode,
             'resource_code' => $mapping->momentus_resource_code,
             'resource_description' => $mapping->momentus_resource_description,
+            'resource_type' => $mapping->momentus_resource_type,
             'sequence' => $mapping->sequence,
         ];
     }
@@ -433,6 +440,7 @@ class MomentusController extends Controller
         $orgCode = $this->getOrgCode();
         $resourceCode = trim((string) $request->post('resource_code', ''));
         $resourceDescription = trim((string) $request->post('resource_description', ''));
+        $resourceType = trim((string) $request->post('resource_type', ''));
         $sequence = (int) $request->post('sequence', 1);
 
         if (!$shapeId) {
@@ -464,6 +472,7 @@ class MomentusController extends Controller
         $mapping->org_code                      = $orgCode;
         $mapping->momentus_resource_code        = $codeForDb;
         $mapping->momentus_resource_description = $resourceDescription ?: null;
+        $mapping->momentus_resource_type        = $resourceType !== '' ? $resourceType : null;
         $mapping->sequence                      = $sequence ?: 1;
 
         if (!$mapping->save()) {
@@ -1170,7 +1179,7 @@ class MomentusController extends Controller
         $hostName = (string) \Yii::$app->request->hostName;
         $s3 = Yii::$app->get('s3');
         $key = 'test_folder/' . strval((int) $eventID) . '.svg';
-        if ($hostName === 'momentusqa.eventdrawusqa.com' || $hostName === 'momentusadmin.eventdrawusqa.com' || $hostName === 'yii2a') {
+        if ($hostName === 'momentusqa.eventdrawusqa.com' || $hostName === 'momentusadmin.eventdrawusqa.com') {
             $key = 'Momentus_QA_SVG/' . strval((int) $eventID) . '.svg';
         }
         $s3->commands()

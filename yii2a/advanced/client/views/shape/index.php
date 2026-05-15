@@ -91,8 +91,24 @@ $unassignMappingUrl = Url::to(['momentus/unassign-mapping']);
                     $jsOrgCode = addslashes($defaultOrgCode);
 
                     $initText = '';
-                    if (isset($model->mapping_resource_description) && $model->mapping_resource_description !== null) {
-                        $initText = $model->mapping_resource_description;
+                    if (!empty($model->mapping_id)) {
+                        $d = trim((string) ($model->mapping_resource_description ?? ''));
+                        $t = trim((string) ($model->mapping_resource_type ?? ''));
+                        $c = trim((string) ($model->mapping_resource_code ?? ''));
+                        if ($d !== '') {
+                            $initText = $d;
+                            if ($t !== '') {
+                                $initText .= ' (' . $t . ')';
+                            }
+                            if ($c !== '') {
+                                $initText .= ' (' . $c . ')';
+                            }
+                        } elseif ($c !== '') {
+                            $initText = $c;
+                            if ($t !== '') {
+                                $initText .= ' (' . $t . ')';
+                            }
+                        }
                     }
 
                     $initValue = '';
@@ -117,12 +133,12 @@ $unassignMappingUrl = Url::to(['momentus/unassign-mapping']);
                                 'url' => $searchUrl,
                                 'dataType' => 'json',
                                 'delay' => 2500,
-                                'data' => new JsExpression('function(params){ return {q: params.term, org_code: "' . Html::encode($orgCode) . '"}; }'),
+                                'data' => new JsExpression('function(params){ return {q: params.term, org_code: "' . Html::encode($orgCode) . '", pageSize: 8000}; }'),
                                 'processResults' => new JsExpression('function(data){
                                     var items = (data || []).map(function(x){
                                         return {
                                             id: x.id,
-                                            text: x.description + " (" + x.type + ")",
+                                            text: x.description + " (" + x.type + ")" + " (" + x.code + ")",
                                             description: x.description,
                                             type: x.type,
                                             code: x.code,
@@ -148,6 +164,7 @@ $unassignMappingUrl = Url::to(['momentus/unassign-mapping']);
                                         org_code: orgCode,
                                         resource_code: item.code || '',
                                         resource_description: item.description || '',
+                                        resource_type: item.type || '',
                                         sequence: item.sequence || 1
                                     }, function(resp) {
                                         if (resp && resp.success) {
