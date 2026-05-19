@@ -41,7 +41,7 @@ class MomentusClient
         $this->subscriptionKey = (string) $config['subscriptionKey'];
         $this->orgCode = (string) $config['orgCode'];
         $this->timeout = (int) $config['timeout'];
-        $this->diagramEndpoint = $config['isMomentusQa'] ? '/ExternalDiagrams' : '/EventSpaceDiagrams';
+        $this->diagramEndpoint = '/ExternalDiagrams';
     }
 
     public function searchSpaces($searchString, $page = null, $pageSize = null, $order = null, $orgCode = null)
