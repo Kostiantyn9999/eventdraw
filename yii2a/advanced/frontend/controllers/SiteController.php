@@ -1634,39 +1634,77 @@ public function actionGetEventExtraLayouts()
            return null;      
         
 }
+    /**
+     * Normalizes event id from numeric id or evt-prefixed id (e.g. evt123).
+     */
+    private function normalizeOpenEventId($eventid)
+    {
+        if (is_string($eventid) && strlen($eventid) > 3 && substr($eventid, 0, 3) === 'evt') {
+            return (int) substr($eventid, 3);
+        }
+
+        return (int) $eventid;
+    }
+
 public function actionSetEventUpdateStatus()
     {
         $request = Yii::$app->request;
-        $eventid = $request->post('eventid');
-        $userid = $request->post('userid');
-        $status = $request->post('status');
+        $eventid = $this->normalizeOpenEventId($request->post('eventid'));
+        $userid = (int) $request->post('userid');
+        $status = (int) $request->post('status');
 
-        $item =  UserOpenEvents::find()
-            ->where(['userid' => $userid, 'eventid' => $eventid , 'status' => 0])
+        if ($eventid <= 0 || $userid <= 0) {
+            return;
+        }
+
+        // Closing: mark every active lock row for this user/event (avoids stale duplicates).
+        if ($status === 1) {
+            UserOpenEvents::updateAll(
+                ['status' => 1, 'edittime' => new Expression('NOW()')],
+                ['userid' => $userid, 'eventid' => $eventid, 'status' => 0]
+            );
+            return;
+        }
+
+        $item = UserOpenEvents::find()
+            ->where(['userid' => $userid, 'eventid' => $eventid, 'status' => 0])
             ->orderBy(['id' => SORT_DESC])
             ->limit(1)
-             ->all();
-        if ($item )
-        {
-            $item[0]->status =  $status;
-            $item[0]->edittime =  new Expression('NOW()');
+            ->all();
+        if ($item) {
+            $item[0]->status = $status;
+            $item[0]->edittime = new Expression('NOW()');
             $item[0]->save(false);
         }
-        
-
     }
+
 public function actionGetEventEditStatus()
     {
         $request = Yii::$app->request;
-        $eventid = $request->post('eventid');
-        $userid = $request->post('userid');
+        $eventid = $this->normalizeOpenEventId($request->post('eventid'));
+        $userid = (int) $request->post('userid');
+
+        if ($eventid <= 0) {
+            return '';
+        }
+
+        // Expire locks that have not been refreshed within the 60-second window.
+        UserOpenEvents::updateAll(
+            ['status' => 1],
+            [
+                'and',
+                ['eventid' => $eventid, 'userid' => $userid, 'status' => 0],
+                ['<=', 'edittime', new Expression('DATE_ADD(NOW(), INTERVAL -60 SECOND)')],
+            ]
+        );
 
         $ret = '';
-        $items =  UserOpenEvents::find()
-            ->where(['eventid' => $eventid , 'status' => 0])
-             ->andwhere(['>','edittime',new Expression('DATE_ADD(NOW(), INTERVAL -60 SECOND)')])
+        $items = UserOpenEvents::find()
+            ->where(['eventid' => $eventid, 'status' => 0])
+            ->andWhere(['!=', 'userid', $userid])
+            ->andWhere(['>', 'edittime', new Expression('DATE_ADD(NOW(), INTERVAL -60 SECOND)')])
             ->orderBy(['userid' => SORT_ASC])
-             ->all();
+            ->all();
         
         if ($items)
         {
@@ -2542,13 +2580,21 @@ public function actionSaveEventJson()
             $item =  Event::findOne(['id' => $eventid]);
         }
 
-        //add record to user_open_events table
+        // Register this open session; close any previous active rows for the same user/event first.
         if ($item)
         {
-            $new_user_open_event =  new UserOpenEvents();
-            $new_user_open_event->userid = $userid ;
-            $new_user_open_event->eventid = $item->id;
+            $userid = (int) $userid;
+            UserOpenEvents::updateAll(
+                ['status' => 1, 'edittime' => new Expression('NOW()')],
+                ['userid' => $userid, 'eventid' => $item->id, 'status' => 0]
+            );
 
+            $new_user_open_event = new UserOpenEvents();
+            $new_user_open_event->userid = $userid;
+            $new_user_open_event->eventid = $item->id;
+            $new_user_open_event->status = 0;
+            $new_user_open_event->opentime = new Expression('NOW()');
+            $new_user_open_event->edittime = new Expression('NOW()');
             $new_user_open_event->save(false);
         }
 
