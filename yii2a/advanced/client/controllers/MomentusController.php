@@ -1802,15 +1802,23 @@ class MomentusController extends Controller
                 if ($itemPriceList !== '') {
                     $addPayload['PriceList'] = $itemPriceList;
                 }
+                $itemForm = isset($di['form']) ? trim((string) $di['form']) : '';
                 if (!empty($di['price_list_detail_seq_nbr'])) {
                     $addPayload['PriceListDetailSeqNbr'] = (int) $di['price_list_detail_seq_nbr'];
                 }
                 if (!isset($addPayload['PriceListDetailSeqNbr']) && $itemPriceList !== '') {
-                    $resolvedSeq = $this->resolvePriceListDetailSeqNbr($client, $orgCode, $itemPriceList, $resourceCode);
+                    $resolvedSeq = $this->resolvePriceListDetailSeqNbr(
+                        $client,
+                        $orgCode,
+                        $itemPriceList,
+                        $resourceCode,
+                        $itemForm !== '' ? $itemForm : null
+                    );
                     if ($resolvedSeq !== null) {
                         $addPayload['PriceListDetailSeqNbr'] = (int) $resolvedSeq;
                     }
                 }
+                // OrderForm is PUT-only; Momentus defaults it from the price list row on POST.
                 if (!isset($addPayload['PriceListDetailSeqNbr'])) {
                     $results['errors'][] = [
                         'action' => 'add',
@@ -1838,21 +1846,38 @@ class MomentusController extends Controller
             }
         }
 
-        // 5) Items in both → update if qty changed
+        // 5) Items in both → update qty, or replace line when Price List Form (detail seq) changed
         foreach ($diagramByResource as $resourceCode => $di) {
             if (isset($currentByResource[$resourceCode])) {
                 $currentItem = $currentByResource[$resourceCode];
                 $newUnits = isset($di['units']) ? (int) $di['units'] : 1;
                 $oldUnits = isset($currentItem['Units']) ? (int) $currentItem['Units'] : 0;
                 $orderLineNumber = isset($currentItem['OrderLineNumber']) ? (int) $currentItem['OrderLineNumber'] : null;
+                $newForm = isset($di['form']) ? trim((string) $di['form']) : '';
+                $currentForm = '';
+                foreach (['OrderForm', 'Form', 'form'] as $formKey) {
+                    if (!empty($currentItem[$formKey])) {
+                        $currentForm = trim((string) $currentItem[$formKey]);
+                        break;
+                    }
+                }
 
-                if ($newUnits !== $oldUnits && $orderLineNumber !== null) {
+                $needsUpdate = ($newUnits !== $oldUnits);
+                if ($newForm !== '' && $currentForm !== '' && strcasecmp($newForm, $currentForm) !== 0) {
+                    $needsUpdate = true;
+                }
+
+                if ($needsUpdate && $orderLineNumber !== null) {
                     $updatePayload = [
                         'OrganizationCode' => $orgCode,
                         'OrderNumber' => $orderNumber,
                         'OrderLineNumber' => $orderLineNumber,
                         'Units' => $newUnits,
                     ];
+                    // OrderForm is PUT-only per Momentus API (defaults from price list on POST).
+                    if ($newForm !== '' && strcasecmp($newForm, $currentForm) !== 0) {
+                        $updatePayload['OrderForm'] = $newForm;
+                    }
 
                     try {
                         $result = $client->updateServiceOrderItem($orgCode, $orderNumber, $orderLineNumber, $updatePayload);
@@ -2063,7 +2088,21 @@ class MomentusController extends Controller
      * Resolve PriceListDetailSeqNbr for a resource within a given price list.
      * Tries keyword search first, then falls back to listing the full price list.
      */
-    private function resolvePriceListDetailSeqNbr(MomentusClient $client, $orgCode, $priceList, $resourceCode)
+    /**
+     * Extract the detail sequence used by POST /ServiceOrderItems (not the grid Sequence column).
+     */
+    private function extractPriceListDetailSeqNbrFromRow(array $row)
+    {
+        if (isset($row['PriceListDetailSeqNbr']) && is_numeric($row['PriceListDetailSeqNbr'])) {
+            return (int) $row['PriceListDetailSeqNbr'];
+        }
+        if (isset($row['price_list_detail_seq_nbr']) && is_numeric($row['price_list_detail_seq_nbr'])) {
+            return (int) $row['price_list_detail_seq_nbr'];
+        }
+        return null;
+    }
+
+    private function resolvePriceListDetailSeqNbr(MomentusClient $client, $orgCode, $priceList, $resourceCode, $form = null)
     {
         try {
             $items = [];
@@ -2080,8 +2119,11 @@ class MomentusController extends Controller
             }
             $targetPriceList = strtoupper(trim((string) $priceList));
             $targetResource = strtoupper(trim((string) $resourceCode));
+            $targetForm = $form !== null ? strtoupper(trim((string) $form)) : '';
 
-            // First pass: strict match on price list + resource code.
+            $fallbackSeq = null;
+
+            // Match price list + resource code; prefer row matching selected Form when duplicates exist.
             foreach ($items as $row) {
                 if (!is_array($row)) {
                     continue;
@@ -2100,16 +2142,26 @@ class MomentusController extends Controller
                     continue;
                 }
 
-                foreach (['PriceListDetailSeqNbr', 'Sequence', 'SequenceNumber', 'DetailSeqNbr'] as $seqKey) {
-                    if (isset($row[$seqKey]) && is_numeric($row[$seqKey])) {
-                        return (int) $row[$seqKey];
-                    }
+                $seq = $this->extractPriceListDetailSeqNbrFromRow($row);
+                if ($seq === null) {
+                    continue;
                 }
+
+                if ($targetForm !== '') {
+                    $rowForm = strtoupper(trim((string) ($row['Form'] ?? $row['form'] ?? '')));
+                    if ($rowForm === $targetForm) {
+                        return $seq;
+                    }
+                    if ($fallbackSeq === null) {
+                        $fallbackSeq = $seq;
+                    }
+                    continue;
+                }
+
+                return $seq;
             }
 
-            // No second pass -- returning any arbitrary sequence from the
-            // price list would create the wrong item in Momentus and cause
-            // duplicates on subsequent syncs.
+            return $fallbackSeq;
         } catch (\Exception $e) {
             Yii::warning('Failed to resolve PriceListDetailSeqNbr: ' . $e->getMessage(), __METHOD__);
         }
