@@ -5,6 +5,9 @@ use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\User */
+/* @var $modelTemplate common\models\UserTemplates */
+/* @var $modelStencil common\models\UserStencils */
+/* @var $modelSettings common\models\Usersettings */
 
 $this->title = $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
@@ -18,7 +21,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Set Password', ['psw', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Set Templates', ['template', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
@@ -27,6 +29,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
+
+    
+   <?= Html::a('Send Login', ['sendlogin', 'id' => $model->id], [
+            'class' => 'btn btn-primary',
+            'data' => [
+                'confirm' => 'Are you sure you want to send login info?',
+                'method' => 'post',
+            ],
+        ]) ?>
+
     </p>
 
     <?= DetailView::widget([
@@ -48,16 +60,28 @@ $this->params['breadcrumbs'][] = $this->title;
              [   'attribute' => 'status',
                 'value' => function($model) { return $model->getStatusName();}
             ],
-            [   'attribute' => 'expiry_date',
-                'format' => ['date','dd/MM/Y HH:mm:ss'],
+            [   'attribute' => 'userType',
+                'value' => function($model) { return $model->getuserType();}
             ],
-            [   'attribute' => 'created_at',
-                'format' => ['date','dd/MM/Y HH:mm:ss'],
-            ],
-            [   'attribute' => 'updated_at',
-                'format' => ['date','dd/MM/Y HH:mm:ss'],
+             'UserCompanyName',
+
+             [   'attribute' => 'UserCountry',
+                'value' => function($model) { return $model->getCountryName();}
             ],
 
+
+            [   'attribute' => 'expiry_date',
+                'format' => ['date','dd/MM/y HH:mm:ss'],
+            ],
+            [   'attribute' => 'created_at',
+                'format' => ['date','dd/MM/y HH:mm:ss'],
+            ],
+            [   'attribute' => 'updated_at',
+                'format' => ['date','dd/MM/y HH:mm:ss'],
+            ],
+            [   'attribute' => 'siDate',
+                'value' => function($model) { return $model->getSiDateName();}
+            ],
             [   'attribute' => 'userIsAdmin',
                 'value' => function($model) { return $model->userIsAdmin == 1 ? 'Yes' : 'No';}
             ],
@@ -70,8 +94,11 @@ $this->params['breadcrumbs'][] = $this->title;
             [   'attribute' => 'company_admin',
                 'value' => function($model) { return $model->company_admin     == 1 ? 'Yes' : 'No';}
             ],
+            [   'attribute' => 'AllowSaveCloud',
+                'value' => function($model) { return $model->AllowSaveCloud == 1 ? 'Yes' : 'No';}
+            ],
             [   'attribute' => 'last_login',
-                'format' => ['date','dd/MM/Y HH:mm:ss'],
+                'format' => ['date','dd/MM/y HH:mm:ss'],
             ],
             'maxSession',
             'totSession',
@@ -82,7 +109,91 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $data->getStencilName();
                 },
             ],
+            [   'attribute' => 'UserDoNotEmail',
+                'value' => function($model) { return $model->UserDoNotEmail     == 1 ? 'Yes' : 'No';}
+            ],
         ],
+        'template' => '<tr><th>{label}</th><td style="width:70%;">{value}</td></tr>',
     ]) ?>
+
+    <!--    Settings-->
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4>
+                <i class="glyphicon glyphicon-cog"></i> Settings
+            </h4>
+            <?= Html::a('Change Settings', ['settings', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+
+        </div>
+
+        <?= DetailView::widget([
+            'model' => $modelSettings,
+            'attributes' => [
+                [
+                    'attribute'=>'meas_unit',
+                    'format'=>'text',
+                    'value'=>function($data){
+                        return $data->getMeasurementName($data->meas_unit);
+                    },
+                ],
+                [   'attribute' => 'localDir',
+                'value' => function($model) { return $model->localDir == 1 ? 'Yes' : 'No';}
+                ],
+            ],
+            'template' => '<tr><th>{label}</th><td style="width:70%;">{value}</td></tr>',
+        ]) ?>
+
+
+    </div>
+
+    <!--    templates-->
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4>
+                <i class="glyphicon glyphicon-book"></i> Template list
+            </h4>
+            <?= Html::a('Choose Templates', ['template', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+
+        </div>
+        <div class="panel-body">
+            <div class="container-items"><!-- widgetBody -->
+                <!-- show list of templates-->
+                <?php foreach ($modelTemplate as $i => $modelTemplates): ?>
+
+                    <div class="row">
+                        <?= Html::encode($modelTemplates->getTemplateName()) ?>
+                    </div><!-- .row -->
+
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4>
+                <i class="glyphicon glyphicon-th"></i> Stencil list
+            </h4>
+            <?= Html::a('Choose Stencils', ['stencil', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+
+        </div>
+        <div class="panel-body">
+            <div class="container-items"><!-- widgetBody -->
+                <!-- show list of templates-->
+                <?php foreach ($modelStencil as $i => $modelStencils): ?>
+
+                    <div class="row">
+                        <?= Html::encode($modelStencils->getStencilName()) ?>
+                    </div><!-- .row -->
+
+                <?php endforeach; ?>
+            </div>
+        </div>
+
+
+    </div>
+
+
+
 
 </div>

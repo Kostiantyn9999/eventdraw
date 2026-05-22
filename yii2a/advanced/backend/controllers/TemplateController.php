@@ -9,6 +9,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 
 /**
  * TemplateController implements the CRUD actions for Template model.
@@ -30,7 +31,7 @@ class TemplateController extends Controller
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['logout', 'index', 'view', 'update', 'create','delete','search','psw','template'],
+                        'actions' => ['logout', 'index', 'view', 'update', 'create','delete','search','psw','template','image','versions'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -60,6 +61,46 @@ class TemplateController extends Controller
         ]);
     }
 
+    public function actionVersions($id)
+    {
+        $model = $this->findModel($id);
+
+         if ($model->load(Yii::$app->request->post()) && $model->saveNewVersion()) {
+             return $this->redirect(['update', 'id' => $model->id]);
+         }
+
+        return $this->render('versions', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionImage($id)
+    {
+        $model = $this->findModel($id);
+        set_time_limit(180);
+
+        if ($model->load(Yii::$app->request->post()) ) {
+            $file = UploadedFile::getInstance($model,'imageFile');
+
+
+            $fileToSave = Yii::getAlias("@backend/web/templates/images/") . $model->id . '.' . $file->extension;
+//            var_dump($file);
+            //var_dump($fileToSave);
+            //die();
+            $file->saveAs($fileToSave);
+            $model->image = $model->id . '.' . $file->extension;
+            $model->save(false);
+
+                return $this->redirect(['view', 'id' => $model->id]);
+
+
+        }
+
+        return $this->render('image', [
+            'model' => $model,
+        ]);
+    }
+
     /**
      * Displays a single Template model.
      * @param integer $id
@@ -70,6 +111,9 @@ class TemplateController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'modelSubTemplate' => $this->findSubTemplates($id),
+            'modelRealistic' => $this->findRealistic($id),
+
         ]);
     }
 
@@ -82,7 +126,7 @@ class TemplateController extends Controller
     {
         $model = new Template();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && $model->save(false)) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -101,8 +145,56 @@ class TemplateController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $model->subtemplate = $this->findSubTemplates($id);
+        $model->realisticid =   $this->getRealisticID($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        //fill exist subtemplates to $model
+
+       
+        if ($model->load(Yii::$app->request->post()) && $model->save(false)) {
+            
+         
+             $RealisticTemplate=\common\models\RealisticTemplates::findOne(['template_id' => $model->id ]);
+            
+            if ($RealisticTemplate){
+
+            
+                if (is_null($model->realisticid) || $model->realisticid == '')
+                {
+                    //realistic is null. If there is record, delete it
+                    
+                    $RealisticTemplate->delete();
+                }
+                else
+                {
+                    $RealisticTemplate->realistic_id = $model->realisticid;
+                    $RealisticTemplate->save();
+                }
+               
+            }
+            else{
+
+               
+                //add new recors if realistic is not null
+
+                if (is_null($model->realisticid) || $model->realisticid == '')
+                {
+
+                }
+                else
+                {
+           
+                    $RealisticTemplate= new \common\models\RealisticTemplates();
+                    $RealisticTemplate->template_id = $model->id;
+                    $RealisticTemplate->realistic_id = $model->realisticid;
+                    $RealisticTemplate->save();
+                }
+
+              
+
+            }
+
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -110,6 +202,7 @@ class TemplateController extends Controller
             'model' => $model,
         ]);
     }
+
 
     /**
      * Deletes an existing Template model.
@@ -124,6 +217,38 @@ class TemplateController extends Controller
 
         return $this->redirect(['index']);
     }
+
+
+    protected function findSubTemplates($id)
+    {
+        $modelSubTemplates= \common\models\Subtemplates::find()
+            ->where(['templateid' => $id])
+            ->all();
+        return $modelSubTemplates;
+    }
+
+
+    protected function getRealisticID($id)
+    {
+        $RealisticTemplate=\common\models\RealisticTemplates::findOne(['template_id' => $id ]);
+        if ($RealisticTemplate){
+            return $RealisticTemplate->realistic_id;
+        }
+        else{
+            return null;
+        }
+    }
+
+     protected function findRealistic($id)
+    {
+        
+        $modelRealistic= \common\models\RealisticTemplates::find()
+            ->where(['template_id' => $id])
+            ->all();
+        return $modelRealistic;
+    }
+
+
 
     /**
      * Finds the Template model based on its primary key value.

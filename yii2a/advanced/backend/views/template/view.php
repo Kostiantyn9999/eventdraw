@@ -6,6 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model common\models\Template */
 /* @var $modelSubTemplate common\models\Subtemplates */
+/* @var $modelRealistic common\models\RealisticTemplates */
 
 $this->title = $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Templates', 'url' => ['index']];
@@ -50,6 +51,20 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $data->getClientName();
                 },
             ],
+            [
+                'attribute'=>'created_by',
+                'format'=>'text',
+                'value'=>function($data){
+                    return $data->getCreatedByName();
+                },
+            ],
+            [
+                'attribute'=>'matterportid',
+                'format'=>'text',
+                'value'=>function($data){
+                    return $data->getMatterport_ID_Name();
+                },
+            ],
             [   'attribute' => 'created_at',
                 'format' => ['date','dd/MM/Y HH:mm:ss'],
             ],
@@ -70,6 +85,28 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]) ?>
 
+</div>
+
+
+<!--  Realistic-->
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4>
+            <i class="glyphicon glyphicon-book"></i> Realistic
+        </h4>
+    </div>
+    <div class="panel-body">
+        <div class="container-items"><!-- widgetBody -->
+            <!-- show list of realistic-->
+            <?php foreach ($modelRealistic as $i => $modelRealistics): ?>
+
+                <div class="row">
+                    <?= Html::encode($modelRealistics->getRealisticName()) ?>
+                </div><!-- .row -->
+
+            <?php endforeach; ?>
+        </div>
+    </div>
 </div>
 
 <!--  sub templates-->

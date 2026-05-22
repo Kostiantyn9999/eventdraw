@@ -42,10 +42,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
 
             ],
-
+            [   'attribute' => 'isMasterStencil',
+                'value' => function($model) { return $model->isMasterStencil == 1 ? 'Yes' : 'No';}
+            ],
             [   'attribute' => 'stencilActive',
                 'value' => function($model) { return $model->stencilActive == 1 ? 'Yes' : 'No';}
             ],
+            'stencilOrder',
             [   'attribute' => 'created_at',
                 'format' => ['date','dd/MM/Y HH:mm:ss'],
             ],

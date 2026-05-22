@@ -21,10 +21,15 @@ use yii\widgets\ActiveForm;
     <br>
     <br>
 
+    <?= $form->field($model, 'isMasterStencil')->checkbox([
+        'template' => '<div class="col-md-1">{label}</div><div class="col-md-5">{input}</div><div class="col-md-6">{error}</div>'
+    ])?>
+
     <?= $form->field($model, 'stencilActive')->checkbox([
         'template' => '<div class="col-md-1">{label}</div><div class="col-md-5">{input}</div><div class="col-md-6">{error}</div>'
     ])?>
 
+    <?= $form->field($model, 'stencilOrder')->textInput(['type' => 'number']) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

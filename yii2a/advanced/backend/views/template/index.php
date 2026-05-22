@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\data\Sort;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\TemplateSearch */
@@ -9,6 +10,7 @@ use yii\grid\GridView;
 
 $this->title = 'Templates';
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="row-full">
 
@@ -24,7 +26,19 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
          'columns' => [
-            'id',
+            [
+     'attribute' => 'id',
+     'value' => function ($model) {
+          return Html::a(
+              $model->id,
+              ['update', 'id' => $model->id],
+              [
+                 'title' => 'Edit',
+              ]
+          );
+      },
+      'format' => 'raw',
+],
             'templateName',
 //              [
 //                 'attribute' => 'xmlCode',
@@ -42,6 +56,28 @@ $this->params['breadcrumbs'][] = $this->title;
                      return $data->getClientName();
                  },
                  'filter' => \common\models\Template::getClientList()
+             ],
+             [
+                 'attribute'=>'created_by',
+                 'format'=>'text',
+                 'content'=>function($data){
+                     return $data->getCreatedByName();
+                 },
+                 
+             ],
+             [
+                 'attribute'=>'templateSize',
+                 'format'=>'text',
+                 'filter' => \common\models\Template::getSizeList(),
+                 'headerOptions' => ['style' => 'width:15%']
+             ],
+             [
+                 'attribute'=>'matterportid',
+                 'format'=>'text',
+                 'content'=>function($data){
+                     return $data->getMatterportName();
+                 },
+                 'filter' => \common\models\Template::getMatterportList()
              ],
              [   'attribute' => 'created_at',
                  'format' => ['date','dd/MM/Y HH:mm:ss'],
@@ -71,10 +107,10 @@ $this->params['breadcrumbs'][] = $this->title;
                  'filter'=>array("1"=>"Yes","0"=>"No"),
                  'value' => function($model) { return $model->templateDefault== 1 ? 'Yes' : 'No';}
              ],
-             [   'attribute' => 'shadow',
-                 'filter'=>array("1"=>"Yes","0"=>"No"),
-                 'value' => function($model) { return $model->shadow== 1 ? 'Yes' : 'No';}
-             ],
+            //  [   'attribute' => 'shadow',
+            //      'filter'=>array("1"=>"Yes","0"=>"No"),
+            //      'value' => function($model) { return $model->shadow== 1 ? 'Yes' : 'No';}
+            //  ],
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

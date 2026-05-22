@@ -16,12 +16,37 @@ use unclead\multipleinput\MultipleInput;
 
     );
 
-    $clients = \common\models\Client::find()->all();
+
+    $clients = \common\models\Client::find()
+            ->select(['id', 'clientName'])
+            ->orderBy(['clientName' => SORT_ASC])->all();
 
     $items = ArrayHelper::map($clients,'id','clientName');
     $params = [
         'prompt' => '-- Select client --'
     ];
+
+
+    $matterports = \common\models\Matterport::find()
+            ->select(['id', 'name'])
+            ->orderBy(['name' => SORT_ASC])->all();
+
+    $MTitems = ArrayHelper::map($matterports,'id','name');
+    $MTparams = [
+        'prompt' => '-- Select matterport --'
+    ];
+
+
+    $realistics = \common\models\Realistic::find()
+            ->select(['id', 'name'])
+            ->orderBy(['name' => SORT_ASC])->all();
+
+    $RT_items = ArrayHelper::map($realistics,'id','name');
+    $RTparams = [
+        'prompt' => '-- Select realistic --'
+    ];
+
+
 
     ?>
 
@@ -34,7 +59,22 @@ use unclead\multipleinput\MultipleInput;
     echo $form->field($model, 'clientid')->dropDownList($items,$params);
     ?>
     
+    <?php
+    echo $form->field($model, 'matterportid')->dropDownList($MTitems,$MTparams);
+    ?>
+
+    <?php
+    echo $form->field($model, 'realisticid')->dropDownList($RT_items,$RTparams);
+    ?>
+
+
+
+
     <?= $form->field($model, 'xmlCode')->textarea(['rows' => 6]) ?>
+
+        <div class="panel-heading">
+            <?= Html::a('Load version', ['template/versions', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        </div>
 
     <?= $form->field($model, 'templateActive')->checkbox([
         'template' => '<div class="col-md-1">{label}</div><div class="col-md-5">{input}</div><div class="col-md-6">{error}</div>'

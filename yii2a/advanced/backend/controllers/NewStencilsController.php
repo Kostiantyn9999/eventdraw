@@ -62,7 +62,7 @@ class NewStencilsController extends Controller
 
                     [
 
-                        'actions' => ['logout', 'index', 'view', 'update', 'create','delete','search','psw','template','download'],
+                        'actions' => ['logout', 'index', 'view', 'update', 'create','delete','search','psw','template','versions'],
 
                         'allow' => true,
 
@@ -99,7 +99,25 @@ class NewStencilsController extends Controller
      * @return mixed
 
      */
+    public function actionView($id)
+    {
+        return $this->render('view', [
+            'model' => $this->findModel($id),
+        ]);
+    }
 
+   public function actionVersions($id)
+    {
+        $model = $this->findModel($id);
+
+         if ($model->load(Yii::$app->request->post()) && $model->saveNewVersion()) {
+             return $this->redirect(['update', 'id' => $model->ID]);
+         }
+
+        return $this->render('versions', [
+            'model' => $model,
+        ]);
+    }
     public function actionIndex()
 
     {
@@ -135,25 +153,6 @@ class NewStencilsController extends Controller
      */
 
 
-
-
-
-
-
-    public function actionView($id)
-
-    {
-
-        return $this->render('view', [
-
-            'model' => $this->findModel($id),
-
-        ]);
-
-    }
-
-
-
      /**
 
      * Creates a new Stencil model.
@@ -184,7 +183,7 @@ class NewStencilsController extends Controller
 
 
 
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['view', 'id' => $model->ID]);
 
         }
 
@@ -224,17 +223,13 @@ class NewStencilsController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
 
-
-
-            $xmlFileInfo = UploadedFile::getInstance($model,'xmlFile');
-
-           
+     
 
             $model->save(false) ;
 
 
 
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['view', 'id' => $model->ID]);
 
         }
 
@@ -250,13 +245,7 @@ class NewStencilsController extends Controller
 
 
 
-    public function actionDownload($id)
-
-    {
-
-        
-    }
-
+    
 
 
     /**
@@ -305,7 +294,7 @@ class NewStencilsController extends Controller
 
     {
 
-        if (($model = Stencil::findOne($id)) !== null) {
+        if (($model = NewStencils::findOne($id)) !== null) {
 
             return $model;
 

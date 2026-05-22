@@ -9,6 +9,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
 /* @var $model common\models\Client */
 /* @var $modelUser common\models\User */
 /* @var $modelTemplate common\models\ClientTemplates */
+/* @var $modelStencil common\models\ClientStencils */
 
 $this->title = $model->clientName;
 $this->params['breadcrumbs'][] = ['label' => 'Clients', 'url' => ['index']];
@@ -21,6 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('User settings', ['settings', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
@@ -36,23 +38,86 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'clientName',
             'clientEmail:email',
+            [   'attribute' => 'clientCountry',
+                'value' => function($model) { return $model->getCountryName();}
+            ],
             [   'attribute' => 'clientPayment',
                 'value' => function($model) { return $model->clientPayment == 1 ? 'Yes' : 'No';}
             ],
             [   'attribute' => 'ShowMaxCapPlans',
                 'value' => function($model) { return $model->ShowMaxCapPlans == 1 ? 'Yes' : 'No';}
             ],
+            [   'attribute' => 'AllowSaveCloud',
+                'value' => function($model) { return $model->AllowSaveCloud == 1 ? 'Yes' : 'No';}
+            ],
+            [   'attribute' => 'AllowFavouriteStencils',
+                'value' => function($model) { return $model->AllowFavouriteStencils == 1 ? 'Yes' : 'No';}
+            ],
+            [   'attribute' => 'Allow3D',
+                'value' => function($model) { return $model->Allow3D == 1 ? 'Yes' : 'No';}
+            ],
+            [   'attribute' => 'AllowImportPdf',
+                'value' => function($model) { return $model->AllowImportPdf == 1 ? 'Yes' : 'No';}
+            ],
+            [   'attribute' => 'AllowShare',
+                'value' => function($model) { return $model->AllowShare == 1 ? 'Yes' : 'No';}
+            ],
+             [   'attribute' => 'AllowMomentus',
+                'value' => function($model) { return $model->AllowMomentus == 1 ? 'Yes' : 'No';}
+            ],
+            [   'attribute' => 'AllowSaveFolder',
+                'value' => function($model) { return $model->AllowSaveFolder == 1 ? 'Yes' : 'No';}
+            ],
+            'MomentusAPIKey',
+            'MomentusSecretKey',
+            'MomentusAPIUrlAuth' ,
+            'MomentusAPIUrl' ,
+            [
+                'label' => 'Favourite Stencil',
+                'format' => 'raw',
+                'attribute' => 'id',
+                'value' => function ($data) {
+
+                    $path= '../../frontend/web/site/stencils_favourite/' . $data['id'] . '_Favourites.xml';
+                    if (file_exists($path)) {
+                        return Html::a($data['id'] . '_Favourites.xml', ['download' , 'id' => $data['id']]);
+                    }
+                    else
+                    {
+                        return 'Not set';
+                    }
+
+
+                },
+
+            ],
             [   'attribute' => 'status',
                 'value' => function($model) { return $model->getStatusName();}
             ],
+            [   'attribute' => 'clientType',
+                'value' => function($model) { return $model->getTypeName();}
+            ],
+            [   'attribute' => 'ClientVenueType',
+                'value' => function($model) { return $model->getVenueTypeName();}
+            ],
+             'clientNotes',
             [   'attribute' => 'expiry_date',
-                'format' => ['date','dd/MM/Y HH:mm:ss'],
+                'format' => ['date','dd/MM/y HH:mm:ss'],
             ],
             [   'attribute' => 'created_at',
-                'format' => ['date','dd/MM/Y HH:mm:ss'],
+                'format' => ['date','dd/MM/y HH:mm:ss'],
+            ],
+            [   'attribute' => 'siDate',
+                'value' => function($model) { return $model->getSiDateName();}
             ],
             [   'attribute' => 'updated_at',
-                'format' => ['date','dd/MM/Y HH:mm:ss'],
+                'format' => ['date','dd/MM/y HH:mm:ss'],
+            ],
+            [   'attribute' => 'last_client_login',
+                'format' => ['date','dd/MM/y HH:mm:ss'],
+            ],
+            [   'attribute' => 'last_client_email',
+                'format' => ['date','dd/MM/y HH:mm:ss'],
             ],
         ],
     ]) ?>
@@ -118,6 +183,31 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
 
+
+<div class="panel panel-default">
+        <div class="panel-heading">
+            <h4>
+                <i class="glyphicon glyphicon-th"></i> Stencil list
+            </h4>
+            <?= Html::a('Choose Stencils', ['stencil', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+
+        </div>
+        <div class="panel-body">
+            <div class="container-items"><!-- widgetBody -->
+                <!-- show list of templates-->
+                <?php foreach ($modelStencil as $i => $modelStencils): ?>
+
+                    <div class="row">
+                        <?= Html::encode($modelStencils->getStencilName()) ?>
+                    </div><!-- .row -->
+
+                <?php endforeach; ?>
+            </div>
+        </div>
+
+
+    </div>
+    
 <!--    templates-->
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -140,5 +230,10 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </div>
+
+
+
+
+
 
 </div>

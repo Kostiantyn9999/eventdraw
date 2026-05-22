@@ -4,7 +4,8 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Client */
-/* @var $modelUser common\models\User */
+/* @var $modelUsers common\models\User */
+/* @var $modelTemplate common\models\Template */
 
 $this->title = 'Create Client';
 $this->params['breadcrumbs'][] = ['label' => 'Clients', 'url' => ['index']];
@@ -16,7 +17,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
-        'modelUser' => $modelUser,
+        'modelUsers' => $modelUsers,
+        'modelTemplate' => $modelTemplate,
     ]) ?>
 
 </div>
