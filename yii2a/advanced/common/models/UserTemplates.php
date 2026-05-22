@@ -76,4 +76,16 @@ class UserTemplates extends \yii\db\ActiveRecord
             'templateid' => 'Template',
         ];
     }
+
+    public function getTemplateName()
+    {
+        $Template=Template::findOne(['id' => $this->templateid]);
+        if ($Template){
+            return $Template->templateName;
+        }
+        else{
+            return null;
+        }
+    }
+
 }
