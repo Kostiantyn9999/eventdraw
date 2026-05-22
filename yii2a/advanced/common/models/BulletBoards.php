@@ -2,90 +2,105 @@
 
 namespace common\models;
 
-use Yii;
+use yii\base\Model;
+use yii\data\ActiveDataProvider;
 
 /**
- * This is the model class for table "bullet_boards".
- *
- * @property int $id
- * @property string $note
- *
- * @property BulletBoardUsers[] $bulletBoardUsers
+ * NewUserBroadcastEmailTemplatesSearch represents the model behind the search form of `common\models\NewUserBroadcastEmailTemplates`.
  */
-class BulletBoards extends \yii\db\ActiveRecord
+class BulletBoards extends NewUserBroadcastEmailTemplates
 {
-
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
-    {
-        return 'bullet_boards';
-    }
-
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['note'], 'required'],
-            [['note'], 'string'],
-         ];
+            [['id','hours','userType','no_of_time_delay','no_of_time_bulletin_show','template_id','priority_option'], 'integer'],
+            [['heading', 'template_image', 'link_heading', 'link', 'button_link','display_as'], 'safe'],
+        ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function scenarios()
     {
-        return [
-            'id' => 'ID',
-            'note' => 'Note',
-        ];
+        // bypass scenarios() implementation in the parent class
+        return Model::scenarios();
     }
 
     /**
-     * Gets query for [[BulletBoardUsers]].
+     * Creates data provider instance with search query applied
      *
-     * @return \yii\db\ActiveQuery
+     * @param array $params
+     *
+     * @return ActiveDataProvider
      */
-    public function getBulletBoardUsers()
+
+    public function searchBulletin($params)
     {
-        return $this->hasMany(BulletBoardUsers::className(), ['bullet_board_id' => 'id']);
+        $query = BulletBoards::find()->where(['userType' => 1,'display_as'=>'Yes'])->orderBy('order');
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'id' => $this->id,
+            'hours' => $this->hours,
+
+        ]);
+
+        $query->andFilterWhere(['like', 'heading', $this->heading])
+            ->andFilterWhere(['like', 'template_image', $this->template_image])
+            ->andFilterWhere(['like', 'link_heading', $this->link_heading])
+            ->andFilterWhere(['like', 'link', $this->link])
+            ->andFilterWhere(['like', 'button_link', $this->button_link]);
+
+        return $dataProvider;
     }
 
-    public static function getUserBulletMessage($userid)
+    public function searchBulletinOrg($params)
     {
-        $retValue = '';
-        //now search first message for this user with has_seen = 0
-     $tmpls = \common\models\BulletBoardUsers::find()
-     ->select(['id','bullet_board_id'])
-     ->where(['user_id' => $userid])
-     ->andWhere(['between','has_seen', '0', '1'])
-     ->orderBy(['bullet_board_id' => SORT_ASC])->one();
+        $query = BulletBoards::find()->where(['userType' => 2,'display_as'=>'Yes'])->orderBy('order');
 
-    if ( $tmpls) {
-    
-       $board_id = $tmpls->bullet_board_id;
+        // add conditions that should always apply here
 
-       $item =  \common\models\BulletBoards::findOne(['id' => $board_id]);
-       if ($item) {
-           $retValue =  $item->note; 
+        $dataOrganizer = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
         }
-        
-        $rec = \common\models\BulletBoardUsers::findByID($tmpls->id);
-        if ($rec)
-        {
-            $rec->has_seen = $rec->has_seen + 1;
-            $rec->save(false);
-        }
-      
-    }
 
-    return $retValue;
-    }
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'id' => $this->id,
+            'hours' => $this->hours,
 
+        ]);
+
+        $query->andFilterWhere(['like', 'heading', $this->heading])
+            ->andFilterWhere(['like', 'template_image', $this->template_image])
+            ->andFilterWhere(['like', 'link_heading', $this->link_heading])
+            ->andFilterWhere(['like', 'link', $this->link])
+            ->andFilterWhere(['like', 'button_link', $this->button_link]);
+        return $dataOrganizer;
+    }
 }
-    

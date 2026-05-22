@@ -17,8 +17,8 @@ class NewUserBroadcastEmailTemplatesSearch extends NewUserBroadcastEmailTemplate
     public function rules()
     {
         return [
-            [['id','hours'], 'integer'],
-            [['heading', 'template_image', 'link_heading', 'link', 'button_link'], 'safe'],
+            [['id','hours','userType','no_of_time_delay','no_of_time_bulletin_show'], 'integer'],
+            [['heading', 'template_image', 'link_heading', 'link', 'button_link','display_as'], 'safe'],
         ];
     }
 
@@ -40,8 +40,8 @@ class NewUserBroadcastEmailTemplatesSearch extends NewUserBroadcastEmailTemplate
      */
     public function search($params)
     {
-        $query = NewUserBroadcastEmailTemplates::find()->orderBy('order');
-
+        //$query = NewUserBroadcastEmailTemplates::find()->orderBy('order');
+        $query = NewUserBroadcastEmailTemplates::find()->where(['userType' => 1])->orderBy('order');
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
@@ -70,5 +70,107 @@ class NewUserBroadcastEmailTemplatesSearch extends NewUserBroadcastEmailTemplate
             ->andFilterWhere(['like', 'button_link', $this->button_link]);
 
         return $dataProvider;
+    }
+
+    public function search_event_organizer($params)
+    {
+        $query = NewUserBroadcastEmailTemplates::find()->where(['userType' => 2])->orderBy('order');
+
+        // add conditions that should always apply here
+
+        $dataOrganizer = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'id' => $this->id,
+            'hours' => $this->hours,
+
+        ]);
+
+        $query->andFilterWhere(['like', 'heading', $this->heading])
+            ->andFilterWhere(['like', 'template_image', $this->template_image])
+            ->andFilterWhere(['like', 'link_heading', $this->link_heading])
+            ->andFilterWhere(['like', 'link', $this->link])
+            ->andFilterWhere(['like', 'button_link', $this->button_link]);
+
+        return $dataOrganizer;
+    }
+
+    public function searchBulletin($params)
+    {
+        //$query = NewUserBroadcastEmailTemplates::find()->orderBy('order');
+        $query = NewUserBroadcastEmailTemplates::find()->where(['userType' => 1,'display_as'=>'Yes'])->orderBy('order');
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'id' => $this->id,
+            'hours' => $this->hours,
+
+        ]);
+
+        $query->andFilterWhere(['like', 'heading', $this->heading])
+            ->andFilterWhere(['like', 'template_image', $this->template_image])
+            ->andFilterWhere(['like', 'link_heading', $this->link_heading])
+            ->andFilterWhere(['like', 'link', $this->link])
+            ->andFilterWhere(['like', 'button_link', $this->button_link]);
+
+        return $dataProvider;
+    }
+
+    public function searchBulletinOrg($params)
+    {
+        $query = NewUserBroadcastEmailTemplates::find()->where(['userType' => 2,'display_as'=>'Yes'])->orderBy('order');
+
+        // add conditions that should always apply here
+
+        $dataOrganizer = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'id' => $this->id,
+            'hours' => $this->hours,
+
+        ]);
+
+        $query->andFilterWhere(['like', 'heading', $this->heading])
+            ->andFilterWhere(['like', 'template_image', $this->template_image])
+            ->andFilterWhere(['like', 'link_heading', $this->link_heading])
+            ->andFilterWhere(['like', 'link', $this->link])
+            ->andFilterWhere(['like', 'button_link', $this->button_link]);
+
+        return $dataOrganizer;
     }
 }

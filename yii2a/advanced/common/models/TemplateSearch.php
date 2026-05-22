@@ -17,8 +17,9 @@ class TemplateSearch extends Template
     public function rules()
     {
         return [
-            [['id', 'created_at','updated_at','clientid','templateActive','templateDefault','shadow'], 'integer'],
-            [['templateName', 'xmlCode','momentusSpaceDescr','momentusSpaceCode'], 'safe'],
+            [['id', 'created_at','updated_at','clientid','templateActive','templateDefault','shadow','matterportid','created_by'], 'integer'],
+            //[['templateName', 'xmlCode','templateSize'], 'safe'],
+            [['templateName', 'templateSize', 'momentusSpaceDescr', 'momentusSpaceCode', 'momentusEventSpaceDiagramId'], 'safe'],
         ];
     }
 
@@ -42,6 +43,18 @@ class TemplateSearch extends Template
     {
         $query = Template::find();
 
+        $query->select(['id',
+                        'templateActive',
+                        'templateDefault',
+                        'clientid',
+                        'shadow',
+                        'templateSize',
+                        'templateName',
+                        'created_at',
+                        'updated_at',
+                        'matterportid',
+                        'created_by']);
+                        
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
@@ -63,12 +76,40 @@ class TemplateSearch extends Template
             'templateDefault' => $this->templateDefault,
             'clientid' => $this->clientid,
             'shadow' => $this->shadow,
+            'matterportid' => $this->matterportid,
+            'created_by' => $this->created_by,
         ]);
 
-        $query->andFilterWhere(['like', 'templateName', $this->templateName])
-            ->andFilterWhere(['like', 'xmlCode', $this->xmlCode])
-            ->andFilterWhere(['like', 'momentusSpaceDescr', $this->momentusSpaceDescr])
-            ->orFilterWhere(['like', 'momentusSpaceCode', $this->momentusSpaceDescr]);
+
+
+        if ($this->templateSize == 1) {
+            //less 20 k
+            $query->andFilterWhere(['<', 'templateSize', 20 ]);
+        }
+        else if ($this->templateSize == 2) {
+            //more 20 k
+            $query->andFilterWhere(['>', 'templateSize', 20 ]);
+        }
+        else if ($this->templateSize == 3) {
+            //more 50 k
+            $query->andFilterWhere(['>', 'templateSize', 50 ]);
+        }
+        else if ($this->templateSize == 4) {
+            //more 100 k
+            $query->andFilterWhere(['>', 'templateSize', 100 ]);
+        }
+        else if ($this->templateSize == 5) {
+            //more 1 MB
+            $query->andFilterWhere(['>', 'templateSize', 1 * 1024 ]);
+        }
+        else if ($this->templateSize == 6) {
+            //more 10 MB
+            $query->andFilterWhere(['>', 'templateSize', 10 * 1024]);
+        }
+
+        $query->andFilterWhere(['like', 'templateName', $this->templateName]);
+        // $query->andFilterWhere(['like', 'templateName', $this->templateName])
+        //     ->andFilterWhere(['like', 'xmlCode', $this->xmlCode]);
 
         return $dataProvider;
     }

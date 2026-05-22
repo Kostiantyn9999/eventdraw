@@ -48,6 +48,18 @@ class Matterport extends \yii\db\ActiveRecord
         ];
     }
 
+
+    public static function getMatterportList()
+    {
+        $mttps = \common\models\Matterport::find()
+            ->select(['id','name'])
+            ->orderBy(['name' => SORT_ASC])->all();
+
+
+        $items = ArrayHelper::map($mttps, 'id', 'name');
+        return $items;
+    }
+
     /**
      * {@inheritdoc}
      */

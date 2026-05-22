@@ -31,7 +31,7 @@ class Stencil extends \yii\db\ActiveRecord
         return 'stencil';
     }
 
- public static function getUserStencils($userid)
+    public static function getUserStencils($userid)
     {
         $userStencils  = [];
         //return all master stencils and user defined stencils order by StencilOrder then by stencil name
@@ -43,27 +43,8 @@ class Stencil extends \yii\db\ActiveRecord
             'userid' => $userid,
         ]);
 
-        // get list of client stencils
-        $User=User::findOne(['id' => $userid]);
-        $Client=Client::findOne(['id' => $User->clientid]);
-
-        if ($Client)
-        {
-            $ClientStencilsList = \common\models\ClientStencils::findAll([
-            'clientid' => $Client->id,
-        ]);
-        }
-        else
-        {
-          $ClientStencilsList = \common\models\ClientStencils::findAll([
-            'clientid' => -1,
-        ]);  
-        }
-        
-
         $arrlength = count($AllStencils);
         $arrlength2 = count($userStencilsList);
-        $arrlength3 = count($ClientStencilsList);
 
         for($x = 0; $x < $arrlength; $x++) {
             //if this stencil is master
@@ -88,16 +69,6 @@ class Stencil extends \yii\db\ActiveRecord
                 }
             }
 
-            //check maybe in client stencil list
-            if (!$foundStencil)
-            {
-                for($y = 0; $y < $arrlength3; $y++) {
-                    if ($AllStencils[$x]->id == $ClientStencilsList[$y]->stencilid)
-                    {
-                        $foundStencil = true;
-                    }
-                }
-            }
             if ($foundStencil) {
                 array_push($userStencils, $AllStencils[$x]);
             }
@@ -122,6 +93,11 @@ class Stencil extends \yii\db\ActiveRecord
     public static function findStencilByID($id)
     {
         return static::findOne(['id' => $id, 'stencilActive' => 1]);
+    }
+
+    public static function findByID($id)
+    {
+        return static::findOne(['id' => $id]);
     }
 
     public function rules()

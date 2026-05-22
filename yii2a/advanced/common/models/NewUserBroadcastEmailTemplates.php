@@ -32,10 +32,10 @@ class NewUserBroadcastEmailTemplates extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['template_image', 'hours', 'order'], 'required'],
-            [['template_image'], 'string'],
+            [['template_image'], 'required'],
+            [['template_image','user_id','display_as'], 'string'],
             [['heading', 'link_heading', 'link', 'button_link'], 'string', 'max' => 255],
-            [['hours', 'order'],'integer'],
+            [['hours','no_of_time_delay','no_of_time_bulletin_show','template_id','priority_option','userType'],'integer'],
         ];
     }
 
@@ -51,8 +51,15 @@ class NewUserBroadcastEmailTemplates extends \yii\db\ActiveRecord
             'link_heading' => 'Link Heading',
             'link' => 'Link',
             'button_link' => 'Button Link',
-            'hours' => 'Hours',
+            'hours' => 'Email Schedule - Since Last',
             'order' => 'Order',
+            'userType'=>'userType',
+            'display_as'=>'Include as a Bulletin',
+            'no_of_time_delay'=>'Number of Times Bulletin to Delay',
+            'no_of_time_bulletin_show'=>'Number of Times Bulletin to Show',
+            'user_id'=>'User Id',
+            'template_id'=>'Template Name',
+            'priority_option'=>'Priority Option'
         ];
     }
 }

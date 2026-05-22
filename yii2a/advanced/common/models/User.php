@@ -1,15 +1,14 @@
 <?php
+
 namespace common\models;
 
+use kartik\password\StrengthValidator;
 use Yii;
-use backend\components\EmailHelper;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
-use yii\debug\panels\EventPanel;
 use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
-use yii\db\Expression;
 
 /**
  * User model
@@ -38,24 +37,46 @@ use yii\db\Expression;
  * @property integer $company_admin
  * @property integer $expiry_date
  * @property integer $is_subscribed
+ * @property integer $email_count
+ * @property string $last_email_date
  * @property string $firstname
  * @property string $surname
+ * @property string $template_number
  * @property string $ShowMaxCapPlans
+ * @property integer $user_type
+ * @property int $AllowSaveCloud
  * @property int $userSavedFloorplansCount
  * @property string $UserCompanyName
+ * @property string $UserCountry
+ * @property integer $UserDoNotEmail
+ * @property int $siDate
+
  */
 class User extends ActiveRecord implements IdentityInterface
 {
+    const SCENARIO_CREATE = 'create';
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
     const STATUS_TRIAL = 11;
+    const STATUS_CHURN = 12;
+    const STATUS_ARCHIVE = 13;
 
-    public $new_password ="";
-    public $user_templates =[];
-    public $user_stencils =[];
-    public $user_settings =[];
-    public $user_settings_meas_unit ;
+
+    const USER_NOT_SET = 0;
+    const USER_VENUE = 1;
+    const USER_EVENT_ORGANISER = 2;
+
+
+
+    public $new_password = "";
+    public $user_templates = [];
+    public $user_stencils = [];
+    public $user_settings = [];
+    public $user_floorplans = [];
+    public $user_settings_meas_unit;
+    public $user_settings_localDir;
+    public $user_type;
 
     /**
      * {@inheritdoc}
@@ -76,43 +97,85 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
+     * @return array|array[]
+     */
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        $scenarios[self::SCENARIO_CREATE] = [
+            'clientid',
+            'firstname',
+            'surname',
+            'email',
+            'status',
+            'expiry_date',
+            'maxSession',
+            'userIsSupport',
+            'company_admin',
+            'username',
+            'template_number',
+            'userType',
+        ];
+
+        return $scenarios;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            ['status', 'default', 'value' => self::STATUS_INACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED, self::STATUS_TRIAL]],
-            ['status', 'validateStatus'],
-            [['userIsAdmin','userIsSupport','userPayment','company_admin', 'is_subscribed'],'boolean'],
+            ['status', 'default', 'value' => self::STATUS_TRIAL],
+            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED, self::STATUS_TRIAL, self::STATUS_CHURN, self::STATUS_ARCHIVE]],
 
+            //[['user_type'],'string'],
+
+            ['userType', 'default', 'value' => self::USER_NOT_SET],
+            ['userType', 'in', 'range' => [self::USER_VENUE, self::USER_EVENT_ORGANISER, self::USER_NOT_SET]],
+
+
+
+            //['status', 'validateStatus'],*/
+            [['userIsAdmin', 'userIsSupport', 'userPayment', 'company_admin', 'is_subscribed'], 'boolean'],
+            [['UserCountry'], 'string', 'max' => 3],
             ['auth_key', 'default', 'value' => Yii::$app->security->generateRandomString()],
+            [
+                ['password_hash'],
+                StrengthValidator::className(),
+                'min' => 8,
+                'lower' => 1,
+                'upper' => 1,
+                'digit' => 1,
+                'special' => 1,
+            ],
             ['password_hash', 'default', 'value' => Yii::$app->security->generatePasswordHash("eventdraw55ax22")],
+            [['siDate'], 'number'],
+            ['username', 'trim'],
+            ['username', 'required'],
+            ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
+            ['username', 'string', 'min' => 2, 'max' => 255],
 
-
-             ['username', 'trim'],
-             ['username', 'default', 'value' => 'new user'],
-            // ['username', 'required'],
-            // ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
-            //['username', 'string', 'min' => 0, 'max' => 255],
+            ['email_count', 'number'],
+            ['user_settings_localDir', 'number'],
+            ['template_number', 'number'],
+            ['last_email_date', 'string'],
 
             ['userfullname', 'trim'],
+
             ['UserCompanyName', 'string'],
 
-
+            ['firstname', 'required'],
             ['firstname', 'trim'],
             ['firstname', 'string', 'min' => 0, 'max' => 255],
             ['surname', 'trim'],
-            ['surname', 'string', 'min' => 0, 'max' => 255],
+
 
             ['email', 'trim'],
-            ['email', 'required'],
             ['email', 'email'],
+            ['email', 'required'],
             ['email', 'string', 'max' => 255],
             ['email', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This email address has already been taken.'],
-
-            [['userSavedFloorplansCount'], 'number', 'min' => 0],
-            ['userSavedFloorplansCount', 'default', 'value' => 0],
 
             ['new_password', 'trim'],
             ['new_password', 'string', 'min' => 6],
@@ -121,14 +184,22 @@ class User extends ActiveRecord implements IdentityInterface
             ['user_templates', 'each', 'rule' => ['integer']],
             ['user_settings_meas_unit', 'trim'],
 
+            [['AllowSaveCloud'], 'number', 'min' => 0],
+            ['AllowSaveCloud', 'default', 'value' => 0],
 
-            //['maxSession','required'],
             [['maxSession'], 'number', 'min' => 1, 'max' => 999],
-            ['maxSession', 'default', 'value' => 1],
+            [['maxSession'], 'default', 'value' => 1],
 
             [['ShowMaxCapPlans'], 'number', 'min' => 0],
             ['ShowMaxCapPlans', 'default', 'value' => 0],
 
+            [['userSavedFloorplansCount'], 'number', 'min' => 0],
+            ['userSavedFloorplansCount', 'default', 'value' => 0],
+
+            [['UserDoNotEmail'], 'number', 'min' => 0],
+            ['UserDoNotEmail', 'default', 'value' => 0],
+         
+         
             [['totSession'], 'number', 'min' => 0],
             ['totSession', 'default', 'value' => 0],
 
@@ -144,18 +215,18 @@ class User extends ActiveRecord implements IdentityInterface
             [['expiry_date'], 'default', 'value' => null],
 
 
-
         ];
     }
 
-public  function validateStatus($attribute, $params)
-{
-    if ($this->$attribute == self::STATUS_TRIAL) {
-        if (!$this->expiry_date) {
-            $this->addError($attribute, 'Please set Expiry date for Custom trial status');
+    public function validateStatus($attribute, $params)
+    {
+        if ($this->$attribute == self::STATUS_TRIAL) {
+            if (!$this->expiry_date) {
+                $this->addError($attribute, 'Please set Expiry date for Custom trial status');
+            }
         }
     }
-}
+
     /**
      * {@inheritdoc}
      */
@@ -185,48 +256,78 @@ public  function validateStatus($attribute, $params)
         return static::findOne(['username' => $username]);
     }
 
-    public function getClientAllowShare()
-    {
-       $Client=Client::findOne(['id' => $this->clientid]);
-        if ($Client){
-            return $Client->AllowShare;
-        }
-        else{
-            return false;
-        }
-
-    }
-    
     public function getClientShowMaxCapPlans()
     {
-        $Client=Client::findOne(['id' => $this->clientid]);
-        if ($Client){
+        $Client = Client::findOne(['id' => $this->clientid]);
+        if ($Client) {
             return $Client->ShowMaxCapPlans;
-        }
-        else{
+        } else {
             return false;
         }
     }
-    public function getClientAllowSaveCloud()
+
+    public function getSiDateName()
     {
-        // $Client=Client::findOne(['id' => $this->clientid]);
-        // if ($Client){
-        //     return $Client->AllowSaveCloud;
-        // }
-        // else{
-        //     return $this->AllowSaveCloud;
-        // }
-
-        return 1; //allow save to cloud for all users
-
+        if ($this->siDate == 1) {
+            return 'January';
+        }elseif ($this->siDate == 2) {
+            return 'February'; 
+        }elseif ($this->siDate == 3) {
+            return 'March'; 
+        }elseif ($this->siDate == 4) {
+            return 'April'; 
+        }elseif ($this->siDate == 5) {
+            return 'May'; 
+        }elseif ($this->siDate == 6) {
+            return 'June'; 
+        }elseif ($this->siDate == 7) {
+            return 'July'; 
+        }elseif ($this->siDate == 8) {
+            return 'August';
+        }elseif ($this->siDate == 9) {
+            return 'September'; 
+        }elseif ($this->siDate == 10) {
+            return 'October'; 
+        }elseif ($this->siDate == 11) {
+            return 'November'; 
+        }elseif ($this->siDate == 12) {
+            return 'December';                             
+              
+        } else {
+            return 'Not set';
+        }
     }
 
+
+    public function getClientAllowSaveCloud()
+    {
+        $Client = Client::findOne(['id' => $this->clientid]);
+        if ($Client) {
+            return $Client->AllowSaveCloud;
+        } else {
+            return false;
+        }
+    }
+
+    public function getCountSavedFloorplans()
+    {
+        $retValue = 0;
+
+        //  $Events =  \common\models\Event::findAll([
+        //  'userid' => $this->id,
+        //  ]);
+        // if ($Events) {
+        //     $retValue = count($Events);
+        //  }
+
+        return $retValue;
+    }
     public function getClientAllowFavStencils()
     {
         $retValue = 0;
 
-        $Client=Client::findOne(['id' => $this->clientid]);
-        if ($Client){
+        $Client = Client::findOne(['id' => $this->clientid]);
+        if ($Client) {
             if ($Client->AllowFavouriteStencils > 0) {
                 $retValue = $this->clientid;
             }
@@ -235,66 +336,54 @@ public  function validateStatus($attribute, $params)
         return $retValue;
     }
 
-public function getClientAllow3D()
+    public function getClientUserType()
     {
-        $retValue = 0;
-
-        $Client=Client::findOne(['id' => $this->clientid]);
-        if ($Client){
-            if ($Client->Allow3D > 0) {
-                $retValue = $this->clientid;
-            }
-        }
-
+        // $Client = Client::findOne(['id' => $this->clientid]);
+        //     if ($Client) {
+        //         $retValue = $Client->clientType;
+        //     }
+        //     else
+        //     {
+               $retValue = $this->userType;
+            // }    
         return $retValue;
     }
-    
-        public function getClientAllowSaveFolder()
+
+    public function getClientUserStatus()
     {
-        $retValue = 0;
-
-        $Client=Client::findOne(['id' => $this->clientid]);
-        if ($Client){
-            if ($Client->AllowSaveFolder > 0) {
-                $retValue =  $this->clientid;
-            }
-        }
-
+        // $Client = Client::findOne(['id' => $this->clientid]);
+        //     if ($Client) {
+        //         $retValue = $Client->status;
+        //     }
+        //     else
+        //     {
+               $retValue = $this->status;
+            // }    
         return $retValue;
     }
-    
-    public function getClientAllowImportPDF()
+
+    public function getClientUserExpiryDate()
     {
-        $retValue = 0;
-
-        $Client=Client::findOne(['id' => $this->clientid]);
-        if ($Client){
-            if ($Client->AllowImportPdf > 0) {
-                $retValue = $Client->AllowImportPdf;
-            }
-        }
-
-        //01Feb2022
-        //allow import PDF for all Event Organisers
-        if ($this->userType == 2)
-        {
-           $retValue = 1;
-        }
-
+        // $Client = Client::findOne(['id' => $this->clientid]);
+        //     if ($Client) {
+        //         $retValue = $Client->expiry_date;
+        //     }
+        //     else
+        //     {
+               $retValue = $this->expiry_date;
+            // }    
         return $retValue;
     }
-    
+
+
     public function getUserMeasurementUnit()
     {
         $user_meas = 'Meters';//meters by default
-        $UserSettings=  Usersettings::findOne(['userid' => $this->id]);
-        if ($UserSettings){
-            if ($UserSettings->meas_unit == 'FT')
-            {
+        $UserSettings = Usersettings::findOne(['userid' => $this->id]);
+        if ($UserSettings) {
+            if ($UserSettings->meas_unit == 'FT') {
                 $user_meas = 'Feet';
-            }
-            else if ($UserSettings->meas_unit == 'BOTH')
-            {
+            } else if ($UserSettings->meas_unit == 'BOTH') {
                 $user_meas = 'Both (Meeters and Feet)';
             }
 
@@ -309,10 +398,12 @@ public function getClientAllow3D()
     {
         return static::findOne(['username' => $username, 'userIsAdmin' => 1]);
     }
+
     public static function findByUsernameClient($username)
     {
         return static::findOne(['username' => $username, 'company_admin' => 1]);
     }
+
     public static function findByUsernamePSW($username, $psw)
     {
         return static::findOne(['username' => $username, 'company_admin' => 1]);
@@ -321,112 +412,151 @@ public function getClientAllow3D()
 
     public function getClientName()
     {
-        $Client=Client::findOne(['id' => $this->clientid]);
-        if ($Client){
+        $Client = Client::findOne(['id' => $this->clientid]);
+        if ($Client) {
             return $Client->clientName;
+        } else {
+            return null;
         }
-        else{
+    }
+
+    public function getCountryName()
+    {
+        $Country = \common\models\Country::findOne(['COUNTRY_ISO3' => $this->UserCountry]);
+        if ($Country) {
+            return $Country->NAME;
+        } else {
             return null;
         }
     }
 
     public function getStatusName()
     {
-        if ($this->status ==9){
+
+        $curStatus = $this->getClientUserStatus();
+        if ($curStatus == 9) {
             return 'Trial';
-        }
-        elseif ($this->status ==10){
+        } elseif ($curStatus == 10) {
             return 'Full version';
-        }
-        else
-        {
+        } elseif ($curStatus == 0) {
+            return 'No Access';    
+        } elseif ($curStatus == 12) {
+            return 'Churn';        
+        } elseif ($curStatus == 13) {
+            return 'Archive';        
+        } else {
             return 'Custom trial';
         }
     }
-
-public function getTypeName()
+    public function getuserType()
     {
-        if ($this->userType == 1) {
-            return 'Venue';
-        } elseif ($this->userType == 2) {
-            return 'Event Organiser';
-        } else {
+        if ($this->userType == 0) {
             return 'Not Set';
+        } elseif ($this->status == 1) {
+            return 'Venue';
+        } else {
+            return 'Event Organiser';
         }
     }
-
     public static function getClientList()
     {
         //$clients = \common\models\Client::find()->all();
 
         $clients = \common\models\Client::find()
             ->select(['id', 'clientName'])
-             ->orderBy(['clientName' => SORT_ASC])->all();
+            ->orderBy(['clientName' => SORT_ASC])->all();
 
-        $items = ArrayHelper::map($clients,'id','clientName');
+        $items = ArrayHelper::map($clients, 'id', 'clientName');
         return $items;
     }
 
+public function getTypeName()
+    {
+        $curType = $this->getClientUserType();
+
+        if ($curType == 1) {
+            return 'Venue';
+        } elseif ($curType == 2) {
+            return 'Event Organiser';
+        } else {
+            return 'Not Set';
+        }
+    }
+
+
     public static function getTemplateList()
-{
+    {
 //    $tmpls = \common\models\Template::findAll([
 //        'templateActive' => 1,
 //    ]);
 
         $tmpls = \common\models\Template::find()
-            ->select(['id', 'clientid','templateName'])
+            ->select(['id', 'clientid', 'templateName'])
             ->where(['templateActive' => 1])
             ->orderBy(['templateName' => SORT_ASC])->all();
 
 
-        $items = ArrayHelper::map($tmpls,'id','templateName');
-    return $items;
-}
+        $items = ArrayHelper::map($tmpls, 'id', 'templateName');
+        return $items;
+    }
+
     public static function getTemplateListClient()
     {
         $tmpls = \common\models\Template::findAll([
-            'templateActive' => 1,'clientid' => Yii::$app->user->identity->clientid
+            'templateActive' => 1, 'clientid' => Yii::$app->user->identity->clientid
         ]);
 
-        $items = ArrayHelper::map($tmpls,'id','templateName');
+        $items = ArrayHelper::map($tmpls, 'id', 'templateName');
         return $items;
     }
+
     public static function getUserTemplates($id)
     {
         $tmpls = \common\models\UserTemplates::findAll([
             'userid' => $id,
         ]);
-        $items =  ArrayHelper::getColumn($tmpls, 'templateid');
+        $items = ArrayHelper::getColumn($tmpls, 'templateid');
         return $items;
     }
+
+    public static function getUserFloorplans($id)
+    {
+        $floorplans = \common\models\Event::find()
+            ->select(['id', 'eventName'])
+            ->where(['userid' => $id, 'eventActive' => 1])
+            ->orderBy(['eventName' => SORT_ASC])->all();
+
+        $items = ArrayHelper::map($floorplans, 'id', 'eventName');
+        return $items;
+
+    }
+
 
     public static function getUserStencils($id)
     {
         $stencils = \common\models\UserStencils::findAll([
             'userid' => $id,
         ]);
-        $items =  ArrayHelper::getColumn($stencils, 'stencilid');
+        $items = ArrayHelper::getColumn($stencils, 'stencilid');
         return $items;
     }
 
     public static function getUserSettings($id, $paramName)
     {
-        $UserSetting= Usersettings::findOne(['userid' => $id]);
+        $UserSetting = Usersettings::findOne(['userid' => $id]);
         if ($UserSetting) {
             return $UserSetting->$paramName;
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     public function getStencilName()
     {
-        $Stencil=Stencil::findOne(['id' => $this->userStencilid]);
-        if ($Stencil){
+        $Stencil = Stencil::findOne(['id' => $this->userStencilid]);
+        if ($Stencil) {
             return $Stencil->stencilName;
-        }
-        else{
+        } else {
             return null;
         }
     }
@@ -442,7 +572,7 @@ public function getTypeName()
             ->where(['stencilActive' => 1])
             ->orderBy(['stencilName' => SORT_ASC])->all();
 
-        $items = ArrayHelper::map($stensils,'id','stencilName');
+        $items = ArrayHelper::map($stensils, 'id', 'stencilName');
         return $items;
     }
 
@@ -469,17 +599,11 @@ public function getTypeName()
      * @param string $token verify email token
      * @return static|null
      */
-    public static function findByVerificationToken($token) {
+    public static function findByVerificationToken($token)
+    {
         return static::findOne([
             'verification_token' => $token,
             'status' => self::STATUS_INACTIVE
-        ]);
-    }
-
-
- public static function findByEmail($email) {
-        return static::findOne([
-            'email' => $email
         ]);
     }
 
@@ -495,7 +619,7 @@ public function getTypeName()
             return false;
         }
 
-        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
+        $timestamp = (int)substr($token, strrpos($token, '_') + 1);
         $expire = Yii::$app->params['user.passwordResetTokenExpire'];
         return $timestamp + $expire >= time();
     }
@@ -575,56 +699,57 @@ public function getTypeName()
         $this->password_reset_token = null;
     }
 
-    public function  getPaymentStatus()
+    public function getPaymentStatus()
     {
         //if this user has client - use client status field for detect payment status
 
-        $Client=Client::findOne(['id' => $this->clientid]);
-        if ($Client){
-            if ($Client->status == self::STATUS_ACTIVE)
-            {
+        $Client = Client::findOne(['id' => $this->clientid]);
+        if ($Client) {
+            if ($Client->status == self::STATUS_ACTIVE) {
                 return 1;
-            }
-            else if ($Client->status == self::STATUS_INACTIVE)
-            {
+            } else if ($Client->status == self::STATUS_INACTIVE or $Client->status == self::STATUS_CHURN ) {
                 return 0;
-            }
-            else  // trial
+            } else  // trial
             {
-                if ($Client->expiry_date > time())
-                {
+                if ($Client->expiry_date > time()) {
                     return 2;
+                } else {
+                    return -1;
                 }
-                else
-                {
+            }
+        } else {
+            if ($this->status == self::STATUS_ACTIVE) {
+                return 1;
+            } else if ($this->status == self::STATUS_INACTIVE or $this->status == self::STATUS_CHURN or $this->status == self::STATUS_ARCHIVE) {
+                return 0;
+            } else  // trial
+            {
+                if ($this->expiry_date > time()) {
+                    return 2;
+                } else {
                     return -1;
                 }
             }
         }
 
-        else
-        {
-            if ($this->status == self::STATUS_ACTIVE)
-            {
-                return 1;
-            }
-            else if ($this->status == self::STATUS_INACTIVE)
-            {
-                return 0;
-            }
-            else  // trial
-            {
-                if ($this->expiry_date > time())
-                {
-                    return 2;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-        }
 
+    }
+
+    public function setCountSavedFloorplans()
+    {
+
+         $Events =  \common\models\Event::findAll([
+          'userid' => $this->id,
+          ]);
+         if ($Events) {
+             $recCount = count($Events);
+          }
+          else {
+            $recCount = 0;
+          }
+
+            $this->userSavedFloorplansCount =  $recCount;
+            $this->save(false);
 
     }
     public function setLastLogin()
@@ -634,9 +759,8 @@ public function getTypeName()
 
         $this->touch('last_login');
         //increase nRelease if its less 1000
-        if ($this->nrelease < 1000)
-        {
-            $this->nrelease = $this->nrelease +1;
+        if ($this->nrelease < 1000) {
+            $this->nrelease = $this->nrelease + 1;
             $this->save();
         }
 
@@ -644,8 +768,8 @@ public function getTypeName()
 
     public function setReleaseN($nRelease)
     {
-            $this->nrelease = $nRelease;
-            $this->save();
+        $this->nrelease = $nRelease;
+        $this->save();
     }
 
     public function attributeLabels()
@@ -653,16 +777,17 @@ public function getTypeName()
         return [
             'id' => 'ID',
             'username' => 'Login',
+            'password_hash' => 'Password',
             'email' => 'Email',
             'status' => 'Status',
             'userfullname' => 'Full Name',
             'userIsAdmin' => 'Admin',
             'userIsSupport' => 'Support',
             'userPayment' => 'Payment',
-            'created_at'=> 'Created',
-            'updated_at'=> 'Updated',
-            'last_login'=> 'Last login',
-            'clientid'=> 'Client',
+            'created_at' => 'Created',
+            'updated_at' => 'Updated',
+            'last_login' => 'Last login',
+            'clientid' => 'Client',
             'user_templates' => 'Template list',
             'maxSession' => 'Max Sessions',
             'totSession' => 'Total Sessions',
@@ -673,8 +798,15 @@ public function getTypeName()
             'surname' => 'Surname',
             'ShowMaxCapPlans' => 'Show Max Capacity Plans',
             'user_settings_meas_unit' => 'Measurement Units',
+            'user_settings_localDir' => 'Local Directory',
+            'userType' => 'Type',
+            'AllowSaveCloud' => 'Allow EventDraw Cloud',
             'userSavedFloorplansCount' => 'Cloud Plans',
             'UserCompanyName' => 'Company Name',
+            'UserCountry' => 'Country',
+            'UserDoNotEmail' => 'Do Not Email',
+            'siDate' => 'SI Date'
+
         ];
     }
 
@@ -686,17 +818,17 @@ public function getTypeName()
 
     public function saveStencils()
     {
+      
         UserStencils::setUserStns($this->id, $this->user_stencils);
         return true;
     }
 
     public function saveSettings()
     {
-        Usersettings::setUserSettings($this->id, $this->user_settings_meas_unit);
+        Usersettings::setUserSettings($this->id, $this->user_settings_meas_unit, $this->user_settings_localDir);
         return true;
     }
-    
-    
+
  public function addRecordToSpreadsheet($userInfo)
     {
         $client = new \Google_Client();
@@ -712,7 +844,7 @@ public function getTypeName()
         //insert new rows data on spreadsheet
         $update_range = "UserList!A1:S1";
 
-if ($userInfo['expiry_date'] != 0)
+    if ($userInfo['expiry_date'] != 0)
     {
         $expiry_date_good =  \Yii::$app->formatter->asDatetime($data['expiry_date'], "php:d-M-Y H:i:s");
     }
@@ -721,7 +853,17 @@ if ($userInfo['expiry_date'] != 0)
         $expiry_date_good = '';
     }
 
-if ($userInfo['created_at'] != 0)
+    if ($userInfo['last_login'] != 0)
+    {
+        $last_login_good =  \Yii::$app->formatter->asDatetime($userInfo['last_login'], "php:d-M-Y H:i:s");
+    }
+    else
+    {
+        $last_login_good = '';
+    }
+    
+
+    if ($userInfo['created_at'] != 0)
     {
         $created_at_good =  \Yii::$app->formatter->asDatetime($userInfo['created_at'], "php:d-M-Y H:i:s");
     }
@@ -747,6 +889,25 @@ if ($userInfo['created_at'] != 0)
     {
         $userIsAdmin_good = 'No';
     }
+
+if ($userInfo['UserDoNotEmail'] == 1)
+    {
+        $UserDoNotEmail =  'Yes';
+    }
+    else
+    {
+        $UserDoNotEmail = 'No';
+    }
+
+    if ($userInfo['is_subscribed'] == 1)
+    {
+        $is_subscribed =  'Yes';
+    }
+    else
+    {
+        $is_subscribed = 'No';
+    }
+    
 
     if ($userInfo['userIsSupport'] == 1)
     {
@@ -775,7 +936,8 @@ if ($userInfo['created_at'] != 0)
         $company_admin_good = 'No';
     }
 
-if ($userInfo->getClientName() != NULL)
+
+    if ($userInfo->getClientName() != NULL)
     {
         $client_name_good = $userInfo->getClientName() ;
     }
@@ -784,7 +946,7 @@ if ($userInfo->getClientName() != NULL)
         $client_name_good = '';
     }
 
-if ($userInfo->getStencilName() != NULL)
+    if ($userInfo->getStencilName() != NULL)
     {
         $stencil_name_good = $userInfo->getStencilName() ;
     }
@@ -793,7 +955,7 @@ if ($userInfo->getStencilName() != NULL)
         $stencil_name_good = '';
     }
 
-if ($userInfo->getStatusName() != NULL)
+    if ($userInfo->getStatusName() != NULL)
     {
         $status_name_good = $userInfo->getStatusName() ;
     }
@@ -802,7 +964,17 @@ if ($userInfo->getStatusName() != NULL)
         $status_name_good = '';
     }
 
-if ($userInfo->getTypeName() != NULL)
+    if ($userInfo->getCountryName() != NULL)
+    {
+        $country_name_good = $userInfo->getCountryName() ;
+    }
+    else
+    {
+        $country_name_good = '';
+    }
+
+
+    if ($userInfo->getTypeName() != NULL)
     {
         $type_name_good = $userInfo->getTypeName() ;
     }
@@ -811,7 +983,7 @@ if ($userInfo->getTypeName() != NULL)
         $type_name_good = '';
     }
 
-        $values = [
+    $values = [
                     [
                         $this->id,
                         $client_name_good,
@@ -819,11 +991,10 @@ if ($userInfo->getTypeName() != NULL)
                         $this->surname,
                         $this->email,
                         $this->username,
-                        '',
+                        $last_login_good,
                         $this->totSession,
                         $stencil_name_good,
                         $status_name_good,
-                        $type_name_good,
                         $expiry_date_good,
                         $userIsAdmin_good,
                         $userIsSupport_good,
@@ -832,7 +1003,10 @@ if ($userInfo->getTypeName() != NULL)
                         $created_at_good,
                         $updated_at_good,
                         $this->maxSession,
-                        $this->UserCompanyName
+                        $this->UserCompanyName,
+                        $country_name_good,
+                        $UserDoNotEmail,
+                        $is_subscribed
                     ]
                   ]; 
         $params = ['valueInputOption' => 'RAW'];
@@ -842,8 +1016,7 @@ if ($userInfo->getTypeName() != NULL)
         $update_sheet = $service->spreadsheets_values->append($spreadsheetId, $update_range, $body, $params);
 
     }
-   
-   
+    
     public function afterSave($insert)
     {
         if ($insert) {
@@ -851,15 +1024,15 @@ if ($userInfo->getTypeName() != NULL)
 
         //set special bulltin board messages for new user
 
-            $bulletBoardUser1 = new \common\models\BulletBoardUsers();
-            $bulletBoardUser1->user_id = $this->id;
-            $bulletBoardUser1->bullet_board_id =30;
-            $bulletBoardUser1->save();
+            // $bulletBoardUser1 = new \common\models\BulletBoardUsers();
+            // $bulletBoardUser1->user_id = $this->id;
+            // $bulletBoardUser1->bullet_board_id =30;
+            // $bulletBoardUser1->save();
 
-            $bulletBoardUser2 = new \common\models\BulletBoardUsers();
-            $bulletBoardUser2->user_id = $this->id;
-            $bulletBoardUser2->bullet_board_id =31;
-            $bulletBoardUser2->save();
+            // $bulletBoardUser2 = new \common\models\BulletBoardUsers();
+            // $bulletBoardUser2->user_id = $this->id;
+            // $bulletBoardUser2->bullet_board_id =31;
+            // $bulletBoardUser2->save();
 
             // $bulletBoardUser3 = new \common\models\BulletBoardUsers();
             // $bulletBoardUser3->user_id = $this->id;
@@ -867,15 +1040,9 @@ if ($userInfo->getTypeName() != NULL)
             // $bulletBoardUser3->save();
         }
     }
-
-
+    
     public function beforeSave($insert)
     {
-        if ($insert) {
-            //set username as email for new users
-            $this->username = $this->email;
-        }
-
         if (parent::beforeSave($insert)) {
             if ($this->new_password) {
                 $this->setPassword($this->new_password);
@@ -887,30 +1054,6 @@ if ($userInfo->getTypeName() != NULL)
 //                    $this->clientid = Yii::$app->user->identity->clientid;
 //                }
 //            }
-
-            //set expiry date as 60 days from current date
-            if ($insert)
-            {
-
-                if ($this->expiry_date)
-                {
-                
-                }
-                else
-                {
-                    if ($this->status == 11){
-                $time = date("Y-m-d");  
-                $dt2 = strtotime( "+12 month", strtotime( $time ) );
-                $this->expiry_date = $dt2;
-                    }
-                }
-              
-
-               $this->last_email_date = date('Y-m-d H:i:s');
-                 $this->email_count = 1;
-                 EmailHelper::sendWelcomeEmail($this);
-
-            }
             $this->userfullname = $this->firstname . ' ' . $this->surname;
             return true;
         } else {

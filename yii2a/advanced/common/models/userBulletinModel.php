@@ -4,7 +4,7 @@ namespace common\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use Yii;
-//fake comment to append it in commit
+
 /**
  * This is the model class for table "bullet_boards".
  *
@@ -13,14 +13,14 @@ use Yii;
  * @property int $bulletin_id
  *
  */
-class userBulletinModel extends \yii\db\ActiveRecord
+class UserbulletinModel extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'bulletboarduserdata';
+        return 'bullet_board_users';
     }
 
     /**
@@ -45,14 +45,5 @@ class userBulletinModel extends \yii\db\ActiveRecord
             'user_id'=>'USER ID',
             'has_seen'=>'Has  Seen'
         ];
-    }
-
-    public static function findIdentity($id)
-    {
-        return static::findOne(['id' => $id]);
-    }
-    public static function customFind($bullet_board_id)
-    {
-        return static::findOne(['bullet_board_id' => $bullet_board_id]);
     }
 }

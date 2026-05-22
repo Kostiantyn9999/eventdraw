@@ -8,7 +8,9 @@ use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
 use yii\web\UploadedFile;
 use yii\helpers\FileHelper;
+use yii\data\SqlDataProvider;
 use \DateTime;
+
 
 /**
  * This is the model class for table "xmltemplate".
@@ -23,7 +25,10 @@ use \DateTime;
  * @property int $clientid
  * @property int $shadow
  * @property string $image
- * @property string $momentusSpaceDescr
+ * @property string $templateSize
+ * @property int $matterportid
+ * @property int $created_by
+ * * @property string $momentusSpaceDescr
  * @property string $momentusSpaceCode
  * @property int|null $momentusEventSpaceDiagramId
  */
@@ -31,6 +36,8 @@ class Template extends \yii\db\ActiveRecord
 {
     public $imageFile;
     public $subtemplate;
+    public $realisticid;
+    public $template_version;
     /**
      * {@inheritdoc}
      */
@@ -305,26 +312,115 @@ class Template extends \yii\db\ActiveRecord
         }
     }
 
+    public function getCreatedByName()
+    {
+        $User=User::findOne(['id' => $this->created_by]);
+        if ($User){
+            return $User->userfullname;
+        }
+        else{
+            return null;
+        }
+    }
+    
+
+  public static function getMatterportList()
+    {
+        $mttps = \common\models\Matterport::find()
+            ->select(['id','name'])
+            ->orderBy(['name' => SORT_ASC])->all();
+
+
+        $items = ArrayHelper::map($mttps, 'id', 'name');
+        return $items;
+    }
+    
+    public function getMatterportName()
+    {
+        $Matterport=\common\models\Matterport::findOne(['id' => $this->matterportid]);
+        if ($Matterport){
+            return $Matterport->name;
+        }
+        else{
+            return null;
+        }
+    }
+
+    public function getMatterport_ID_Name()
+    {
+        $Matterport=\common\models\Matterport::findOne(['id' => $this->matterportid]);
+        if ($Matterport){
+            return 'ID = ' . $Matterport->id . '  '. $Matterport->name;
+        }
+        else{
+            return null;
+        }
+    }
+
+
+
     public static function getClientList()
     {
-        $clients = \common\models\Client::find()->all();
+        
+        $dataProvider = new SqlDataProvider([
+            'sql' => 'select client1.id, client1.clientName from client as client1 where client1.id in 
+(select DISTINCT clientid from user where id in 
+    (SELECT DISTINCT userid from usertemplates))  
+
+UNION
+
+select client2.id, client2.clientName from client  as client2 where client2.id IN
+(select distinct clientid from clienttemplates)
+order by 2',
+              'pagination' => false,
+        ]);
+
+        $clients = $dataProvider->getModels();
 
         $items = ArrayHelper::map($clients,'id','clientName');
+
+        //replace & char to space to avoid incorrect show in list
+        //  $arrlength = count($items);
+        //  for($x = 0; $x < $arrlength; $x++) {
+        //   $items[x]->clientName = str_replace($items[x]->clientName, '&' , 'new' );
+        //  }
+        //var_dump($clients);die;
         return $items;
+    }
+
+
+
+
+    public static function getSizeList()
+    {
+        $info = array('Any size','less 20 KB','more 20 KB',  'more 50 KB', 'more 100 KB', 'more 1 MB', 'more 10 MB');
+
+// Listing all the variables
+        list($drink, $color, $power) = $info;
+
+        $clients = \common\models\Client::find()
+            ->select(['id', 'clientName'])
+            ->orderBy(['clientName' => SORT_ASC])->all();
+
+        $items = ArrayHelper::map($clients,'id','clientName');
+        return $info;
     }
 
     public function rules()
     {
         return [
             [['templateName', 'xmlCode'], 'required'],
-            [['xmlCode','momentusSpaceDescr','momentusSpaceCode'], 'string'],
-            [['templateActive','templateDefault','clientid','shadow','momentusEventSpaceDiagramId'], 'integer'],
+            [['xmlCode', 'momentusSpaceDescr','momentusSpaceCode'], 'string'],
+            [['templateActive','templateDefault','clientid','shadow','matterportid','created_by', 'momentusEventSpaceDiagramId'], 'integer'],
             ['templateActive', 'default', 'value' => 1],
             [['templateName'], 'string', 'max' => 100],
             [['imageFile'], 'file', 'skipOnEmpty' => false, 'extensions' => 'png, jpg, jpeg, gif'],
             [['image'], 'string'],
+            [['realisticid'], 'integer'],
             ['image', 'default', 'value' => ''],
+            ['templateSize', 'default', 'value' => 0],
             ['subtemplate', 'validateSubtemplate', 'skipOnEmpty' => true],
+            ['template_version', 'default', 'value' => ''],
             ['momentusSpaceCode', 'validateMomentusSpaceCodeUnique'],
          ];
     }
@@ -374,8 +470,8 @@ class Template extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ED ID',
-            'templateName' => 'ED Template Name',
+            'id' => 'ID',
+            'templateName' => 'Template Name',
             'xmlCode' => 'Xml Code',
             'templateActive' => 'Active',
             'created_at'=> 'Created',
@@ -385,6 +481,11 @@ class Template extends \yii\db\ActiveRecord
             'shadow' => 'Shadow',
             'imageFile' => 'Template image',
             'image' => 'Image file name',
+            'templateSize' => 'Size (KB)',
+            'template_version'=> 'Template Version',
+            'matterportid'=> 'Matterport',
+            'created_by'=>'Created by',
+            'realisticid' => 'Realistic',
             'momentusSpaceDescr'=> 'Momentus Space',
             'momentusSpaceCode'=> 'Momentus Space Code',
             'momentusEventSpaceDiagramId' => 'Default EventSpaceDiagram ID',
@@ -394,6 +495,48 @@ class Template extends \yii\db\ActiveRecord
     public function init() {
         parent::init ();
         $this->templateActive  = 1;
+    }
+
+    public function saveNewVersion()
+    {
+        //get file with selected version and save it to database
+        
+        $s3 = Yii::$app->get('s3');
+        $filename_looking = 'eventdraw_data/templates/' .  $this->id . '.xml';
+        $fileNameLocal = uniqid(rand(), true) . '.xml';
+       
+        $result = $s3->commands()->get($filename_looking)->withVersionId($this->template_version)->saveAs($fileNameLocal)->execute();
+        $strXML = file_get_contents($fileNameLocal);
+
+             //delete temp files
+        if (!unlink($fileNameLocal)) {
+         }
+
+        //save to database
+        $tmpl = Template::findOne(['id' => $this->id]);
+        if ($tmpl){
+            $tmpl->xmlCode =  $strXML;
+            $tmpl->templateSize = round(strlen($tmpl->xmlCode) / 1024, 2);
+            $tmpl->save(false);
+        }
+        
+        return true;
+    }
+
+    public function beforeSave($insert)
+    {
+        if($insert)
+        {
+            $this->created_by =  Yii::$app->user->identity->id;
+        }
+        if (parent::beforeSave($insert)) {
+
+            $this->templateSize = round(strlen($this->xmlCode) / 1024, 2);
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
 }

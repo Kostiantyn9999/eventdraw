@@ -42,44 +42,11 @@ class LoginForm extends Model
     {
         if (!$this->hasErrors()) {
             $user = $this->getUser();
-
             if (!$user || !$user->validatePassword($this->password)) {
                 $this->addError($attribute, 'Incorrect username or password.');
             }
-            //check about no access for user
-            else if ($user->status == 0) {
-                $this->addError('rememberMe', 'Access to your account is currently locked. <br/>Please contact <a href = "mailto: sales@eventdraw.com">sales@eventdraw.com</a> for assistance');
-            }
-
-            //check about expiry date
-            // else if ($user->expiry_date) {
-
-            //     if ($user->expiry_date < strtotime("now")) {
-
-            //         if ($user->status == 10)  //full version
-            //         {
-            //             $this->addError('rememberMe', 'Your account is temporarily locked. <br/>Please contact <a href = "mailto: support@eventdraw.com">support@eventdraw.com</a>  for assistance');
-            //         }
-            //         else{  //trial user
-            //             $this->addError('rememberMe', 'Your trial has ended. <br/>Please contact <a href = "mailto: sales@eventdraw.com">sales@eventdraw.com</a>  for assistance');
-            //         }
-
-            //     }
-            // }
-
-            if ($user->clientid > 0) {
-                //check no access status for client
-                $client = Client::findIdentity($user->clientid);
-                if ($client)
-                {
-                    if ($client->status == 0)  {
-                        $this->addError('rememberMe', 'Access to your client account is currently locked. <br/>Please contact <a href = "mailto: sales@eventdraw.com">sales@eventdraw.com</a> for assistance');
-                    }
-                }
-            }
         }
     }
-
 
     /**
      * Logs in a user using the provided username and password.
