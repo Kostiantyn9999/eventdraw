@@ -10,7 +10,7 @@ fwrite( $output, "\xEF\xBB\xBF" );
 fputcsv( $output, [ 'ID', 'Client','First Name','Surname','Email','Login',
     'Last login','Total sessions','Stencil','Status','Expiry Date',
     'Admin','Support','Payment','Company Admin',
-    'Created','Updated','Max Sessions'], ';' );
+    'Created','Updated','Max Sessions','Company Name','Country','Do Not Email', 'Is Subscribed'], ';' );
 
 foreach($model as $data){
     if ($data['last_login'] != 0)
@@ -85,6 +85,25 @@ foreach($model as $data){
         $company_admin_good = 'No';
     }
 
+    if ($data['UserDoNotEmail'] == 1)
+    {
+        $UserDoNotEmail =  'Yes';
+    }
+    else
+    {
+        $UserDoNotEmail = 'No';
+    }
+
+    if ($data['is_subscribed'] == 1)
+    {
+        $is_subscribed =  'Yes';
+    }
+    else
+    {
+        $is_subscribed = 'No';
+    }
+    
+
 
     fputcsv( $output, [ $data['id'],
         $data->getClientName(),
@@ -103,7 +122,11 @@ foreach($model as $data){
         $company_admin_good,
         $created_at_good,
         $updated_at_good,
-        $data['maxSession']
+        $data['maxSession'],
+        $data['UserCompanyName'],
+        $data->getCountryName(),
+        $UserDoNotEmail,
+        $is_subscribed
 
     ], ';' );
 }

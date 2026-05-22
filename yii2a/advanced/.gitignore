@@ -37,6 +37,8 @@ phpunit.phar
 # config files with secrets - never commit
 /common/config/main.php
 /common/config/params.php
+/backend/config/main.php
+/backend/config/params.php
 
 # ignore generated files
 /frontend/web/index.php

@@ -9,40 +9,13 @@ use common\models\EmailsSent;
 use http\Exception;
 use Yii;
 use yii\web\ServerErrorHttpException;
+use common\models\EmailTemplate;
 
 /**
  * Class EmailHelper
  */
 class EmailHelper
 {
-
-
-    public static function sendTemplateChangeMail($email,$mailBody,$username): string
-    {
-        
-
-        $message = Yii::$app
-            ->mailer
-            ->compose(
-                'new-email-template-body', [
-                    'name' => $username,
-                    'body' => $mailBody,
-                ]
-            )
-            ->setFrom(Yii::$app->params['supportEmail'])
-            ->setTo($email)            
-            // ->setCc('sales@eventdraw.com')
-            ->setSubject('Template Change');
-
-        try {
-            Yii::$app->mailer->send($message);            
-            return 'Email Sent Successfully';
-        }
-        catch (Exception $exception) {
-            return $exception->getMessage();
-        }
-    }
-    
     /**
      * @param array $userIds
      * @return string
@@ -63,7 +36,7 @@ class EmailHelper
                         continue;
                     }
                 }
-
+ 
                 $messages[] = Yii::$app
                     ->mailer
                     ->compose('user-credentials', [
@@ -96,36 +69,49 @@ class EmailHelper
      */
     public static function sendWelcomeEmail($model): string
     {
-        // $template = NewUserBroadcastEmailTemplates::find()->where(['order' => 1])->one();
-        $template = \common\models\EmailTemplate::find()->where(['template_type' => 'welcome-template'])->one();
-        
+        $template = EmailTemplate::find()->where(['template_type' => 'welcome-template'])->one();
+        // echo $template['email_subject'];
+        // print_r($template['email_subject']);die;
+
+        // $message = Yii::$app
+        //     ->mailer
+        //     ->compose(
+        //         'new-email-template-body', [
+        //             'name' => $model->firstname,
+        //             'body' => $template->template_image,
+        //         ]
+        //     )
+        //     ->setFrom(Yii::$app->params['supportEmail'])
+        //     ->setTo($model->email)
+        //     ->setCc('sales@eventdraw.com')
+        //     ->setSubject($template->heading);
+
         $message = Yii::$app
             ->mailer
             ->compose(
-
                 'new-email-template-body', [
                     'name' => $model->firstname,
-                    'body' => $template['content']
+                    'body' => $template['content'],
                 ]
-
-
             )
             ->setFrom(Yii::$app->params['supportEmail'])
             ->setTo($model->email)
             ->setCc('sales@eventdraw.com')
             ->setSubject($template['email_subject']);
 
-            try {
-                Yii::$app->mailer->send($message);
-            } catch (\Swift_TransportException $e) {
-                Yii::warning($e->getMessage(), __METHOD__);
-            } catch (\Exception $e) {
-                Yii::error($e->getMessage(), __METHOD__);
-            }
+        try {
+            Yii::$app->mailer->send($message);
+
+            $model->last_email_date = date('Y-m-d H:i:s');
+            $model->email_count++;
+
+            $model->save();
 
             return 'Welcome Email Sent Successfully';
-
-
+        }
+        catch (Exception $exception) {
+            return $exception->getMessage();
+        }
     }
 
     /**
@@ -133,7 +119,34 @@ class EmailHelper
      * @param string $filename
      * @return bool
      */
-    public static function sendEmailToBulkUser(array $email, string $filename = null): bool
+
+    public static function sendTemplateChangeMiail($email,$mailBody,$username): string
+    {
+        
+
+        $message = Yii::$app
+            ->mailer
+            ->compose(
+                'new-email-template-body', [
+                    'name' => $username,
+                    'body' => $mailBody,
+                ]
+            )
+            ->setFrom(Yii::$app->params['supportEmail'])
+            ->setTo($model->email)
+            ->setCc('sales@eventdraw.com')
+            ->setSubject('Template Change');
+
+        try {
+            Yii::$app->mailer->send($message);            
+            return 'Email Sent Successfully';
+        }
+        catch (Exception $exception) {
+            return $exception->getMessage();
+        }
+    }
+    
+    public static function sendEmailToBulkUser(array $email, string $filename = null, string $send_from = null): bool
     {
 
         $messages = [];
@@ -158,7 +171,8 @@ class EmailHelper
                             'isSubscribed' => $model->is_subscribed,
                         ]
                     )
-                        ->setFrom(Yii::$app->params['supportEmail'])
+                        //->setFrom(ucfirst($send_from))
+                        ->setFrom(array(ucfirst($send_from) => substr(ucfirst($send_from), 0, strpos(ucfirst($send_from), '@')) .'@EventDraw'))
                         ->setTo($model->email)
                         ->setSubject($email['subject']);
 
@@ -632,6 +646,9 @@ class EmailHelper
         $limit = $pageSize;
         $offset =  ($page * $pageSize) - $pageSize;
         $users = User::find()->all();
+       
+
+        $clients = Client::find()->all();
         $eligibleUsers = [];
         $selectedUsers = [];
         $totalSelectedUsers=0;
@@ -641,14 +658,98 @@ class EmailHelper
         }
 
         $i = 0;
+        //print_r($users);die;
+        
+        $array_username     =   array();
+        $new = array();
+        foreach($users as $obj){
+            $new_user       =   $obj->username;
+            array_push($array_username,$new_user);
+        }
+        if ($data['type'] === 'username') {
+            $array          =   explode(',',$data['filter']);
+            $new = array();
+            foreach($array  as $u){
+                array_push($new,$u);
+            }
+        }
+
+        if ($data['type'] === 'company') {
+            $com_array          =   $data['filter'];
+            $company_array = array();
+            foreach($com_array  as $c){
+                array_push($company_array,$c);
+            }
+        }
+        $response['com_array']   =   $com_array;
         foreach ($users as $model) {
             $lastLogin = date('Y-m-d', $model->last_login);
+            $lastEmail  =   date("Y-m-d",$model->last_email_date);
+            $totSession =   $model->totSession;
+            $userType   =   $model->userType;
+            $status     =   $model->status;
+            $siDate     =   $model->siDate;
 
+            //AXF 27Apr 2023 
+            //do not include user if it has status UserDoNotEmail = 1
+            if ($model->UserDoNotEmail === 1 )
+            {
+               continue; 
+            }
+            
+            if ($data['type'] === 'siDate' && ($data['filter'] != $siDate)) {
+                continue;
+            }
+            
             if ($data['type'] === 'last-login-date' && ($data['filter'] >= $lastLogin)) {
                 continue;
             }
+            if ($data['type'] === 'last_email_date') {
+                if ($data['filter'] === '') {
+                    continue;
+                }
 
-            if ($data['type'] === 'last-login-month') {
+                if ($data['filter'] === '0' && (date('Y-m-d', strtotime('-3 days')) > $lastEmail)) {
+                    continue;
+                }
+
+                if ($data['filter'] === '1' && date('Y-m-d', strtotime('-5 days')) <= $lastEmail) {
+                    continue;
+                }
+            }
+            if($data['type']==='totSession'){
+                if($data['filter']===''){
+                    continue;
+                }
+                if ($data['filter'] === '0'
+                    && !(
+                        $totSession >= '0'
+                        && $totSession <= '2'
+                    )) {
+                    continue;
+                }
+                if ($data['filter'] === '1'
+                    && !(
+                        $totSession >= '3'
+                        && $totSession <= '5'
+                    )) {
+                    continue;
+                }
+                if ($data['filter'] === '2'
+                    && !(
+                        $totSession >= '5'
+                        && $totSession <= '10'
+                    )) {
+                    continue;
+                }
+                if ($data['filter'] === '3'
+                    && !(
+                        $totSession >= '10'
+                    )) {
+                    continue;
+                }
+            }
+            if ($data['type'] === 'last_login') {
                 if ($data['filter'] === '') {
                     continue;
                 }
@@ -677,18 +778,48 @@ class EmailHelper
                     continue;
                 }
             }
-
+            
             if ($data['type'] === 'username') {
-                if (!empty($data['filter'])
-                    && strpos($model->firstname, $data['filter']) === false
-                    && strpos($model->surname, $data['filter']) === false
-                    && strpos($model->email, $data['filter']) === false) {
+                /*if (!empty($data['filter'])
+                    in_array($model->username,$array)) {
+                    continue;
+                }*/
+                if (!empty($data['filter']) && !in_array($model->username,$array)) {
                     continue;
                 }
             }
 
             if ($data['type'] === 'company') {
                 continue;
+            }
+            if($data['type']==='status'){
+                if($data['filter']===''){
+                    continue;
+                }
+                if ($data['filter'] === '9' && !($status == '9')) {
+                    continue;
+                }
+                if ($data['filter'] === '10' && !($status == '10')) {
+                    continue;
+                }
+                if ($data['filter'] === '11' && !($status == '11')) {
+                    continue;
+                }
+            }
+
+            if($data['type']==='userType'){
+                if($data['filter']===''){
+                    continue;
+                }
+                if ($data['filter'] === '0' && !($userType == '0')) {
+                    continue;
+                }
+                if ($data['filter'] === '1' && !($userType == '1')) {
+                    continue;
+                }
+                if ($data['filter'] === '2' && !($userType == '2')) {
+                    continue;
+                }
             }
 
             if ($data['isSelectAllClicked'] == 1 && $data['selectAll'] == 0) {
@@ -728,7 +859,13 @@ class EmailHelper
                 $client = Client::find()->where(['clientName' => $data['filter']])->one();
 
                 if ($client->users) {
-                    $users = User::find()->where(['clientid' => $client->id])->all();
+                    //$users = User::find()->where(['clientid' => $client->id])->all();
+                    $users = User::find()->where(['clientid' => $client->id, 'UserDoNotEmail' => 0])->all();
+                    
+                     //AXF 27Apr 2023 
+                    //do not include user if it has status UserDoNotEmail = 1
+          
+
                     foreach ($users as $model) {
                         if ($data['isSelectAllClicked'] == 1 && $data['selectAll'] == 0) {
                             $selectedUsers[$i]['email'] = $model->email;
@@ -755,6 +892,8 @@ class EmailHelper
             }
         }
 
+
+
         $response['selectedUsers'] = $selectedUsers;
         $response['totalSelectedUsers'] = $totalSelectedUsers;
         $response['allusers']=$allUsers;
@@ -763,7 +902,9 @@ class EmailHelper
         $response['totalPages'] = !empty($allUsersCount) ? ceil($allUsersCount / $pageSize) : 0;
         $response['data'] = $data;
         $session->set('selectedUsers', json_encode($selectedUsers));
-
+        $session->set('exportUser', json_encode($eligibleUsers));
+        //return $response['data'];
+        $response['clients']    =   $clients;
         return $response;
     }
 }

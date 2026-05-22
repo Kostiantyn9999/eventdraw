@@ -66,6 +66,14 @@ class StencilController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
+
+    public function saveStencil_S3($fileName, $dataXML)
+    {
+            $s3 = Yii::$app->get('s3');
+            $result = $s3->put('eventdraw_data/stencils/' . $fileName , $dataXML);
+       
+    }
+
     public function actionView($id)
     {
         return $this->render('view', [
@@ -88,7 +96,11 @@ class StencilController extends Controller
             if (isset($xmlFileInfo)) {
                 $model->stencilXML =$xmlFileInfo->name;
                 $xmlFileInfo->saveAs('../../frontend/web/site/' . $xmlFileInfo->name);
-            }
+
+                 $xmlResult = file_get_contents('../../frontend/web/site/' . $xmlFileInfo->name);
+                 $this::saveStencil_S3($xmlFileInfo->name, $xmlResult);
+                
+                }
             $model->save(false) ;
 
             return $this->redirect(['view', 'id' => $model->id]);
@@ -116,6 +128,10 @@ class StencilController extends Controller
             if (isset($xmlFileInfo)) {
                 $model->stencilXML =$xmlFileInfo->name;
                 $xmlFileInfo->saveAs('../../frontend/web/site/' . $xmlFileInfo->name);
+
+                $xmlResult = file_get_contents('../../frontend/web/site/' . $xmlFileInfo->name);
+                $this::saveStencil_S3($xmlFileInfo->name, $xmlResult);
+
             }
             $model->save(false) ;
 
@@ -130,6 +146,16 @@ class StencilController extends Controller
     public function actionDownload($id)
     {
         $path= '../../frontend/web/site/' .$id;
+
+        $s3 = Yii::$app->get('s3');
+        $filename_looking = 'eventdraw_data/stencils/'. $id;
+        $exist = $s3->exist($filename_looking);
+
+        if ($exist) 
+        {
+            $result = $s3->commands()->get($filename_looking)->saveAs($path)->execute();
+        }
+
         if (file_exists($path)) {
 
             return Yii::$app->response->sendFile($path);
