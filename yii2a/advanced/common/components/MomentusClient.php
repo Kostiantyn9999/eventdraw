@@ -532,6 +532,45 @@ class MomentusClient
     // ---------------------------------------------------------------
 
     /**
+     * GET /Organizations
+     * Returns available organizations (OrganizationCode + OrganizationName).
+     *
+     * @param string|null $search Optional search filter
+     * @return array<int, array{code: string, name: string}>
+     */
+    public function getOrganizations($search = null)
+    {
+        $params = [];
+        $search = trim((string) $search);
+        if ($search !== '') {
+            $params['Search'] = $search;
+        }
+
+        try {
+            $result = $this->request('GET', '/Organizations/', $params);
+            $items = $this->extractODataItems($result);
+            $orgs = [];
+            foreach ($items as $item) {
+                if (!is_array($item)) {
+                    continue;
+                }
+                $code = trim((string) ($item['OrganizationCode'] ?? ''));
+                if ($code === '') {
+                    continue;
+                }
+                $name = trim((string) ($item['OrganizationName'] ?? $item['Description'] ?? $item['Name'] ?? ''));
+                $orgs[] = ['code' => $code, 'name' => $name];
+            }
+            usort($orgs, function ($a, $b) {
+                return strnatcmp($a['code'], $b['code']);
+            });
+            return $orgs;
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    /**
      * GET /Organizations/{OrgCode}
      * Returns the organisation name for a given org code, or null if not found.
      *

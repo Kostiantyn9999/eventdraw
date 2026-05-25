@@ -30,7 +30,7 @@ class SiteController extends Controller
                         'allow' => true,
                     ],
                     [
-                    'actions' => ['logout', 'index', 'account-code', 'ajax-set-account-code', 'ajax-get-org-name'],
+                    'actions' => ['logout', 'index', 'account-code', 'ajax-set-account-code', 'ajax-get-org-name', 'ajax-get-organizations'],
                     'allow' => true,
                     'roles' => ['@'],
                     ],
@@ -109,6 +109,17 @@ class SiteController extends Controller
             return ['ok' => true, 'account_code' => $client->momentusOrgCode];
         }
         return ['ok' => false, 'errors' => $client->errors];
+    }
+
+    /**
+     * AJAX GET: return available organizations from Momentus.
+     */
+    public function actionAjaxGetOrganizations()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $search = trim((string) Yii::$app->request->get('search', ''));
+        $mc = MomentusClient::create();
+        return ['ok' => true, 'organizations' => $mc->getOrganizations($search !== '' ? $search : null)];
     }
 
     /**
