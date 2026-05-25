@@ -68,10 +68,11 @@ $this->params['breadcrumbs'][] = $this->title;
             [   'attribute' => 'AllowSaveFolder',
                 'value' => function($model) { return $model->AllowSaveFolder == 1 ? 'Yes' : 'No';}
             ],
+            'MomentusAPIUrl',
             'MomentusAPIKey',
             'MomentusSecretKey',
-            'MomentusAPIUrlAuth' ,
-            'MomentusAPIUrl' ,
+            'momentusOrgCode',
+            'MomentusAPIUrlAuth',
             [
                 'label' => 'Favourite Stencil',
                 'format' => 'raw',

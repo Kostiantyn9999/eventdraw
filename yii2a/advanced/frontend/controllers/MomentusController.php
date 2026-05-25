@@ -18,6 +18,7 @@ class MomentusController extends Controller
         return [
             '*',
             'https://momentusstaging.eventdrawus.com',
+            'https://momentusproduction.eventdrawus.com',
             'https://momentus.eventdrawus.com',
             'http://localhost',
         ];
@@ -95,7 +96,7 @@ class MomentusController extends Controller
         $orgCode = $this->getOrgCode();
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             $result = $client->searchSpaces($query, $page, $pageSize, $order, $orgCode);
 
             return $this->formatSpaces($result);
@@ -142,7 +143,7 @@ class MomentusController extends Controller
         $order = \Yii::$app->request->get('order');
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             return $client->searchNotes($search, $page, $pageSize, $order);
         } catch (\Exception $exception) {
             \Yii::error($exception->getMessage(), __METHOD__);
@@ -156,7 +157,7 @@ class MomentusController extends Controller
         \Yii::$app->response->format = Response::FORMAT_JSON;
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             return $client->getNote($type, $code, $sequenceNumber, $orgCode);
         } catch (\Exception $exception) {
             \Yii::error($exception->getMessage(), __METHOD__);
@@ -176,7 +177,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             return $client->createNote($payload);
         } catch (\Exception $exception) {
             \Yii::error($exception->getMessage(), __METHOD__);
@@ -196,7 +197,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             return $client->updateNote($type, $code, $sequenceNumber, $payload, $orgCode);
         } catch (\Exception $exception) {
             \Yii::error($exception->getMessage(), __METHOD__);
@@ -210,7 +211,7 @@ class MomentusController extends Controller
         \Yii::$app->response->format = Response::FORMAT_JSON;
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             $client->deleteNote($type, $code, $sequenceNumber, $orgCode);
             \Yii::$app->response->statusCode = 204;
             return null;
@@ -364,7 +365,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             $row = $client->getEventRowForFloorplan($eventId, $orgCode);
             if ($row === null) {
                 return [

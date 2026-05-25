@@ -36,10 +36,21 @@ use yii\web\IdentityInterface;
  * @property string $clientNotes
  * @property string $MomentusAPIUrlAuth
  * @property string $MomentusAPIUrl
+ * @property string|null $momentusOrgCode
  * @property int $AllowSaveFolder
  */
 class Client extends \yii\db\ActiveRecord
 {
+    /**
+     * Hostnames where Momentus Enterprise API credentials are read from the logged-in user's client row.
+     */
+    public static function hostsUsingPerClientMomentusConfig()
+    {
+        return [
+            'momentusproduction.eventdrawus.com',
+            // 'yii2a'
+        ];
+    }
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
@@ -199,6 +210,8 @@ public function getTypeName()
             [['MomentusAPIUrlAuth'], 'default', 'value' => null],
             ['MomentusAPIUrl', 'string', 'max' => 255],
             [['MomentusAPIUrl'], 'default', 'value' => null],
+            ['momentusOrgCode', 'string', 'max' => 50],
+            [['momentusOrgCode'], 'default', 'value' => null],
             [['AllowSaveFolder'], 'number', 'min' => 0],
             ['AllowSaveFolder', 'default', 'value' => 0]
              
@@ -322,14 +335,28 @@ public function getTypeName()
             'AllowShare'=> 'Allow Share Edit Plan',
             'siDate' => 'SI Date',
             'ClientVenueType' => 'Venue Type',
-            'AllowMomentus' => 'Momentus Elite',
-            'MomentusAPIKey' => 'Momentus Client ID',
-            'MomentusSecretKey' => 'Momentus Client Secret',
+            'AllowMomentus' => 'Momentus Enterprise',
+            'MomentusAPIKey' => 'Momentus API Token',
+            'MomentusSecretKey' => 'Momentus Subscription Key',
             'clientNotes' => '........Notes..........',
-            'MomentusAPIUrlAuth' => 'Momentus API Url Auth',
-            'MomentusAPIUrl' => 'Momentus API Url',
+            'MomentusAPIUrlAuth' => 'Momentus Elite Auth URL (Elite only)',
+            'MomentusAPIUrl' => 'Momentus Enterprise API Base URL',
+            'momentusOrgCode' => 'Momentus Organisation Code',
             'AllowSaveFolder'=> 'Allow Save to Folder'
         ];
+    }
+
+    /**
+     * Returns this client's Momentus Account Code (OrgCode).
+     * Falls back to the global params value if not set on the client.
+     */
+    public function getMomentusOrgCode()
+    {
+        $code = trim((string) $this->momentusOrgCode);
+        if ($code !== '') {
+            return $code;
+        }
+        return trim((string) (\Yii::$app->params['momentus']['orgCode'] ?? ''));
     }
 
     public function saveTemplates()
@@ -404,6 +431,55 @@ public function getTypeName()
         } else {
             return false;
         }
+    }
+
+    /**
+     * Enterprise Connect API settings stored on the client row (TEST/PROD per client).
+     *
+     * Field mapping (repurposed from Elite OAuth columns):
+     * - MomentusAPIUrl      -> baseUrl
+     * - MomentusAPIKey      -> apiToken
+     * - MomentusSecretKey   -> subscriptionKey
+     * - momentusOrgCode     -> orgCode
+     *
+     * @return array<string, string>
+     */
+    public function getMomentusEnterpriseConfig()
+    {
+        $config = [];
+
+        $baseUrl = trim((string) $this->MomentusAPIUrl);
+        if ($baseUrl !== '') {
+            $config['baseUrl'] = rtrim($baseUrl, '/');
+        }
+
+        $apiToken = trim((string) $this->MomentusAPIKey);
+        if ($apiToken !== '') {
+            $config['apiToken'] = $apiToken;
+        }
+
+        $subscriptionKey = trim((string) $this->MomentusSecretKey);
+        if ($subscriptionKey !== '') {
+            $config['subscriptionKey'] = $subscriptionKey;
+        }
+
+        $orgCode = trim((string) $this->momentusOrgCode);
+        if ($orgCode !== '') {
+            $config['orgCode'] = $orgCode;
+        }
+
+        return $config;
+    }
+
+    public function hasMomentusEnterpriseConfig()
+    {
+        if ((int) $this->AllowMomentus !== 1) {
+            return false;
+        }
+
+        $config = $this->getMomentusEnterpriseConfig();
+
+        return isset($config['baseUrl'], $config['apiToken'], $config['subscriptionKey']);
     }
 
     /**

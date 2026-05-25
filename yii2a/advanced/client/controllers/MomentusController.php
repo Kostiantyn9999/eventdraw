@@ -64,6 +64,7 @@ class MomentusController extends Controller
                         'http://yii2a',
                         'http://localhost',
                         'https://momentusstaging.eventdrawus.com',
+                        'https://momentusproduction.eventdrawus.com',
                         'https://momentusqa.eventdrawusqa.com',
                         'https://momentus.eventdrawus.com',
                     ],
@@ -224,7 +225,7 @@ class MomentusController extends Controller
         $orgCode = trim((string) Yii::$app->request->get('org_code', ''));
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             $result = $client->searchResources($query, $page, $pageSize, $order, $orgCode);
             
             return $this->formatResources($result);
@@ -588,7 +589,7 @@ class MomentusController extends Controller
         $odataQuery = trim((string) Yii::$app->request->get('ODataQuery', ''));
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             return $client->listServiceOrders($odataQuery);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -612,7 +613,7 @@ class MomentusController extends Controller
         $odataQuery = trim((string) Yii::$app->request->get('ODataQuery', ''));
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             return $client->listServiceOrderItems($odataQuery);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -638,7 +639,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             return $client->getServiceOrderItem($orgCode, $orderNumber, $orderLineNumber);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -666,7 +667,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             return $client->addServiceOrderItem($payload);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -706,7 +707,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             return $client->updateServiceOrderItem($orgCode, $orderNumber, $orderLineNumber, $payload);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -732,7 +733,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             $client->deleteServiceOrderItem($orgCode, $orderNumber, $orderLineNumber);
             return ['success' => true];
         } catch (\Exception $e) {
@@ -761,7 +762,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             return $client->saveNewItemToExistingPackage($payload);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -789,7 +790,7 @@ class MomentusController extends Controller
         $defaultFunctionId = Yii::$app->request->get('default_function_id');
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             $totalResult = $client->listFunctions($orgCode, $eventId, null);
 
             $items = isset($totalResult['value']) ? $totalResult['value'] : (is_array($totalResult) ? $totalResult : []);
@@ -824,7 +825,7 @@ class MomentusController extends Controller
         $priceListCodeForClient = ($defaultPriceList !== '') ? $defaultPriceList : null;
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             $totalResult = $client->listPriceLists($odataQuery ?: null, $orgCode, $priceListCodeForClient);
             $filteredResult = $client->listPriceLists($odataQuery ?: null, $orgCode);
 
@@ -857,7 +858,7 @@ class MomentusController extends Controller
         $orgCode = $this->getOrgCode();
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             return $client->searchPriceListItems($search, $orgCode);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -883,7 +884,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             return $client->getPriceListItem($orgCode, $priceList, $sequence);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -911,7 +912,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             return $client->addPriceListItem($payload);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -946,7 +947,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             return $client->updatePriceListItem($orgCode, $priceList, $sequence, $payload);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -972,7 +973,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             $client->deletePriceListItem($orgCode, $priceList, $sequence);
             return ['success' => true];
         } catch (\Exception $e) {
@@ -1002,7 +1003,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             $result = $client->listPriceListItemsByCode($priceList, $orgCode);
             $items = $this->extractItems(is_array($result) ? $result : []);
 
@@ -1056,7 +1057,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             $result = $client->getEventSpaceDiagram($id);
             return $result;
         } catch (\Exception $e) {
@@ -1100,7 +1101,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = new MomentusClient();
+            $client = MomentusClient::create();
             $result = $client->updateEventSpaceDiagramUrl($eventSpaceDiagramId, $eventdrawUrl, $orgCode, $eventdrawSvgUrl);
             return [
                 'success' => true,
@@ -1297,7 +1298,7 @@ class MomentusController extends Controller
             return ['error' => 'org_code is required (or configure params[momentus][orgCode]).'];
         }
 
-        $client = new MomentusClient();
+        $client = MomentusClient::create();
         $mapping = MomentusServiceOrder::findBySpaceDiagram($spaceDiagramId, $orgCode);
 
         try {
@@ -1538,7 +1539,7 @@ class MomentusController extends Controller
             ];
         }
 
-        $client = new MomentusClient();
+        $client = MomentusClient::create();
 
         try {
             $client->getServiceOrder($orgCode, $mapping->momentus_order_number);
@@ -1716,7 +1717,7 @@ class MomentusController extends Controller
             return ['error' => 'order_number is required.'];
         }
 
-        $client = new MomentusClient();
+        $client = MomentusClient::create();
         $results = ['added' => [], 'updated' => [], 'deleted' => [], 'skipped' => [], 'errors' => []];
 
         // 0) Resolve StartDate/EndDate from the function if not provided

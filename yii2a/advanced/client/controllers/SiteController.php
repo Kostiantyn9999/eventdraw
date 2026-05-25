@@ -121,7 +121,7 @@ class SiteController extends Controller
         if ($code === '') {
             return ['ok' => false, 'name' => null];
         }
-        $mc = new MomentusClient(['orgCode' => $code]);
+        $mc = MomentusClient::create(['orgCode' => $code]);
         $name = $mc->getOrganizationName($code);
         return ['ok' => true, 'name' => $name];
     }

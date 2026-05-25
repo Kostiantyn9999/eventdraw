@@ -105,6 +105,19 @@ $expiryDate = $model->isNewRecord ? date('M d, yy', strtotime('+30 days')) : $mo
     </div>
 
     <div class="row">
+        <div class="col-sm-12">
+            <p class="help-block" style="margin-bottom: 10px;">
+                Momentus Enterprise (Connect API): use <strong>API Base URL</strong>, <strong>API Token</strong>, and <strong>Subscription Key</strong> for each client&rsquo;s TEST database.
+                Set <strong>Organisation Code</strong> to the client&rsquo;s Momentus org. Auth URL is only used for legacy Momentus Elite OAuth.
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-sm-3">
+            <?= $form->field($model, 'MomentusAPIUrl')->textInput(['maxlength' => true, 'placeholder' => 'https://api-sandbox.gomomentus.com/enterprise/connect/api']) ?>
+        </div>
 
         <div class="col-sm-3">
             <?= $form->field($model, 'MomentusAPIKey')->textInput(['maxlength' => true]) ?>
@@ -114,14 +127,17 @@ $expiryDate = $model->isNewRecord ? date('M d, yy', strtotime('+30 days')) : $mo
             <?= $form->field($model, 'MomentusSecretKey')->textInput(['maxlength' => true]) ?>
         </div>
 
-    <div class="col-sm-3">
+        <div class="col-sm-3">
+            <?= $form->field($model, 'momentusOrgCode')->textInput(['maxlength' => true]) ?>
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        <div class="col-sm-6">
             <?= $form->field($model, 'MomentusAPIUrlAuth')->textInput(['maxlength' => true]) ?>
         </div>
-
-        <div class="col-sm-3">
-            <?= $form->field($model, 'MomentusAPIUrl')->textInput(['maxlength' => true]) ?>
-        </div>
-
 
     </div>
 

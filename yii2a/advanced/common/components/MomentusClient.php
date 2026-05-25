@@ -2,6 +2,7 @@
 
 namespace common\components;
 
+use common\models\Client;
 use RuntimeException;
 
 class MomentusClient
@@ -13,6 +14,14 @@ class MomentusClient
     private $timeout;
     private $diagramEndpoint;
 
+    /**
+     * Preferred factory — resolves per-client credentials on production hosts.
+     */
+    public static function create(array $config = [])
+    {
+        return new self($config);
+    }
+
     public function __construct(array $config = [])
     {
         $defaultConfig = [
@@ -23,8 +32,9 @@ class MomentusClient
             'timeout' => 20,
             'isMomentusQa' => false,
         ];
-        $hostName = (string) \Yii::$app->request->hostName;
-        if (class_exists('\Yii', false) && \Yii::$app !== null) {
+        $hostName = '';
+        if (class_exists('\Yii', false) && \Yii::$app !== null && \Yii::$app->request !== null) {
+            $hostName = (string) \Yii::$app->request->hostName;
             $paramsConfig = (array) \Yii::$app->params;
             if ($hostName === 'momentusqa.eventdrawusqa.com' || $hostName === 'momentusadmin.eventdrawusqa.com') {
                 $paramsConfig['momentus'] = $paramsConfig['momentusqa'];
@@ -32,6 +42,11 @@ class MomentusClient
             if (isset($paramsConfig['momentus']) && is_array($paramsConfig['momentus'])) {
                 $defaultConfig = array_merge($defaultConfig, $paramsConfig['momentus']);
             }
+        }
+
+        $clientConfig = self::resolveClientMomentusConfig($config, $hostName);
+        if ($clientConfig !== []) {
+            $defaultConfig = array_merge($defaultConfig, $clientConfig);
         }
 
         $config = array_merge($defaultConfig, $config);
@@ -42,6 +57,42 @@ class MomentusClient
         $this->orgCode = (string) $config['orgCode'];
         $this->timeout = (int) $config['timeout'];
         $this->diagramEndpoint = '/ExternalDiagrams';
+    }
+
+    /**
+     * On beta/production hosts, load apiToken, subscriptionKey, baseUrl, orgCode from the client row.
+     *
+     * @return array<string, string>
+     */
+    private static function resolveClientMomentusConfig(array $config, $hostName)
+    {
+        if (!class_exists('\Yii', false) || \Yii::$app === null) {
+            return [];
+        }
+
+        $usePerClient = in_array($hostName, Client::hostsUsingPerClientMomentusConfig(), true);
+        if (!$usePerClient) {
+            return [];
+        }
+
+        $clientId = isset($config['clientId']) ? (int) $config['clientId'] : 0;
+        if ($clientId <= 0 && \Yii::$app->user !== null && !\Yii::$app->user->isGuest) {
+            $identity = \Yii::$app->user->identity;
+            if ($identity !== null && isset($identity->clientid)) {
+                $clientId = (int) $identity->clientid;
+            }
+        }
+
+        if ($clientId <= 0) {
+            return [];
+        }
+
+        $client = Client::findOne($clientId);
+        if ($client === null || !$client->hasMomentusEnterpriseConfig()) {
+            return [];
+        }
+
+        return $client->getMomentusEnterpriseConfig();
     }
 
     public function searchSpaces($searchString, $page = null, $pageSize = null, $order = null, $orgCode = null)

@@ -256,6 +256,18 @@ class User extends ActiveRecord implements IdentityInterface
         return static::findOne(['username' => $username]);
     }
 
+    public function getClientAllowShare()
+    {
+       $Client=Client::findOne(['id' => $this->clientid]);
+        if ($Client){
+            return $Client->AllowShare;
+        }
+        else{
+            return false;
+        }
+
+    }
+
     public function getClientShowMaxCapPlans()
     {
         $Client = Client::findOne(['id' => $this->clientid]);
@@ -331,6 +343,55 @@ class User extends ActiveRecord implements IdentityInterface
             if ($Client->AllowFavouriteStencils > 0) {
                 $retValue = $this->clientid;
             }
+        }
+
+        return $retValue;
+    }
+
+    public function getClientAllow3D()
+    {
+        $retValue = 0;
+
+        $Client=Client::findOne(['id' => $this->clientid]);
+        if ($Client){
+            if ($Client->Allow3D > 0) {
+                $retValue = $this->clientid;
+            }
+        }
+
+        return $retValue;
+    }
+    
+    public function getClientAllowSaveFolder()
+    {
+        $retValue = 0;
+
+        $Client=Client::findOne(['id' => $this->clientid]);
+        if ($Client){
+            if ($Client->AllowSaveFolder > 0) {
+                $retValue =  $this->clientid;
+            }
+        }
+
+        return $retValue;
+    }
+    
+    public function getClientAllowImportPDF()
+    {
+        $retValue = 0;
+
+        $Client=Client::findOne(['id' => $this->clientid]);
+        if ($Client){
+            if ($Client->AllowImportPdf > 0) {
+                $retValue = $Client->AllowImportPdf;
+            }
+        }
+
+        //01Feb2022
+        //allow import PDF for all Event Organisers
+        if ($this->userType == 2)
+        {
+           $retValue = 1;
         }
 
         return $retValue;
@@ -604,6 +665,12 @@ public function getTypeName()
         return static::findOne([
             'verification_token' => $token,
             'status' => self::STATUS_INACTIVE
+        ]);
+    }
+
+    public static function findByEmail($email) {
+        return static::findOne([
+            'email' => $email
         ]);
     }
 
@@ -1024,15 +1091,15 @@ if ($userInfo['UserDoNotEmail'] == 1)
 
         //set special bulltin board messages for new user
 
-            // $bulletBoardUser1 = new \common\models\BulletBoardUsers();
-            // $bulletBoardUser1->user_id = $this->id;
-            // $bulletBoardUser1->bullet_board_id =30;
-            // $bulletBoardUser1->save();
+            $bulletBoardUser1 = new \common\models\BulletBoardUsers();
+            $bulletBoardUser1->user_id = $this->id;
+            $bulletBoardUser1->bullet_board_id =30;
+            $bulletBoardUser1->save();
 
-            // $bulletBoardUser2 = new \common\models\BulletBoardUsers();
-            // $bulletBoardUser2->user_id = $this->id;
-            // $bulletBoardUser2->bullet_board_id =31;
-            // $bulletBoardUser2->save();
+            $bulletBoardUser2 = new \common\models\BulletBoardUsers();
+            $bulletBoardUser2->user_id = $this->id;
+            $bulletBoardUser2->bullet_board_id =31;
+            $bulletBoardUser2->save();
 
             // $bulletBoardUser3 = new \common\models\BulletBoardUsers();
             // $bulletBoardUser3->user_id = $this->id;
@@ -1043,6 +1110,11 @@ if ($userInfo['UserDoNotEmail'] == 1)
     
     public function beforeSave($insert)
     {
+        if ($insert) {
+            //set username as email for new users
+            $this->username = $this->email;
+        }
+
         if (parent::beforeSave($insert)) {
             if ($this->new_password) {
                 $this->setPassword($this->new_password);
@@ -1054,6 +1126,30 @@ if ($userInfo['UserDoNotEmail'] == 1)
 //                    $this->clientid = Yii::$app->user->identity->clientid;
 //                }
 //            }
+
+            //set expiry date as 60 days from current date
+            if ($insert)
+            {
+
+                if ($this->expiry_date)
+                {
+                
+                }
+                else
+                {
+                    if ($this->status == 11){
+                $time = date("Y-m-d");  
+                $dt2 = strtotime( "+12 month", strtotime( $time ) );
+                $this->expiry_date = $dt2;
+                    }
+                }
+              
+
+               $this->last_email_date = date('Y-m-d H:i:s');
+                 $this->email_count = 1;
+                 EmailHelper::sendWelcomeEmail($this);
+
+            }
             $this->userfullname = $this->firstname . ' ' . $this->surname;
             return true;
         } else {
