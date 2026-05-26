@@ -31,6 +31,10 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
 
+    <?= $form->field($model, 'ed_shapes_category')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'shapetypes')->textInput(['maxlength' => true])->hint('Internal geometry type (ShapeType on canvas), if different from shape name.') ?>
+
     <?= $form->field($model, 'model')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'category')->textInput() ?>
@@ -38,8 +42,6 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'elevate')->textInput() ?>
 
     <?= $form->field($model, 'height')->textInput() ?>
-
-    <?= $form->field($model, 'shapetypes')->textInput(['maxlength' => true]) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

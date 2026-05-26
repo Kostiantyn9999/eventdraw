@@ -39,6 +39,11 @@ $unassignMappingUrl = Url::to(['momentus/unassign-mapping']);
     .org-toolbar input { padding: 5px 10px; width: 120px; border: 1px solid #ccc; border-radius: 3px; }
     .org-toolbar button { padding: 5px 14px; background: #007bff; color: #fff; border: none; border-radius: 3px; cursor: pointer; margin-left: 8px; }
     .org-toolbar button:hover { background: #0069d9; }
+    .import-toolbar { margin-bottom: 15px; padding: 12px 15px; background: #fff8e6; border: 1px solid #f0d78c; border-radius: 4px; }
+    .import-toolbar label { font-weight: 600; margin-right: 8px; display: inline-block; min-width: 140px; }
+    .import-toolbar input[type="text"],
+    .import-toolbar input[type="file"] { margin-right: 10px; }
+    .import-toolbar .hint { display: block; margin-top: 8px; color: #666; font-size: 12px; }
 </style>
 
 <div class="row-full">
@@ -48,6 +53,55 @@ $unassignMappingUrl = Url::to(['momentus/unassign-mapping']);
     <p>
         <?= Html::a('Create Shape', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
+
+    <div class="import-toolbar">
+        <h4 style="margin-top:0;">Import shapes from XML</h4>
+        <?= Html::beginForm(['momentus/import-shapes-xml'], 'post', ['enctype' => 'multipart/form-data']) ?>
+            <?php if ($defaultOrgCode !== ''): ?>
+                <?= Html::hiddenInput('org_code', $defaultOrgCode) ?>
+            <?php endif; ?>
+            <div style="margin-bottom:8px;">
+                <label for="xml_file">Stencil XML file</label>
+                <input type="file" name="xml_file" id="xml_file" accept=".xml,text/xml,application/xml" required>
+            </div>
+            <div style="margin-bottom:8px;">
+                <label for="ed_shapes_category">ED Shapes Category</label>
+                <input type="text" name="ed_shapes_category" id="ed_shapes_category" placeholder="e.g. Te Pae - Event Sets" style="width:320px;">
+            </div>
+            <div style="margin-bottom:8px;">
+                <label>
+                    <input type="checkbox" name="update_existing" value="1">
+                    Update category / shape type on existing shape names
+                </label>
+            </div>
+            <button type="submit" class="btn btn-warning">Import XML</button>
+            <span class="hint">
+                ED Shapes Category is filled from the selected file name (without <code>.xml</code>) when you choose a file; you can edit it before importing.
+                If you clear it, the server still uses the uploaded file’s original name.
+                Shape names come from each stencil’s <code>ShapeName</code> (or library title).
+                Internal geometry type is stored in <code>shapetypes</code> when present in the XML.
+            </span>
+        <?= Html::endForm() ?>
+    </div>
+    <script>
+    (function () {
+        var fileInput = document.getElementById('xml_file');
+        var categoryInput = document.getElementById('ed_shapes_category');
+        if (!fileInput || !categoryInput) {
+            return;
+        }
+        fileInput.addEventListener('change', function () {
+            if (!fileInput.files || !fileInput.files.length) {
+                return;
+            }
+            var name = fileInput.files[0].name || '';
+            var base = name.replace(/\.[^.]+$/, '');
+            if (base && !categoryInput.value) {
+                categoryInput.value = base;
+            }
+        });
+    })();
+    </script>
 
     <div class="org-toolbar">
         <?= Html::beginForm(['momentus/shape-manager'], 'get') ?>
@@ -81,6 +135,14 @@ $unassignMappingUrl = Url::to(['momentus/unassign-mapping']);
                 'contentOptions' => ['data-col' => 'shape-name'],
             ],
             'description',
+            [
+                'attribute' => 'ed_shapes_category',
+                'label' => 'ED Shapes Category',
+            ],
+            [
+                'attribute' => 'shapetypes',
+                'label' => 'Shape Type (geometry)',
+            ],
             [
                 'attribute' => 'mapping_resource_description',
                 'label' => 'MT Resource Description',

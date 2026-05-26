@@ -9,6 +9,8 @@ use common\models\MomentusShapeSearch;
 use common\models\MomentusServiceOrder;
 use common\models\ShapeMomentusMapping;
 use common\components\MomentusClient;
+use common\components\ShapeXmlImportService;
+use yii\web\UploadedFile;
 use Yii;
 use yii\helpers\Url;
 use yii\filters\AccessControl;
@@ -119,6 +121,7 @@ class MomentusController extends Controller
                     [
                         'actions' => [
                             'shape-manager',
+                            'import-shapes-xml',
                             'view',
                             'create',
                             'update',
@@ -157,6 +160,7 @@ class MomentusController extends Controller
                     'assign-mapping' => ['POST'],
                     'unassign-mapping' => ['POST'],
                     'add-shape' => ['POST'],
+                    'import-shapes-xml' => ['POST'],
                     // Service Orders
                     'list-service-orders' => ['GET'],
                     'list-service-order-items' => ['GET'],
@@ -287,6 +291,73 @@ class MomentusController extends Controller
             'dataProvider' => $dataProvider,
             'orgCode' => $orgCode,
         ]);
+    }
+
+    /**
+     * Import draw.io stencil library XML into the shapes catalog (Shapes Manager).
+     */
+    public function actionImportShapesXml()
+    {
+        $request = Yii::$app->request;
+        $orgCode = $this->getOrgCode();
+        $redirectParams = ['shape-manager'];
+        if ($orgCode !== '') {
+            $redirectParams['org_code'] = $orgCode;
+        }
+
+        $file = UploadedFile::getInstanceByName('xml_file');
+        if ($file === null) {
+            Yii::$app->session->setFlash('error', 'Please choose an XML file to import.');
+            return $this->redirect($redirectParams);
+        }
+
+        if (strtolower($file->extension) !== 'xml') {
+            Yii::$app->session->setFlash('error', 'Only .xml stencil library files are supported.');
+            return $this->redirect($redirectParams);
+        }
+
+        $categoryOverride = trim((string) $request->post('ed_shapes_category', ''));
+        $updateExisting = (bool) $request->post('update_existing', false);
+
+        $service = new ShapeXmlImportService();
+        $parsed = $service->parseLibraryFile(
+            $file->tempName,
+            $categoryOverride !== '' ? $categoryOverride : null,
+            $file->name
+        );
+
+        if (!empty($parsed['errors']) && empty($parsed['items'])) {
+            Yii::$app->session->setFlash('error', implode(' ', $parsed['errors']));
+            return $this->redirect($redirectParams);
+        }
+
+        $clientId = $this->usesClientShapeScoping() ? $this->getClientId() : null;
+        $imported = $service->importItems($parsed['items'], $parsed['category'], $clientId, $updateExisting);
+
+        $messages = [];
+        $messages[] = sprintf(
+            'Imported %d shape(s) into category "%s".',
+            $imported['created'],
+            $parsed['category'] !== '' ? $parsed['category'] : '(none)'
+        );
+        if ($imported['updated'] > 0) {
+            $messages[] = sprintf('Updated %d existing shape(s).', $imported['updated']);
+        }
+        if ($imported['skipped'] > 0) {
+            $messages[] = sprintf('Skipped %d duplicate shape name(s).', $imported['skipped']);
+        }
+
+        $warnings = array_merge($parsed['errors'], $imported['errors']);
+        if (!empty($warnings)) {
+            $messages[] = 'Warnings: ' . implode(' ', array_slice($warnings, 0, 5));
+            if (count($warnings) > 5) {
+                $messages[] = sprintf('(%d more warnings)', count($warnings) - 5);
+            }
+        }
+
+        Yii::$app->session->setFlash($imported['created'] > 0 || $imported['updated'] > 0 ? 'success' : 'warning', implode(' ', $messages));
+
+        return $this->redirect($redirectParams);
     }
 
     public function actionView($id)
