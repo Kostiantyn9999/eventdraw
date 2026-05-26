@@ -1265,10 +1265,10 @@ class MomentusController extends Controller
             return ['ok' => false, 'error' => 'empty_svg'];
         }
 
-        $evnt = Event::findOne(['id' => $eventid]);
-        if (!$evnt || (int) $evnt->userid !== $userid) {
-            return ['ok' => false, 'error' => 'forbidden'];
-        }
+        // $evnt = Event::findOne(['id' => $eventid]);
+        // if (!$evnt || (int) $evnt->userid !== $userid) {
+        //     return ['ok' => false, 'error' => 'forbidden'];
+        // }
 
         try {
             $url = $this->saveEventSvg_S3($eventid, $svg);
