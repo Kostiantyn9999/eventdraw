@@ -3,6 +3,7 @@
 namespace client\controllers;
 
 use Yii;
+use common\models\Client;
 use common\models\Template;
 use common\models\TemplateSearch;
 use yii\filters\AccessControl;
@@ -87,10 +88,13 @@ public function actionAjaxSetMomentusSpace()
         $m->momentusSpaceCode = null;
         $m->momentusSpaceDescr = null;
     } else {
-        $other = Template::find()
+        $otherQuery = Template::find()
             ->where(['momentusSpaceCode' => $code])
-            ->andWhere(['<>', 'id', $templateId])
-            ->one();
+            ->andWhere(['<>', 'id', $templateId]);
+        if (!Yii::$app->user->isGuest && Client::usesClientResourceScoping()) {
+            $otherQuery->andWhere(['clientid' => Yii::$app->user->identity->clientid]);
+        }
+        $other = $otherQuery->one();
         if ($other !== null) {
             return [
                 'ok' => false,
@@ -159,7 +163,11 @@ public function actionAjaxSetMomentusSpace()
     public function actionIndex()
     {
         $searchModel = new TemplateSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        if (Client::usesClientResourceScoping()) {
+            $dataProvider = $searchModel->searchClient(Yii::$app->request->queryParams);
+        } else {
+            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        }
         $dataProvider->pagination->pageSize=50;
 
         return $this->render('index', [
@@ -190,8 +198,17 @@ public function actionAjaxSetMomentusSpace()
     {
         $model = new Template();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if (Client::usesClientResourceScoping()) {
+            $model->clientid = Yii::$app->user->identity->clientid;
+        }
+
+        if ($model->load(Yii::$app->request->post())) {
+            if (Client::usesClientResourceScoping()) {
+                $model->clientid = Yii::$app->user->identity->clientid;
+            }
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->render('create', [
@@ -210,8 +227,13 @@ public function actionAjaxSetMomentusSpace()
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+            if (Client::usesClientResourceScoping()) {
+                $model->clientid = Yii::$app->user->identity->clientid;
+            }
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->render('update', [
@@ -242,7 +264,11 @@ public function actionAjaxSetMomentusSpace()
      */
     protected function findModel($id)
     {
-        if (($model = Template::findOne($id)) !== null) {
+        if (Client::usesClientResourceScoping()) {
+            if (($model = Template::findOne(['id' => $id, 'clientid' => Yii::$app->user->identity->clientid])) !== null) {
+                return $model;
+            }
+        } elseif (($model = Template::findOne($id)) !== null) {
             return $model;
         }
 

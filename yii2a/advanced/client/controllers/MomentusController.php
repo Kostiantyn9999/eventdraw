@@ -3,6 +3,7 @@
 namespace client\controllers;
 
 use common\models\Event;
+use common\models\Client;
 use common\models\MomentusShape;
 use common\models\MomentusShapeSearch;
 use common\models\MomentusServiceOrder;
@@ -212,6 +213,37 @@ class MomentusController extends Controller
         return trim((string) (\Yii::$app->params['momentus']['orgCode'] ?? ''));
     }
 
+    /**
+     * Logged-in user's client id for resource scoping.
+     */
+    private function getClientId()
+    {
+        if (\Yii::$app->user->isGuest) {
+            return null;
+        }
+
+        $clientId = (int) \Yii::$app->user->identity->clientid;
+        return $clientId > 0 ? $clientId : null;
+    }
+
+    /**
+     * Per-client shape scoping: production client admin host + clientid column present.
+     */
+    private function usesClientShapeScoping()
+    {
+        return Client::usesClientResourceScoping() && MomentusShape::hasClientIdColumn();
+    }
+
+    /**
+     * Set clientid on a shape when scoping is active for this host.
+     */
+    private function assignShapeClientId(MomentusShape $model)
+    {
+        if ($this->usesClientShapeScoping()) {
+            $model->clientid = $this->getClientId();
+        }
+    }
+
     public function actionSearchResources()
     {
         \Yii::$app->response->format = Response::FORMAT_JSON;
@@ -240,7 +272,15 @@ class MomentusController extends Controller
     {
         $searchModel = new MomentusShapeSearch();
         $orgCode = $this->getOrgCode();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $orgCode);
+        if ($this->usesClientShapeScoping()) {
+            $dataProvider = $searchModel->searchClient(
+                Yii::$app->request->queryParams,
+                $this->getClientId(),
+                $orgCode
+            );
+        } else {
+            $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $orgCode);
+        }
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -259,9 +299,13 @@ class MomentusController extends Controller
     public function actionCreate()
     {
         $model = new MomentusShape();
+        $this->assignShapeClientId($model);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+            $this->assignShapeClientId($model);
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->render('create', [
@@ -279,12 +323,15 @@ class MomentusController extends Controller
             $fallbackUrl['org_code'] = $orgCode;
         }
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $returnUrl = trim((string) $request->post('return_url', $request->get('return_url', '')));
-            if ($returnUrl !== '' && Url::isRelative($returnUrl)) {
-                return $this->redirect($returnUrl);
+        if ($model->load(Yii::$app->request->post())) {
+            $this->assignShapeClientId($model);
+            if ($model->save()) {
+                $returnUrl = trim((string) $request->post('return_url', $request->get('return_url', '')));
+                if ($returnUrl !== '' && Url::isRelative($returnUrl)) {
+                    return $this->redirect($returnUrl);
+                }
+                return $this->redirect($fallbackUrl);
             }
-            return $this->redirect($fallbackUrl);
         }
 
         return $this->render('update', [
@@ -2032,7 +2079,15 @@ class MomentusController extends Controller
 
     protected function findModel($id)
     {
-        if (($model = MomentusShape::findOne($id)) !== null) {
+        $query = MomentusShape::find()->where(['id' => $id]);
+        if ($this->usesClientShapeScoping()) {
+            $clientId = $this->getClientId();
+            if ($clientId !== null) {
+                $query->andWhere(['clientid' => $clientId]);
+            }
+        }
+
+        if (($model = $query->one()) !== null) {
             return $model;
         }
 

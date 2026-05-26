@@ -51,6 +51,36 @@ class Client extends \yii\db\ActiveRecord
             // 'yii2a'
         ];
     }
+
+    /**
+     * Client admin hosts where shapes/templates are scoped to the logged-in client.
+     */
+    public static function hostsUsingClientResourceScoping()
+    {
+        return [
+            'clientmomentusproduction.eventdrawus.com',
+        ];
+    }
+
+    /**
+     * Whether the current (or given) host uses per-client shape/template scoping.
+     */
+    public static function usesClientResourceScoping($hostName = null)
+    {
+        if ($hostName === null) {
+            if (!isset(\Yii::$app->request)) {
+                return false;
+            }
+            $hostName = \Yii::$app->request->hostName;
+        }
+
+        return in_array(
+            strtolower((string) $hostName),
+            array_map('strtolower', static::hostsUsingClientResourceScoping()),
+            true
+        );
+    }
+
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;

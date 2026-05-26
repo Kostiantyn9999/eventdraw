@@ -112,4 +112,28 @@ class MomentusShapeSearch extends MomentusShape
 
         return $dataProvider;
     }
+
+    /**
+     * Client-scoped search for the client admin app.
+     *
+     * @param array $params query params
+     * @param int $clientId owning client
+     * @param string $orgCode org_code to LEFT JOIN mapping table (empty = no join)
+     */
+    public function searchClient($params, $clientId, $orgCode = '')
+    {
+        $dataProvider = $this->search($params, $orgCode);
+
+        if (!Client::usesClientResourceScoping() || !static::hasClientIdColumn()) {
+            return $dataProvider;
+        }
+
+        if ($clientId !== null) {
+            $dataProvider->query->andWhere(['s.clientid' => $clientId]);
+        } else {
+            $dataProvider->query->andWhere('0=1');
+        }
+
+        return $dataProvider;
+    }
 }

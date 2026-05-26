@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use unclead\multipleinput\MultipleInput;
+use common\models\Client;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Template */
@@ -16,13 +17,6 @@ use unclead\multipleinput\MultipleInput;
 
     );
 
-    $clients = \common\models\Client::find()->all();
-
-    $items = ArrayHelper::map($clients,'id','clientName');
-    $params = [
-        'prompt' => '-- Select client --'
-    ];
-
     ?>
 
 
@@ -30,9 +24,15 @@ use unclead\multipleinput\MultipleInput;
 
     <?= $form->field($model, 'templateName')->textInput(['maxlength' => true]) ?>
 
-    <?php
-    echo $form->field($model, 'clientid')->dropDownList($items,$params);
-    ?>
+    <?php if (Client::usesClientResourceScoping()): ?>
+        <?= Html::activeHiddenInput($model, 'clientid') ?>
+    <?php else: ?>
+        <?php
+        $clients = \common\models\Client::find()->all();
+        $items = ArrayHelper::map($clients, 'id', 'clientName');
+        echo $form->field($model, 'clientid')->dropDownList($items, ['prompt' => '-- Select client --']);
+        ?>
+    <?php endif; ?>
     
     <?= $form->field($model, 'xmlCode')->textarea(['rows' => 6]) ?>
 

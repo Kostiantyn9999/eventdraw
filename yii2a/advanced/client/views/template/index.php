@@ -32,7 +32,12 @@ if (!Yii::$app->user->isGuest && !empty(Yii::$app->user->identity->clientid)) {
 $momentusOrgJson = json_encode($momentusOrgForSearch);
 
 $momentusSpaceOwners = [];
-foreach (Template::find()->asArray()->all() as $row) {
+$templateOwnerQuery = Template::find();
+if (Client::usesClientResourceScoping()) {
+    $clientId = !Yii::$app->user->isGuest ? (int) Yii::$app->user->identity->clientid : 0;
+    $templateOwnerQuery->where(['clientid' => $clientId]);
+}
+foreach ($templateOwnerQuery->asArray()->all() as $row) {
     $c = trim((string) ($row['momentusSpaceCode'] ?? ''));
     if ($c !== '') {
         $momentusSpaceOwners[$c] = (int) $row['id'];

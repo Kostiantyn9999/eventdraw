@@ -21,6 +21,10 @@ use yii\widgets\ActiveForm;
         <?= Html::hiddenInput('org_code', $orgCode) ?>
     <?php endif; ?>
 
+    <?php if (\common\models\Client::usesClientResourceScoping() && \common\models\MomentusShape::hasClientIdColumn()): ?>
+        <?= Html::activeHiddenInput($model, 'clientid') ?>
+    <?php endif; ?>
+
     <?= $form->field($model, 'source_id')->textInput() ?>
 
     <?= $form->field($model, 'shapeType')->textInput(['maxlength' => true]) ?>

@@ -113,4 +113,23 @@ class TemplateSearch extends Template
 
         return $dataProvider;
     }
+
+    /**
+     * Client-scoped search for the client admin app.
+     *
+     * @param array $params
+     * @return ActiveDataProvider
+     */
+    public function searchClient($params)
+    {
+        $dataProvider = $this->search($params);
+
+        if (!Client::usesClientResourceScoping()) {
+            return $dataProvider;
+        }
+
+        $dataProvider->query->andWhere(['clientid' => \Yii::$app->user->identity->clientid]);
+
+        return $dataProvider;
+    }
 }
