@@ -164,6 +164,10 @@ public function getClientName()
         return static::findOne(['id' => $id, 'eventActive' => 1]);
     }
 
+    public static function findByIDAll($id) {
+        return static::findOne(['id' => $id]);
+    }
+
     public static function findByName($eventname,$userid) {
         return static::findOne(['eventName' => $eventname, 'userid' => $userid, 'eventActive' => 1]);
     }
