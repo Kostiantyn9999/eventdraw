@@ -151,7 +151,6 @@ public function getClientName()
 
     public static function getUserList()
     {
-
         $users = \common\models\User::find()
             ->select(['id', 'userfullname'])
             ->orderBy(['userfullname' => SORT_ASC])->all();

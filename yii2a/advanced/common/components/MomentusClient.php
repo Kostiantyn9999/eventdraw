@@ -422,29 +422,46 @@ class MomentusClient
      *
      * Falls back to OData if the REST endpoint returns 404.
      */
-    public function listPriceListItemsByCode($priceListCode, $orgCode = null)
+    public function listPriceListItemsByCode($priceListCode, $orgCode = null, array $resourceCodes = [])
     {
         $orgCode = ($orgCode !== null && $orgCode !== '') ? (string) $orgCode : $this->orgCode;
+        $escapedPriceList = str_replace("'", "''", (string) $priceListCode);
+        $escapedOrgCode = str_replace("'", "''", (string) $orgCode);
+        $filter = "OrganizationCode eq '" . $escapedOrgCode . "' and PriceList eq '" . $escapedPriceList . "'";
 
-        // Approach 1: REST endpoint /PriceListItems/{OrgCode}/{PriceList}
-        try {
-            $result = $this->request(
-                'GET',
-                '/PriceListItems/' . $this->normalizeOrgCode($orgCode) . '/'
-                . rawurlencode((string) $priceListCode)
-            );
-            return $result;
-        } catch (RuntimeException $e) {
-            // If 404, fall through to OData approach.
-            if (strpos($e->getMessage(), '404') === false) {
-                throw $e;
+        $normalizedCodes = [];
+        foreach ($resourceCodes as $rawCode) {
+            $code = strtoupper(trim((string) $rawCode));
+            if ($code === '') {
+                continue;
+            }
+            $normalizedCodes[$code] = true;
+        }
+        if ($normalizedCodes !== []) {
+            $codeParts = [];
+            foreach (array_keys($normalizedCodes) as $code) {
+                $codeParts[] = "Code eq '" . str_replace("'", "''", $code) . "'";
+            }
+            if ($codeParts !== []) {
+                $filter .= ' and (' . implode(' or ', $codeParts) . ')';
             }
         }
 
-        // Approach 2: OData endpoint
-        $odataQuery = '$filter=PriceList eq \'' . addslashes($priceListCode)
-            . '\' and OrganizationCode eq \'' . addslashes($orgCode) . '\'';
-        return $this->request('GET', '/odata/PriceListItems', ['ODataQuery' => $odataQuery]);
+        $params = ['ODataQuery' => '$filter=' . $filter];
+        $result = $this->request('GET', '/odata/PriceListItems', $params);
+        $allItems = $this->extractODataItems(is_array($result) ? $result : []);
+        $nextLink = $this->extractODataNextLink(is_array($result) ? $result : []);
+
+        while ($nextLink !== null && $nextLink !== '') {
+            $nextResult = $this->requestAbsoluteUrl('GET', $nextLink);
+            $nextItems = $this->extractODataItems(is_array($nextResult) ? $nextResult : []);
+            if ($nextItems !== []) {
+                $allItems = array_merge($allItems, $nextItems);
+            }
+            $nextLink = $this->extractODataNextLink(is_array($nextResult) ? $nextResult : []);
+        }
+
+        return $allItems;
     }
 
     /**
@@ -744,6 +761,74 @@ class MomentusClient
 
         $decoded = json_decode($response, true);
         return is_array($decoded) ? $decoded : [];
+    }
+
+    private function requestAbsoluteUrl($method, $url, array $payload = null)
+    {
+        if ($this->apiToken === '' || $this->subscriptionKey === '') {
+            throw new RuntimeException('Momentus credentials are not configured.');
+        }
+
+        $targetUrl = trim((string) $url);
+        if ($targetUrl === '') {
+            return [];
+        }
+        if (stripos($targetUrl, 'http://') !== 0 && stripos($targetUrl, 'https://') !== 0) {
+            $targetUrl = $this->baseUrl . '/' . ltrim($targetUrl, '/');
+        }
+
+        $headers = [
+            'accept: application/json',
+            'apitoken: ' . $this->apiToken,
+            'ocp-apim-subscription-key: ' . $this->subscriptionKey,
+        ];
+
+        $ch = curl_init();
+        $options = [
+            CURLOPT_URL => $targetUrl,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => $this->timeout,
+            CURLOPT_CUSTOMREQUEST => strtoupper((string) $method),
+        ];
+
+        if ($payload !== null) {
+            $headers[] = 'content-type: application/json';
+            $options[CURLOPT_POSTFIELDS] = json_encode($payload);
+        }
+        $options[CURLOPT_HTTPHEADER] = $headers;
+        curl_setopt_array($ch, $options);
+
+        $response = curl_exec($ch);
+        if ($response === false) {
+            $error = curl_error($ch);
+            curl_close($ch);
+            throw new RuntimeException('Momentus cURL error: ' . $error);
+        }
+
+        $statusCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($statusCode < 200 || $statusCode >= 300) {
+            throw new RuntimeException('Momentus API request failed with HTTP ' . $statusCode . ': ' . $response);
+        }
+
+        if ($response === '' || $response === null) {
+            return [];
+        }
+
+        $decoded = json_decode($response, true);
+        return is_array($decoded) ? $decoded : [];
+    }
+
+    private function extractODataNextLink(array $payload)
+    {
+        if (isset($payload['@odata.nextLink']) && is_string($payload['@odata.nextLink'])) {
+            return $payload['@odata.nextLink'];
+        }
+        if (isset($payload['odata.nextLink']) && is_string($payload['odata.nextLink'])) {
+            return $payload['odata.nextLink'];
+        }
+        return null;
     }
 
     private function normalizeOrgCode($orgCode = null)

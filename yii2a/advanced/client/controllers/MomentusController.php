@@ -48,6 +48,7 @@ class MomentusController extends Controller
             'sync-service-order-items',
             'upsert-service-order',
             'save-event-svg-s3',
+            'get-price-list-items-by-resources',
         ];
         if (in_array($action->id, $csrfExempt)) {
             $this->enableCsrfValidation = false;
@@ -90,6 +91,7 @@ class MomentusController extends Controller
                             'list-functions',
                             'list-price-lists',
                             'get-price-list-items-by-list',
+                            'get-price-list-items-by-resources',
                             'get-event-service-order',
                             'get-event-space-diagram',
                             'upsert-service-order',
@@ -174,6 +176,7 @@ class MomentusController extends Controller
                     'update-price-list-item' => ['PUT', 'POST'],
                     'delete-price-list-item' => ['DELETE', 'POST'],
                     'get-price-list-items-by-list' => ['GET'],
+                    'get-price-list-items-by-resources' => ['POST'],
                     // Saved Layout link + PNG
                     'get-event-space-diagram' => ['GET'],
                     'update-event-space-diagram-url' => ['POST'],
@@ -1055,6 +1058,58 @@ class MomentusController extends Controller
             $items = $this->extractItems(is_array($result) ? $result : []);
 
             return $items;
+        } catch (\Exception $e) {
+            Yii::error($e->getMessage(), __METHOD__);
+            Yii::$app->response->statusCode = 500;
+            return ['error' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * POST /momentus/get-price-list-items-by-resources
+     * Body:
+     * {
+     *   "price_list": "EDDEMO",
+     *   "resource_codes": ["CHAIR", "TABLE"]
+     * }
+     *
+     * Returns price list item variants only for the requested resource codes.
+     * This avoids loading the full price list (which can be server-side paged).
+     */
+    public function actionGetPriceListItemsByResources()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $orgCode = $this->getOrgCode();
+        $payload = $this->getJsonBody();
+        if ($payload === null) {
+            $payload = Yii::$app->request->post();
+        }
+
+        $priceList = trim((string) ($payload['price_list'] ?? ''));
+        if ($priceList === '') {
+            Yii::$app->response->statusCode = 400;
+            return ['error' => 'price_list is required.'];
+        }
+
+        $resourceCodes = [];
+        if (isset($payload['resource_codes']) && is_array($payload['resource_codes'])) {
+            foreach ($payload['resource_codes'] as $rawCode) {
+                $code = strtoupper(trim((string) $rawCode));
+                if ($code !== '' && !isset($resourceCodes[$code])) {
+                    $resourceCodes[$code] = true;
+                }
+            }
+        }
+        $resourceCodes = array_keys($resourceCodes);
+        if ($resourceCodes === []) {
+            return [];
+        }
+
+        try {
+            $client = MomentusClient::create();
+            $response = $client->listPriceListItemsByCode($priceList, $orgCode, $resourceCodes);
+            return $this->extractItems(is_array($response) ? $response : []);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
             Yii::$app->response->statusCode = 500;
