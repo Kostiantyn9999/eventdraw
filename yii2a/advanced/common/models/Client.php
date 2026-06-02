@@ -48,6 +48,12 @@ class Client extends \yii\db\ActiveRecord
     {
         return [
             'momentusproduction.eventdrawus.com',
+            'clientmomentusproduction.eventdrawus.com',
+            'adminmomentusproduction.eventdrawus.com',
+
+            'momentusstaging.eventdrawus.com',
+            'momentusadmin.eventdrawus.com',
+            'admin.eventdrawus.com',
             // 'yii2a'
         ];
     }
@@ -58,7 +64,13 @@ class Client extends \yii\db\ActiveRecord
     public static function hostsUsingClientResourceScoping()
     {
         return [
+            'momentusproduction.eventdrawus.com',
             'clientmomentusproduction.eventdrawus.com',
+            'adminmomentusproduction.eventdrawus.com',
+            
+            'momentusstaging.eventdrawus.com',
+            'momentusadmin.eventdrawus.com',
+            'admin.eventdrawus.com',
         ];
     }
 
