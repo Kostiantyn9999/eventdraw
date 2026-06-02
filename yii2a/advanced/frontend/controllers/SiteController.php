@@ -4676,25 +4676,20 @@ public function actionSaveTemplateJson()
         $spaceCode           = trim((string) Yii::$app->request->get('SpaceCode', ''));
         $eventSpaceDiagramId = (int) Yii::$app->request->get('EventSpaceDiagramID', 0);
 
-        // Resolve the EventDraw template from OrgCode + SpaceCode.
-        // OrgCode identifies the client; SpaceCode identifies the space within that client.
-        // Both are required together because the same SpaceCode can exist across multiple Momentus organisations.
+        // Resolve the EventDraw template from the logged-in user's client + Momentus SpaceCode.
         $templateId = 0;
-        if ($spaceCode !== '' && $orgCode !== '') {
-            $client = \common\models\Client::find()
-                ->where(['momentusOrgCode' => $orgCode])
+        $tmpl = null;
+        $clientId = (int) (Yii::$app->user->identity->clientid ?? 0);
+        if ($spaceCode !== '' && $clientId > 0) {
+            $tmpl = \common\models\Template::find()
+                ->where([
+                    'momentusSpaceCode' => $spaceCode,
+                    'clientid'          => $clientId,
+                    'templateActive'    => 1,
+                ])
                 ->one();
-            if ($client) {
-                $tmpl = \common\models\Template::find()
-                    ->where([
-                        'momentusSpaceCode' => $spaceCode,
-                        'clientid'          => $client->id,
-                        'templateActive'    => 1,
-                    ])
-                    ->one();
-                if ($tmpl) {
-                    $templateId = (int) $tmpl->id;
-                }
+            if ($tmpl) {
+                $templateId = (int) $tmpl->id;
             }
         }
 
