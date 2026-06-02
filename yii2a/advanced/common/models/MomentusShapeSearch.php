@@ -17,7 +17,7 @@ class MomentusShapeSearch extends MomentusShape
     {
         return [
             [['id', 'source_id', 'category', 'elevate', 'height'], 'integer'],
-            [['shapeType', 'description', 'model', 'shapetypes'], 'safe'],
+            [['shapeType', 'description', 'model', 'shapetypes', 'ed_shapes_category'], 'safe'],
             [['mapping_resource_code', 'mapping_resource_description', 'mapping_resource_type', 'mapping_sequence', 'mapping_id'], 'safe'],
         ];
     }
@@ -58,6 +58,10 @@ class MomentusShapeSearch extends MomentusShape
                 'id' => ['asc' => ['s.id' => SORT_ASC], 'desc' => ['s.id' => SORT_DESC]],
                 'shapeType' => ['asc' => ['s.shapeType' => SORT_ASC], 'desc' => ['s.shapeType' => SORT_DESC]],
                 'description' => ['asc' => ['s.description' => SORT_ASC], 'desc' => ['s.description' => SORT_DESC]],
+                'ed_shapes_category' => [
+                    'asc' => ['s.ed_shapes_category' => SORT_ASC],
+                    'desc' => ['s.ed_shapes_category' => SORT_DESC],
+                ],
             ],
         ];
 
@@ -102,7 +106,8 @@ class MomentusShapeSearch extends MomentusShape
 
         $query->andFilterWhere(['like', 's.shapeType', $this->shapeType])
             ->andFilterWhere(['like', 's.description', $this->description])
-            ->andFilterWhere(['like', 's.model', $this->model]);
+            ->andFilterWhere(['like', 's.model', $this->model])
+            ->andFilterWhere(['like', 's.ed_shapes_category', $this->ed_shapes_category]);
 
         if ($orgCode !== '') {
             $query->andFilterWhere(['like', 'm.momentus_resource_code', $this->mapping_resource_code])

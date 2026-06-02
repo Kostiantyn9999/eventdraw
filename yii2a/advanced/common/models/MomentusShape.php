@@ -16,6 +16,7 @@ use Yii;
  * @property string|null $description
  * @property string $model
  * @property string|null $shapetypes
+ * @property string|null $ed_shapes_category
  * @property string $created_at
  * @property string $updated_at
  * @property int|null $clientid
@@ -56,7 +57,7 @@ class MomentusShape extends \yii\db\ActiveRecord
         return [
             [['source_id', 'shapeType', 'model'], 'required'],
             [$integerFields, 'integer'],
-            [['shapeType', 'description', 'model', 'shapetypes'], 'string', 'max' => 255],
+            [['shapeType', 'description', 'model', 'shapetypes', 'ed_shapes_category'], 'string', 'max' => 255],
             [['source_id'], 'unique'],
         ];
     }
@@ -73,6 +74,7 @@ class MomentusShape extends \yii\db\ActiveRecord
             'description' => 'Description',
             'model' => 'Model File',
             'shapetypes' => 'Shape Types',
+            'ed_shapes_category' => 'ED Shapes Category',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
             'clientid' => 'Client',
