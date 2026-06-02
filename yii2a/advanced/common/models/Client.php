@@ -38,7 +38,7 @@ use yii\web\IdentityInterface;
  * @property string $MomentusAPIUrl
  * @property string|null $momentusOrgCode
  * @property int $AllowSaveFolder
- */
+ */ 
 class Client extends \yii\db\ActiveRecord
 {
     /**

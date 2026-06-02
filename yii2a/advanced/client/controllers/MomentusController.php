@@ -115,6 +115,7 @@ class MomentusController extends Controller
                             'unassign-mapping',
                             'add-shape',
                             'search-resources',
+                            'search-spaces',
                             'shape-primary-resource',
                         ],
                         'allow' => true,
@@ -175,6 +176,7 @@ class MomentusController extends Controller
                     'list-functions' => ['GET'],
                     'list-price-lists' => ['GET'],
                     'search-price-list-items' => ['GET'],
+                    'search-spaces' => ['GET'],
                     'get-price-list-item' => ['GET'],
                     'add-price-list-item' => ['POST'],
                     'update-price-list-item' => ['PUT', 'POST'],
@@ -206,6 +208,17 @@ class MomentusController extends Controller
             return $fromRequest;
         }
 
+        $clientId = (int) (\Yii::$app->request->get('client_id') ?: \Yii::$app->request->post('client_id', 0));
+        if ($clientId > 0) {
+            $client = Client::findOne($clientId);
+            if ($client) {
+                $fromClient = trim((string) $client->momentusOrgCode);
+                if ($fromClient !== '') {
+                    return $fromClient;
+                }
+            }
+        }
+
         if (!\Yii::$app->user->isGuest) {
             $clientId = \Yii::$app->user->identity->clientid;
             $client = \common\models\Client::findOne($clientId);
@@ -221,16 +234,52 @@ class MomentusController extends Controller
     }
 
     /**
-     * Logged-in user's client id for resource scoping.
+     * Resolve client id: request param, then logged-in user session.
+     */
+    private function resolveClientIdForMomentus()
+    {
+        $fromRequest = (int) (\Yii::$app->request->get('client_id') ?: \Yii::$app->request->post('client_id', 0));
+        if ($fromRequest > 0) {
+            return $fromRequest;
+        }
+
+        if (!\Yii::$app->user->isGuest) {
+            $clientId = (int) \Yii::$app->user->identity->clientid;
+            if ($clientId > 0) {
+                return $clientId;
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * Client id for DB scoping (null when unknown).
      */
     private function getClientId()
     {
-        if (\Yii::$app->user->isGuest) {
-            return null;
+        $clientId = $this->resolveClientIdForMomentus();
+
+        return $clientId > 0 ? $clientId : null;
+    }
+
+    /**
+     * Momentus API client with per-tenant credentials from client_id param or session.
+     */
+    private function createMomentusClient(array $config = [])
+    {
+        $clientId = $this->resolveClientIdForMomentus();
+        if ($clientId > 0 && !isset($config['clientId'])) {
+            $config['clientId'] = $clientId;
+        }
+        if (!isset($config['orgCode'])) {
+            $orgCode = $this->getOrgCode();
+            if ($orgCode !== '') {
+                $config['orgCode'] = $orgCode;
+            }
         }
 
-        $clientId = (int) \Yii::$app->user->identity->clientid;
-        return $clientId > 0 ? $clientId : null;
+        return MomentusClient::create($config);
     }
 
     /**
@@ -247,8 +296,32 @@ class MomentusController extends Controller
     private function assignShapeClientId(MomentusShape $model)
     {
         if ($this->usesClientShapeScoping()) {
-            $model->clientid = $this->getClientId();
+            $clientId = $this->getClientId();
+            if ($clientId !== null) {
+                $model->clientid = $clientId;
+            }
         }
+    }
+
+    /**
+     * Load a shape for mapping APIs, scoped to the resolved client when applicable.
+     */
+    private function findShapeForMapping($shapeId)
+    {
+        $shapeId = (int) $shapeId;
+        if ($shapeId <= 0) {
+            return null;
+        }
+
+        $query = MomentusShape::find()->where(['id' => $shapeId]);
+        if ($this->usesClientShapeScoping()) {
+            $scopeClientId = $this->getClientId();
+            if ($scopeClientId !== null) {
+                $query->andWhere(['clientid' => $scopeClientId]);
+            }
+        }
+
+        return $query->one();
     }
 
     public function actionSearchResources()
@@ -264,13 +337,41 @@ class MomentusController extends Controller
         $orgCode = trim((string) Yii::$app->request->get('org_code', ''));
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             $result = $client->searchResources($query, $page, $pageSize, $order, $orgCode);
             
             return $this->formatResources($result);
         } catch (\Exception $exception) {
             \Yii::error($exception->getMessage(), __METHOD__);
             \Yii::$app->response->statusCode = 500;
+            return ['error' => $exception->getMessage()];
+        }
+    }
+
+    /**
+     * GET /momentus/search-spaces?q=...&org_code=...
+     * Used by Templates admin (client app session — per-client Momentus credentials).
+     */
+    public function actionSearchSpaces()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        Yii::$app->response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate');
+        Yii::$app->response->headers->set('Pragma', 'no-cache');
+
+        $query = trim((string) Yii::$app->request->get('q', ''));
+        $page = Yii::$app->request->get('page');
+        $pageSize = Yii::$app->request->get('pageSize');
+        $order = Yii::$app->request->get('order');
+        $orgCode = $this->getOrgCode();
+
+        try {
+            $client = $this->createMomentusClient(['orgCode' => $orgCode]);
+            $result = $client->searchSpaces($query, $page, $pageSize, $order, $orgCode);
+
+            return $this->formatSpaces($result);
+        } catch (\Exception $exception) {
+            Yii::error($exception->getMessage(), __METHOD__);
+            Yii::$app->response->statusCode = 500;
             return ['error' => $exception->getMessage()];
         }
     }
@@ -450,6 +551,13 @@ class MomentusController extends Controller
 
         $query->leftJoin('{{%shape_momentus_mapping}} m', 's.id = m.shape_id');
 
+        if ($this->usesClientShapeScoping()) {
+            $scopeClientId = $this->getClientId();
+            if ($scopeClientId !== null) {
+                $query->andWhere(['s.clientid' => $scopeClientId]);
+            }
+        }
+
         if ($search !== '') {
             $query->andWhere([
                 'or',
@@ -574,7 +682,7 @@ class MomentusController extends Controller
             return ['error' => 'org_code is not configured (set params[momentus][orgCode] or pass org_code).'];
         }
 
-        $shape = MomentusShape::findOne($shapeId);
+        $shape = $this->findShapeForMapping($shapeId);
         if ($shape === null) {
             Yii::$app->response->statusCode = 404;
             return ['error' => 'Shape not found.'];
@@ -651,7 +759,14 @@ class MomentusController extends Controller
         }
 
         // Return existing record if the shapeType is already in the DB (idempotent).
-        $existing = MomentusShape::find()->where(['shapeType' => $shapeType])->one();
+        $existingQuery = MomentusShape::find()->where(['shapeType' => $shapeType]);
+        if ($this->usesClientShapeScoping()) {
+            $scopeClientId = $this->getClientId();
+            if ($scopeClientId !== null) {
+                $existingQuery->andWhere(['clientid' => $scopeClientId]);
+            }
+        }
+        $existing = $existingQuery->one();
         if ($existing !== null) {
             return [
                 'ok' => true,
@@ -678,6 +793,7 @@ class MomentusController extends Controller
         $shape->height      = 0;
         $shape->model       = 'standard';
         $shape->description = $shapeType;
+        $this->assignShapeClientId($shape);
 
         if (!$shape->save(false)) {
             Yii::$app->response->statusCode = 500;
@@ -710,7 +826,7 @@ class MomentusController extends Controller
         $odataQuery = trim((string) Yii::$app->request->get('ODataQuery', ''));
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             return $client->listServiceOrders($odataQuery);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -734,7 +850,7 @@ class MomentusController extends Controller
         $odataQuery = trim((string) Yii::$app->request->get('ODataQuery', ''));
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             return $client->listServiceOrderItems($odataQuery);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -760,7 +876,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             return $client->getServiceOrderItem($orgCode, $orderNumber, $orderLineNumber);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -788,7 +904,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             return $client->addServiceOrderItem($payload);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -828,7 +944,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             return $client->updateServiceOrderItem($orgCode, $orderNumber, $orderLineNumber, $payload);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -854,7 +970,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             $client->deleteServiceOrderItem($orgCode, $orderNumber, $orderLineNumber);
             return ['success' => true];
         } catch (\Exception $e) {
@@ -883,7 +999,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             return $client->saveNewItemToExistingPackage($payload);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -911,7 +1027,7 @@ class MomentusController extends Controller
         $defaultFunctionId = Yii::$app->request->get('default_function_id');
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             $totalResult = $client->listFunctions($orgCode, $eventId, null);
 
             $items = isset($totalResult['value']) ? $totalResult['value'] : (is_array($totalResult) ? $totalResult : []);
@@ -946,7 +1062,7 @@ class MomentusController extends Controller
         $priceListCodeForClient = ($defaultPriceList !== '') ? $defaultPriceList : null;
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             $totalResult = $client->listPriceLists($odataQuery ?: null, $orgCode, $priceListCodeForClient);
             $filteredResult = $client->listPriceLists($odataQuery ?: null, $orgCode);
 
@@ -979,7 +1095,7 @@ class MomentusController extends Controller
         $orgCode = $this->getOrgCode();
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             return $client->searchPriceListItems($search, $orgCode);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -1005,7 +1121,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             return $client->getPriceListItem($orgCode, $priceList, $sequence);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -1033,7 +1149,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             return $client->addPriceListItem($payload);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -1068,7 +1184,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             return $client->updatePriceListItem($orgCode, $priceList, $sequence, $payload);
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
@@ -1094,7 +1210,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             $client->deletePriceListItem($orgCode, $priceList, $sequence);
             return ['success' => true];
         } catch (\Exception $e) {
@@ -1124,7 +1240,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             $result = $client->listPriceListItemsByCode($priceList, $orgCode);
             $items = $this->extractItems(is_array($result) ? $result : []);
 
@@ -1178,7 +1294,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             $response = $client->listPriceListItemsByCode($priceList, $orgCode, $resourceCodes);
             return $this->extractItems(is_array($response) ? $response : []);
         } catch (\Exception $e) {
@@ -1230,7 +1346,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             $result = $client->getEventSpaceDiagram($id);
             return $result;
         } catch (\Exception $e) {
@@ -1274,7 +1390,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             $result = $client->updateEventSpaceDiagramUrl($eventSpaceDiagramId, $eventdrawUrl, $orgCode, $eventdrawSvgUrl);
             return [
                 'success' => true,
@@ -1471,7 +1587,7 @@ class MomentusController extends Controller
             return ['error' => 'org_code is required (or configure params[momentus][orgCode]).'];
         }
 
-        $client = MomentusClient::create();
+        $client = $this->createMomentusClient();
         $mapping = MomentusServiceOrder::findBySpaceDiagram($spaceDiagramId, $orgCode);
 
         try {
@@ -1712,7 +1828,7 @@ class MomentusController extends Controller
             ];
         }
 
-        $client = MomentusClient::create();
+        $client = $this->createMomentusClient();
 
         try {
             $client->getServiceOrder($orgCode, $mapping->momentus_order_number);
@@ -1890,7 +2006,7 @@ class MomentusController extends Controller
             return ['error' => 'order_number is required.'];
         }
 
-        $client = MomentusClient::create();
+        $client = $this->createMomentusClient();
         $results = ['added' => [], 'updated' => [], 'deleted' => [], 'skipped' => [], 'errors' => []];
 
         // 0) Resolve StartDate/EndDate from the function if not provided
@@ -2218,6 +2334,28 @@ class MomentusController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    private function formatSpaces(array $payload)
+    {
+        $items = [];
+        foreach ($this->extractItems($payload) as $space) {
+            if (isset($space['Bookable']) && strtoupper(trim((string) $space['Bookable'])) !== 'Y') {
+                continue;
+            }
+            $description = isset($space['SpaceDescription']) ? (string) $space['SpaceDescription'] : '';
+            $code = isset($space['Code']) ? (string) $space['Code'] : (isset($space['SpaceCode']) ? (string) $space['SpaceCode'] : '');
+            $id = isset($space['SpaceID']) ? (string) $space['SpaceID'] : '';
+
+            $items[] = [
+                'id' => $id,
+                'text' => trim($description . ($code !== '' ? ' (' . $code . ')' : '')),
+                'description' => $description,
+                'code' => $code,
+            ];
+        }
+
+        return $items;
     }
 
     private function formatResources(array $payload)

@@ -88,6 +88,8 @@ class MomentusController extends Controller
     public function actionSearchSpaces()
     {
         \Yii::$app->response->format = Response::FORMAT_JSON;
+        \Yii::$app->response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate');
+        \Yii::$app->response->headers->set('Pragma', 'no-cache');
 
         $query = trim((string) \Yii::$app->request->get('q', ''));
         $page = \Yii::$app->request->get('page');
@@ -96,7 +98,7 @@ class MomentusController extends Controller
         $orgCode = $this->getOrgCode();
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient(['orgCode' => $orgCode]);
             $result = $client->searchSpaces($query, $page, $pageSize, $order, $orgCode);
 
             return $this->formatSpaces($result);
@@ -117,6 +119,17 @@ class MomentusController extends Controller
             return $fromRequest;
         }
 
+        $clientId = (int) (\Yii::$app->request->get('client_id') ?: \Yii::$app->request->post('client_id', 0));
+        if ($clientId > 0) {
+            $client = \common\models\Client::findOne($clientId);
+            if ($client) {
+                $fromClient = trim((string) $client->momentusOrgCode);
+                if ($fromClient !== '') {
+                    return $fromClient;
+                }
+            }
+        }
+
         if (!\Yii::$app->user->isGuest) {
             $clientId = \Yii::$app->user->identity->clientid ?? null;
             if ($clientId) {
@@ -133,6 +146,45 @@ class MomentusController extends Controller
         return trim((string) (\Yii::$app->params['momentus']['orgCode'] ?? ''));
     }
 
+    /**
+     * Momentus API client with per-tenant credentials from client_id param or session.
+     */
+    private function createMomentusClient(array $config = [])
+    {
+        $clientId = $this->resolveClientIdForMomentus();
+        if ($clientId > 0 && !isset($config['clientId'])) {
+            $config['clientId'] = $clientId;
+        }
+        if (!isset($config['orgCode'])) {
+            $orgCode = $this->getOrgCode();
+            if ($orgCode !== '') {
+                $config['orgCode'] = $orgCode;
+            }
+        }
+
+        return MomentusClient::create($config);
+    }
+
+    /**
+     * Resolve client id: request param, then logged-in frontend user session.
+     */
+    private function resolveClientIdForMomentus()
+    {
+        $fromRequest = (int) (\Yii::$app->request->get('client_id') ?: \Yii::$app->request->post('client_id', 0));
+        if ($fromRequest > 0) {
+            return $fromRequest;
+        }
+
+        if (!\Yii::$app->user->isGuest) {
+            $clientId = (int) (\Yii::$app->user->identity->clientid ?? 0);
+            if ($clientId > 0) {
+                return $clientId;
+            }
+        }
+
+        return 0;
+    }
+
     public function actionSearchNotes()
     {
         \Yii::$app->response->format = Response::FORMAT_JSON;
@@ -143,7 +195,7 @@ class MomentusController extends Controller
         $order = \Yii::$app->request->get('order');
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             return $client->searchNotes($search, $page, $pageSize, $order);
         } catch (\Exception $exception) {
             \Yii::error($exception->getMessage(), __METHOD__);
@@ -157,7 +209,7 @@ class MomentusController extends Controller
         \Yii::$app->response->format = Response::FORMAT_JSON;
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             return $client->getNote($type, $code, $sequenceNumber, $orgCode);
         } catch (\Exception $exception) {
             \Yii::error($exception->getMessage(), __METHOD__);
@@ -177,7 +229,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             return $client->createNote($payload);
         } catch (\Exception $exception) {
             \Yii::error($exception->getMessage(), __METHOD__);
@@ -197,7 +249,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             return $client->updateNote($type, $code, $sequenceNumber, $payload, $orgCode);
         } catch (\Exception $exception) {
             \Yii::error($exception->getMessage(), __METHOD__);
@@ -211,7 +263,7 @@ class MomentusController extends Controller
         \Yii::$app->response->format = Response::FORMAT_JSON;
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             $client->deleteNote($type, $code, $sequenceNumber, $orgCode);
             \Yii::$app->response->statusCode = 204;
             return null;
@@ -365,7 +417,7 @@ class MomentusController extends Controller
         }
 
         try {
-            $client = MomentusClient::create();
+            $client = $this->createMomentusClient();
             $row = $client->getEventRowForFloorplan($eventId, $orgCode);
             if ($row === null) {
                 return [

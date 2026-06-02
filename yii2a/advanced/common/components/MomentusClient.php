@@ -68,7 +68,7 @@ class MomentusClient
     {
         if (!class_exists('\Yii', false) || \Yii::$app === null) {
             return [];
-        }
+        }         
 
         $usePerClient = in_array($hostName, Client::hostsUsingPerClientMomentusConfig(), true);
         if (!$usePerClient) {
@@ -76,6 +76,12 @@ class MomentusClient
         }
 
         $clientId = isset($config['clientId']) ? (int) $config['clientId'] : 0;
+        if ($clientId <= 0 && \Yii::$app->request !== null) {
+            $fromRequest = (int) (\Yii::$app->request->get('client_id') ?: \Yii::$app->request->post('client_id', 0));
+            if ($fromRequest > 0) {
+                $clientId = $fromRequest;
+            }
+        }
         if ($clientId <= 0 && \Yii::$app->user !== null && !\Yii::$app->user->isGuest) {
             $identity = \Yii::$app->user->identity;
             if ($identity !== null && isset($identity->clientid)) {

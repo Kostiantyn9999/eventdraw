@@ -20,7 +20,25 @@ use yii\web\BadRequestHttpException;
 class TemplateController extends Controller
 {
     /**
-     * Disable CSRF for endpoints called from the Draw.io iframe (no Yii session).
+     * Resolve client id: request param, then logged-in user session.
+     */
+    private function resolveClientIdForApi()
+    {
+        $fromRequest = (int) (\Yii::$app->request->get('client_id') ?: \Yii::$app->request->post('client_id', 0));
+        if ($fromRequest > 0) {
+            return $fromRequest;
+        }
+
+        if (!\Yii::$app->user->isGuest) {
+            $clientId = (int) \Yii::$app->user->identity->clientid;
+            return $clientId > 0 ? $clientId : null;
+        }
+
+        return null;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function beforeAction($action)
     {
@@ -84,6 +102,13 @@ public function actionAjaxSetMomentusSpace()
         throw new BadRequestHttpException('Template not found');
     }
 
+    if (Client::usesClientResourceScoping()) {
+        $clientId = $this->resolveClientIdForApi();
+        if ($clientId !== null && (int) $m->clientid !== (int) $clientId) {
+            throw new BadRequestHttpException('Template not found');
+        }
+    }
+
     if ($code === '') {
         $m->momentusSpaceCode = null;
         $m->momentusSpaceDescr = null;
@@ -91,8 +116,11 @@ public function actionAjaxSetMomentusSpace()
         $otherQuery = Template::find()
             ->where(['momentusSpaceCode' => $code])
             ->andWhere(['<>', 'id', $templateId]);
-        if (!Yii::$app->user->isGuest && Client::usesClientResourceScoping()) {
-            $otherQuery->andWhere(['clientid' => Yii::$app->user->identity->clientid]);
+        if (Client::usesClientResourceScoping()) {
+            $clientId = $this->resolveClientIdForApi();
+            if ($clientId !== null) {
+                $otherQuery->andWhere(['clientid' => $clientId]);
+            }
         }
         $other = $otherQuery->one();
         if ($other !== null) {
@@ -147,7 +175,16 @@ public function actionAjaxSetMomentusSpace()
     public function actionIndexJson()
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $templates = Template::find()->orderBy('templateName')->all();
+
+        $query = Template::find()->orderBy('templateName');
+        if (Client::usesClientResourceScoping()) {
+            $clientId = $this->resolveClientIdForApi();
+            if ($clientId !== null) {
+                $query->andWhere(['clientid' => $clientId]);
+            }
+        }
+
+        $templates = $query->all();
         $out = [];
         foreach ($templates as $t) {
             $out[] = [

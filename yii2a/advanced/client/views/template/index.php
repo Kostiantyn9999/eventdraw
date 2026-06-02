@@ -18,9 +18,8 @@ use yii\helpers\Json;
 $this->title = 'Templates';
 $this->params['breadcrumbs'][] = $this->title;
 
-// Same host as this admin app; swap /client/web → /frontend/web (matches Draw.io Menus.js).
-$clientWebBase = rtrim(Yii::$app->request->hostInfo . Yii::$app->request->baseUrl, '/');
-$searchSpacesBaseUrl = str_replace('/client/web', '/frontend/web', $clientWebBase) . '/momentus/search-spaces';
+// Client app endpoint so the logged-in client session resolves per-client Momentus credentials.
+$searchSpacesBaseUrl = Url::to(['momentus/search-spaces']);
 
 $momentusOrgForSearch = '';
 if (!Yii::$app->user->isGuest && !empty(Yii::$app->user->identity->clientid)) {
@@ -30,24 +29,42 @@ if (!Yii::$app->user->isGuest && !empty(Yii::$app->user->identity->clientid)) {
     }
 }
 $momentusOrgJson = json_encode($momentusOrgForSearch);
+$momentusClientIdForSearch = 0;
+if (!Yii::$app->user->isGuest && !empty(Yii::$app->user->identity->clientid)) {
+    $momentusClientIdForSearch = (int) Yii::$app->user->identity->clientid;
+}
+$momentusClientIdJson = json_encode($momentusClientIdForSearch);
 
 $momentusSpaceOwners = [];
+$momentusSpaceOwnerLabels = [];
 $templateOwnerQuery = Template::find();
 if (Client::usesClientResourceScoping()) {
     $clientId = !Yii::$app->user->isGuest ? (int) Yii::$app->user->identity->clientid : 0;
     $templateOwnerQuery->where(['clientid' => $clientId]);
 }
 foreach ($templateOwnerQuery->asArray()->all() as $row) {
-    $c = trim((string) ($row['momentusSpaceCode'] ?? ''));
+    $c = strtoupper(trim((string) ($row['momentusSpaceCode'] ?? '')));
     if ($c !== '') {
         $momentusSpaceOwners[$c] = (int) $row['id'];
+        $name = trim((string) ($row['templateName'] ?? ''));
+        $momentusSpaceOwnerLabels[$c] = $name !== '' ? $name : ('Template #' . $row['id']);
     }
 }
 $momentusSpaceOwnersJson = Json::encode($momentusSpaceOwners);
+$momentusSpaceOwnerLabelsJson = Json::encode($momentusSpaceOwnerLabels);
 $saveUrlSpaceJs = Json::encode(Url::to(['template/ajax-set-momentus-space']));
+
+$this->registerCss(
+    '.select2-results__option[aria-disabled=true],'
+    . '.select2-results__option--disabled,'
+    . '.select2-results__option.momentus-space-taken {'
+    . 'color:#888 !important;cursor:not-allowed !important;'
+    . 'opacity:0.55;background-color:#f5f5f5 !important;}'
+);
 
 $this->registerJs(
     'window.__momentusSpaceCodeOwner = ' . $momentusSpaceOwnersJson . ";\n" .
+    'window.__momentusSpaceOwnerLabels = ' . $momentusSpaceOwnerLabelsJson . ";\n" .
     "$(document).on('select2:open', 'select[name^=\"momentus_space_\"]', function() {\n" .
     "  var m = (this.name || '').match(/momentus_space_(\\d+)/);\n" .
     "  window.__mpsCurrentTid = m ? parseInt(m[1], 10) : 0;\n" .
@@ -97,20 +114,21 @@ $this->registerJs(
                 'attribute' => 'momentusSpaceDescr',
                 'label' => 'Momentus space',
                 'format' => 'raw',
-                'value' => function ($model) use ($searchSpacesBaseUrl, $momentusOrgJson, $saveUrlSpaceJs) {
+                'value' => function ($model) use ($searchSpacesBaseUrl, $momentusOrgJson, $momentusClientIdJson, $saveUrlSpaceJs) {
 
                     $searchUrl = $searchSpacesBaseUrl;
 
-                    $initText = $model->momentusSpaceCode
-                        ? ($model->momentusSpaceDescr
-                            ? ($model->momentusSpaceCode . ' — ' . $model->momentusSpaceDescr)
-                            : $model->momentusSpaceCode)
+                    $spaceCode = trim((string) $model->momentusSpaceCode);
+                    $spaceDescr = trim((string) $model->momentusSpaceDescr);
+                    $initText = $spaceCode !== ''
+                        ? ($spaceDescr !== '' ? ($spaceCode . ' — ' . $spaceDescr) : $spaceCode)
                         : '';
 
                     return Select2::widget([
                         'name' => 'momentus_space_'.$model->id,
-                        'value' => $model->momentusSpaceCode,
+                        'value' => $spaceCode,
                         'initValueText' => $initText,
+                        'data' => $spaceCode !== '' ? [$spaceCode => $initText] : [],
                         'options' => [
                             'placeholder' => 'Type to search Space Description or Code ...',
                             'data-template-id' => $model->id,
@@ -122,38 +140,66 @@ $this->registerJs(
                                 'url' => $searchUrl,
                                 'dataType' => 'json',
                                 'delay' => 250,
-                                'data' => new JsExpression('function(params){ return { q: params.term, org_code: ' . $momentusOrgJson . ' }; }'),
+                                'cache' => false,
+                                'data' => new JsExpression('function(params){ return { q: params.term, org_code: ' . $momentusOrgJson . ', client_id: ' . $momentusClientIdJson . ', _: Date.now() }; }'),
                                 'processResults' => new JsExpression('function(data){
-                                    var owners = window.__momentusSpaceCodeOwner;
-                                    if (!owners) { return { results: [] }; }
+                                    var owners = window.__momentusSpaceCodeOwner || {};
+                                    var labels = window.__momentusSpaceOwnerLabels || {};
                                     var myTid = parseInt(window.__mpsCurrentTid, 10) || 0;
                                     var arr = Array.isArray(data) ? data : [];
-                                    var filtered = arr.filter(function (x) {
-                                        if (!myTid) { return true; }
-                                        if (!x || x.code === undefined || x.code === null) { return true; }
-                                        var code = String(x.code);
-                                        var oid = owners[code];
-                                        if (oid === undefined) { return true; }
-                                        return parseInt(oid, 10) === myTid;
-                                    });
                                     return {
-                                        results: filtered.map(function(x) {
+                                        results: arr.map(function (x) {
+                                            if (!x) { return null; }
+                                            var code = String(x.code != null ? x.code : "").trim();
+                                            if (code === "" && x.id != null) {
+                                                code = String(x.id).trim();
+                                            }
+                                            if (code === "") { return null; }
+                                            var codeKey = code.toUpperCase();
+                                            var oid = owners[codeKey];
+                                            var takenByOther = myTid > 0 && oid !== undefined && parseInt(oid, 10) !== myTid;
+                                            var text = x.text || (code + " — " + (x.description || ""));
+                                            if (takenByOther) {
+                                                var ownerLabel = labels[codeKey] || ("Template #" + oid);
+                                                text += " (assigned to " + ownerLabel + ")";
+                                            }
                                             return {
-                                                id: x.code,
-                                                text: x.text || (x.code + " — " + (x.description || "")),
-                                                desc: x.description || ""
+                                                id: code,
+                                                text: text,
+                                                desc: x.description || "",
+                                                disabled: takenByOther
                                             };
-                                        })
+                                        }).filter(function (r) { return r != null; })
                                     };
                                 }'),
                             ],
                             'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            'templateResult' => new JsExpression('function (item) {
+                                if (item.loading) { return item.text; }
+                                var $row = jQuery("<span></span>").text(item.text);
+                                if (item.disabled) {
+                                    $row.addClass("momentus-space-taken").css({color:"#888",cursor:"not-allowed"});
+                                }
+                                return $row;
+                            }'),
                         ],
                         'pluginEvents' => [
+                            'select2:selecting' => new JsExpression('function (e) {
+    var item = (e.params.args && e.params.args.data) || e.params.data || {};
+    if (item.disabled) {
+        e.preventDefault();
+        var msg = item.text || "This Momentus space is already assigned to another template.";
+        window.alert(msg);
+    }
+}'),
                             'select2:select' => new JsExpression('function (e) {
     var el = jQuery(this);
     var templateId = el.data("templateId");
     var item = e.params.data || {};
+    if (item.disabled) {
+        el.val(null).trigger("change");
+        return;
+    }
     jQuery.post(' . $saveUrlSpaceJs . ', { id: templateId, code: item.id || "", desc: item.desc || "" })
         .done(function (resp) {
             if (resp && resp.ok) {
@@ -161,7 +207,7 @@ $this->registerJs(
                 if (!o) { o = window.__momentusSpaceCodeOwner = {}; }
                 var tid = parseInt(templateId, 10);
                 jQuery.each(o, function (k, v) { if (parseInt(v, 10) === tid) { delete o[k]; } });
-                if (item.id) { o[item.id] = tid; }
+                if (item.id) { o[String(item.id).trim().toUpperCase()] = tid; }
                 return;
             }
             if (resp && resp.message) { window.alert(resp.message); }
