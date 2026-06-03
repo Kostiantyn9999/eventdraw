@@ -68,6 +68,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
+                'except' => ['sso-login'],
 //                'only' => ['logout', 'signup'],
                 'rules' => [
                     [
@@ -135,14 +136,44 @@ class SiteController extends Controller
                             'get-momentus-data',
                             'get-template-matterport',
                             'get-user-templates-json',
-'create-template-folder','rename-template-folder', 'delete-template-folder','set-template-folder','delete-template','delete-event',
-'create-event-folder','rename-event-folder','delete-event-folder','set-event-folder', 'get-all-clients','get-client-templates',
-'set-event-update-status','get-event-edit-status','get-event-extra-layouts','svg2dwg','svg2dxf','get-dwg3','get-dxf3','clear-old-events',
-'temp-ed-upload','get-temp-ed-file','add-new-stencil','get-new-stencils','save-new-stencil','delete-new-stencil',
-'get-comments', 'add-comment','edit-comment','delete-comment', 'get-user-list','board-data-popup','users-video-data','get-user-template-changes','sso-login',
+                            'create-template-folder',
+                            'rename-template-folder',
+                            'delete-template-folder',
+                            'set-template-folder',
+                            'delete-template',
+                            'delete-event',
+                            'create-event-folder',
+                            'rename-event-folder',
+                            'delete-event-folder',
+                            'set-event-folder',
+                            'get-all-clients',
+                            'get-client-templates',
+                            'set-event-update-status',
+                            'get-event-edit-status',
+                            'get-event-extra-layouts',
+                            'svg2dwg',
+                            'svg2dxf',
+                            'get-dwg3',
+                            'get-dxf3',
+                            'clear-old-events',
+                            'temp-ed-upload',
+                            'get-temp-ed-file',
+                            'add-new-stencil',
+                            'get-new-stencils',
+                            'save-new-stencil',
+                            'delete-new-stencil',
+                            'get-comments', 'add-comment',
+                            'edit-comment',
+                            'delete-comment', 'get-user-list',
+                            'board-data-popup',
+                            'users-video-data',
+                            'get-user-template-changes',
+                            'sso-login',
+                            'momentus-jwt'
                         ],
                         'allow' => true,
 //                        'roles' => ['?'],
+
                             'denyCallback' => function ($rule, $action) {
                                 // Set return URL and redirect to login page
                                 Yii::$app->user->setReturnUrl(Yii::$app->request->url);
@@ -155,6 +186,13 @@ class SiteController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                     ],
+                    [
+                        'actions' => ['sso-login'],
+                        'allow' => true,
+                        'roles' => ['@','?'],
+                    ],
+
+                    
                 ],
             ],
             'verbs' => [
@@ -5119,6 +5157,7 @@ public function actionGetUserTemplateChanges()
 
     public function actionSsoLogin()
     {
+
         $request = Yii::$app->request;
         $session = Yii::$app->session;
 
@@ -5416,5 +5455,350 @@ public function actionGetUserTemplateChanges()
     }
 //sso upgarde
 
+//momentus login
 
+    public static function verifyJWT($jwt, $secret)
+{
+    $parts = explode('.', $jwt);
+
+    if (count($parts) !== 3) {
+        return false;
+    }
+
+    [$header, $payload, $signature] = $parts;
+
+    $validSignature = rtrim(strtr(base64_encode(
+        hash_hmac(
+            'sha256',
+            $header . '.' . $payload,
+            $secret,
+            true
+        )
+    ), '+/', '-_'), '=');
+
+    if (!hash_equals($validSignature, $signature)) {
+               return false;
+
+    }
+
+    $payloadData = json_decode(
+        base64_decode(strtr($payload, '-_', '+/')),
+        true
+    );
+
+    return $payloadData;
+}
+
+public function actionMomentusJwt()
+{
+    $session = Yii::$app->session;
+
+    try {
+
+        // ==========================
+        // 1. Get JWT Token
+        // ==========================
+        $token = Yii::$app->request->get('token');
+
+        Yii::info(
+            'Token JWT: ' .
+            json_encode($token),
+            'momentus-token'
+        );
+
+        if (empty($token)) {
+            $session->setFlash('error', 'JWT token missing.');
+            return $this->redirect(['site/login']);
+        }
+
+        // ==========================
+        // 2. Secret Key
+        // ==========================
+        $secretKey = Yii::$app->params['momentusJwtSecret'];
+
+        if (empty($secretKey)) {
+            $session->setFlash('error', 'JWT secret key not configured.');
+            return $this->redirect(['site/login']);
+        }
+
+        // ==========================
+        // 3. Verify JWT
+        // ==========================
+        $jwt = self::verifyJWT($token, $secretKey);
+
+   
+//         $jwt = [
+
+//   "Email"=> "raghawsinghrathore+1@gmail.com",
+//   "sub"=> "Raghaw Singh",
+//   "OrgCode"=> "10",
+//   "EventID"=> "70664",
+//   "SpaceCode"=> "11",
+//   "EventSpaceDiagramID"=> "1955",
+//   "jti"=> "1a7d8bef-1b04-4aea-bd5b-2882bc8d192b",
+//   "iat"=> 1779536191,
+//   "guid"=> "96c834a02cf05d50f7b16ed118f42c6e",
+//   "nbf"=> 1779536191,
+//   "exp"=> 1779536251,
+//   "iss"=> "momentus",
+//   "aud"=> "eventdraw"
+// ];
+
+        if (empty($jwt) || !is_array($jwt)) {
+            $session->setFlash('error', 'Invalid token.');
+            return $this->redirect(['site/login']);
+        }
+
+        Yii::info(
+            'Decoded JWT: ' .
+            json_encode($jwt),
+            'momentus-jwt'
+        );
+
+        // ==========================
+        // 4. Validate Required Fields
+        // ==========================
+        $requiredFields = [
+            'iss',
+            'aud',
+            'sub',
+            'Email',
+            'OrgCode',
+            'EventID',
+            'SpaceCode',
+            'EventSpaceDiagramID',
+            'iat',
+            'exp',
+            'jti'
+        ];
+
+        foreach ($requiredFields as $field) {
+            if (empty($jwt[$field])) {
+                $session->setFlash(
+                    'error',
+                    "Missing JWT field: {$field}"
+                );
+
+                return $this->redirect(['site/login']);
+            }
+        }
+
+        // ==========================
+        // 5. Validate Issuer
+        // ==========================
+        if ($jwt['iss'] !== 'momentus') {
+            $session->setFlash(
+                'error',
+                'Invalid token issuer.'
+            );
+
+            return $this->redirect(['site/login']);
+        }
+
+        // ==========================
+        // 6. Validate Audience
+        // ==========================
+        if ($jwt['aud'] !== 'eventdraw') {
+            $session->setFlash(
+                'error',
+                'Invalid token audience.'
+            );
+
+            return $this->redirect(['site/login']);
+        }
+
+        // ==========================
+        // 7. Validate Expiry
+        // ==========================
+        if ($jwt['exp'] < time()) {
+            $session->setFlash(
+                'error',
+                'Token expired.'
+            );
+
+            return $this->redirect(['site/login']);
+        }
+
+        // ==========================
+        // 8. Replay Protection (jti)
+        // ==========================
+        // $alreadyUsed = (new \yii\db\Query())
+        //     ->from('momentus_jwt_log')
+        //     ->where(['jti' => $jwt['jti']])
+        //     ->exists();
+
+        // if ($alreadyUsed) {
+        //     $session->setFlash(
+        //         'error',
+        //         'Token already used.'
+        //     );
+
+        //     return $this->redirect(['site/login']);
+        // }
+
+        // // Save token usage
+        // Yii::$app->db->createCommand()->insert(
+        //     'momentus_jwt_log',
+        //     [
+        //         'jti' => $jwt['jti'],
+        //         'created_at' => date('Y-m-d H:i:s')
+        //     ]
+        // )->execute();
+
+        // ==========================
+        // 9. Find User
+        // ==========================
+        // $user = User::find()
+        //     ->where([
+        //         'momentus_user_id' => $jwt['sub']
+        //     ])
+        //     ->one();
+
+        // fallback email
+        // if (!$user) {
+            $user = User::find()
+                ->where([
+                    'email' => $jwt['Email']
+                ])
+                ->one();
+        // }
+
+        // ==========================
+        // 10. Create User (Optional)
+        // ==========================
+        if (!$user) {
+            $time = time();
+            $user = new User();
+            $user->username = $jwt['Email'];
+            $user->email = $jwt['Email'];
+            $user->firstname = $jwt['sub'];
+            $user->userfullname = $jwt['sub'];
+
+            // Save external ID
+            // $user->momentus_user_id = $jwt['sub'];
+
+            // random password
+            $password = Yii::$app
+                ->security
+                ->generateRandomString(16);
+
+            $user->setPassword($password);
+
+            $user->status = 10;
+            // $user->expiry_date = strtotime('+7 days');
+
+            $user->created_at = $time;
+            $user->updated_at = $time;
+
+
+            $user->generateAuthKey();
+
+            if (!$user->save()) {
+
+                Yii::error(
+                    json_encode($user->errors),
+                    'momentus-jwt'
+                );
+
+                $session->setFlash(
+                    'error',
+                    'Unable to create user.'
+                );
+
+                return $this->redirect(['site/login']);
+            }
+        }
+
+        // ==========================
+        // 11. Login User
+        // ==========================
+        if (!Yii::$app->user->login($user, 86400)) {
+
+            $session->setFlash(
+                'error',
+                'Unable to login user.'
+            );
+
+            return $this->redirect(['site/login']);
+        }
+
+        // ==========================
+        // 12. Store Session Values
+        // ==========================
+        $session->set(
+            'momentus_login',
+            true
+        );
+
+        $session->set(
+            'momentus_user_id',
+            $jwt['sub']
+        );
+
+        $session->set(
+            'event_id',
+            $jwt['EventID']
+        );
+
+        $session->set(
+            'org_code',
+            $jwt['OrgCode']
+        );
+
+
+if(!empty($jwt['guid'])){
+
+$guidInfo = \common\models\Userlogon::findByGUID($jwt['guid']);
+
+if (!$guidInfo) {
+    $session->setFlash('error', 'Incorrect GUID');
+    return $this->redirect(['site/login']);
+}
+
+$filedata = $guidInfo->xml ?? null;
+
+if (!empty($filedata)) {
+    return $this->redirect([
+        'site/eventdraw',
+        'EventID' => $filedata,
+    ]);
+}
+
+  $session->setFlash(
+                'error',
+                'No EventID Found');
+
+return $this->redirect(['site/login']);
+}
+        // ==========================
+        // 13. Redirect to EventDraw
+        // ==========================
+        return $this->redirect([
+            'site/eventdraw',
+            'OrgCode' => $jwt['OrgCode'],
+            'EventID' => $jwt['EventID'],
+            'SpaceCode' => $jwt['SpaceCode'],
+            'EventSpaceDiagramID' => $jwt['EventSpaceDiagramID'],
+        ]);
+
+    } catch (\Exception $e) {
+
+        Yii::error(
+            'Momentus JWT Error: ' .
+            $e->getMessage(),
+            'momentus-jwt'
+        );
+
+        $session->setFlash(
+            'error',
+            'Authentication failed: ' .
+            $e->getMessage()
+        );
+
+        return $this->redirect(['site/login']);
+    }
+}
+
+
+//momentus login end
 }//class
