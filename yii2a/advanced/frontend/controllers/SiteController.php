@@ -68,7 +68,6 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'except' => ['sso-login'],
 //                'only' => ['logout', 'signup'],
                 'rules' => [
                     [
@@ -136,44 +135,14 @@ class SiteController extends Controller
                             'get-momentus-data',
                             'get-template-matterport',
                             'get-user-templates-json',
-                            'create-template-folder',
-                            'rename-template-folder',
-                            'delete-template-folder',
-                            'set-template-folder',
-                            'delete-template',
-                            'delete-event',
-                            'create-event-folder',
-                            'rename-event-folder',
-                            'delete-event-folder',
-                            'set-event-folder',
-                            'get-all-clients',
-                            'get-client-templates',
-                            'set-event-update-status',
-                            'get-event-edit-status',
-                            'get-event-extra-layouts',
-                            'svg2dwg',
-                            'svg2dxf',
-                            'get-dwg3',
-                            'get-dxf3',
-                            'clear-old-events',
-                            'temp-ed-upload',
-                            'get-temp-ed-file',
-                            'add-new-stencil',
-                            'get-new-stencils',
-                            'save-new-stencil',
-                            'delete-new-stencil',
-                            'get-comments', 'add-comment',
-                            'edit-comment',
-                            'delete-comment', 'get-user-list',
-                            'board-data-popup',
-                            'users-video-data',
-                            'get-user-template-changes',
-                            'sso-login',
-                            'momentus-jwt'
+'create-template-folder','rename-template-folder', 'delete-template-folder','set-template-folder','delete-template','delete-event',
+'create-event-folder','rename-event-folder','delete-event-folder','set-event-folder', 'get-all-clients','get-client-templates',
+'set-event-update-status','get-event-edit-status','get-event-extra-layouts','svg2dwg','svg2dxf','get-dwg3','get-dxf3','clear-old-events',
+'temp-ed-upload','get-temp-ed-file','add-new-stencil','get-new-stencils','save-new-stencil','delete-new-stencil',
+'get-comments', 'add-comment','edit-comment','delete-comment', 'get-user-list','board-data-popup','users-video-data','get-user-template-changes','sso-login','momentus-jwt'
                         ],
                         'allow' => true,
 //                        'roles' => ['?'],
-
                             'denyCallback' => function ($rule, $action) {
                                 // Set return URL and redirect to login page
                                 Yii::$app->user->setReturnUrl(Yii::$app->request->url);
@@ -186,13 +155,6 @@ class SiteController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                     ],
-                    [
-                        'actions' => ['sso-login'],
-                        'allow' => true,
-                        'roles' => ['@','?'],
-                    ],
-
-                    
                 ],
             ],
             'verbs' => [
@@ -5157,7 +5119,6 @@ public function actionGetUserTemplateChanges()
 
     public function actionSsoLogin()
     {
-
         $request = Yii::$app->request;
         $session = Yii::$app->session;
 
@@ -5455,6 +5416,7 @@ public function actionGetUserTemplateChanges()
     }
 //sso upgarde
 
+
 //momentus login
 
     public static function verifyJWT($jwt, $secret)
@@ -5492,6 +5454,8 @@ public function actionGetUserTemplateChanges()
 public function actionMomentusJwt()
 {
     $session = Yii::$app->session;
+    // echo 'test';
+    // die;
 
     try {
 
@@ -5801,4 +5765,5 @@ return $this->redirect(['site/login']);
 
 
 //momentus login end
+
 }//class
