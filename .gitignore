@@ -1,5 +1,6 @@
 # Project-specific (large trees / vendored copies)
 drawio-master_10_6_0_main/
+yii2a/
 
 # Dependencies
 node_modules/
@@ -14,11 +15,6 @@ out/
 .nuxt/
 .cache/
 .parcel-cache/
-
-# Minified JS under site/js (applies only to untracked files; use
-# `git rm --cached <path>` once if a file was committed before this rule.)
-yii2a/advanced/frontend/web/site/js/*.min.js
-yii2a/advanced/frontend/web/site/js/**/*.min.js
 
 # Upload and temporary directories
 uploads/
